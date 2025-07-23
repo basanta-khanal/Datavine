@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { useToast } from "@/components/ui/use-toast"
 import {
   Brain,
   Trophy,
@@ -962,6 +963,7 @@ export default function DataVineIQPortal() {
   const [showCouponField, setShowCouponField] = useState(false)
   const [secretClickCount, setSecretClickCount] = useState(0)
   const [paymentProcessing, setPaymentProcessing] = useState(false)
+  const { toast } = useToast()
 
   // Secret coupon code - hidden in the code
   const SECRET_COUPON = "DATAVINE2024PRO"
@@ -1144,6 +1146,16 @@ export default function DataVineIQPortal() {
       }
       setUser(updatedUser)
       setShowAuthDialog(false)
+      
+      // Show confirmation message for sign up
+      if (authMode === "signup") {
+        toast({
+          title: "🎉 Registration Successful!",
+          description: `Welcome to DataVine.ai, ${formData.name}! Your account has been created successfully. You can now access your assessment results.`,
+          duration: 6000,
+        })
+      }
+      
       setCurrentView("free-results")
       return false
     } catch (error) {
