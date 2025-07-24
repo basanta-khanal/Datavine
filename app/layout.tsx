@@ -1,48 +1,43 @@
-import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from "next/font/google"
+import { Inter } from 'next/font/google'
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Free IQ Test Online - Discover Your Intelligence Score in 15 Minutes | MindMetrics",
-  description:
-    "Take our scientifically-validated IQ test and get instant results. Discover your cognitive strengths across logic, memory, and reasoning. Trusted by 100,000+ users worldwide.",
-  keywords:
-    "IQ test, intelligence test, cognitive assessment, free IQ test online, intelligence quotient, brain test, mental ability test",
-  authors: [{ name: "MindMetrics Team" }],
-  creator: "MindMetrics",
-  publisher: "MindMetrics",
+  title: "DataVine.ai - Professional Cognitive Assessments",
+  description: "Discover your unique cognitive profile with scientifically validated assessments. Take IQ tests, ADHD screenings, and autism assessments with AI-powered insights.",
+  keywords: "IQ test, cognitive assessment, ADHD screening, autism test, brain training, psychology, mental health",
+  authors: [{ name: "DataVine.ai Team" }],
+  creator: "DataVine.ai",
+  publisher: "DataVine.ai",
   robots: "index, follow",
   openGraph: {
-    title: "Free IQ Test Online - Discover Your Intelligence Score | MindMetrics",
-    description:
-      "Take our scientifically-validated IQ test and get instant results. Trusted by 100,000+ users worldwide.",
-    url: "https://mindmetrics.com",
-    siteName: "MindMetrics",
+    type: "website",
+    locale: "en_US",
+    url: "https://datavine.ai",
+    title: "DataVine.ai - Professional Cognitive Assessments",
+    description: "Discover your unique cognitive profile with scientifically validated assessments.",
+    siteName: "DataVine.ai",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "MindMetrics IQ Test - Discover Your Intelligence",
+        alt: "DataVine.ai - Cognitive Assessments",
       },
     ],
-    locale: "en_US",
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free IQ Test Online - Discover Your Intelligence Score",
-    description:
-      "Take our scientifically-validated IQ test and get instant results. Trusted by 100,000+ users worldwide.",
-    images: ["/twitter-image.jpg"],
+    title: "DataVine.ai - Professional Cognitive Assessments",
+    description: "Discover your unique cognitive profile with scientifically validated assessments.",
+    creator: "@datavineai",
+    images: ["/og-image.jpg"],
   },
-  verification: {
-    google: "your-google-verification-code",
-  },
+  viewport: "width=device-width, initial-scale=1",
+  themeColor: "#1e293b",
     generator: 'v0.dev'
 }
 
@@ -54,30 +49,47 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <link rel="canonical" href="https://mindmetrics.com" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="msapplication-TileColor" content="#1e293b" />
+        <meta name="msapplication-config" content="/browserconfig.xml" />
+        
+        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "MindMetrics IQ Test",
-              description: "Professional online IQ test with instant results and detailed cognitive analysis",
-              url: "https://mindmetrics.com",
-              applicationCategory: "EducationalApplication",
-              operatingSystem: "Web Browser",
-              offers: {
+              "name": "DataVine.ai",
+              "description": "Professional cognitive assessments and brain training platform",
+              "url": "https://datavine.ai",
+              "applicationCategory": "HealthApplication",
+              "operatingSystem": "Web",
+              "offers": {
                 "@type": "Offer",
-                price: "0",
-                priceCurrency: "USD",
+                "price": "0",
+                "priceCurrency": "USD"
               },
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: "4.8",
-                reviewCount: "12847",
-              },
-            }),
+              "author": {
+                "@type": "Organization",
+                "name": "DataVine.ai"
+              }
+            })
+          }}
+        />
+        
+        {/* Google Analytics */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'GA_MEASUREMENT_ID');
+            `,
           }}
         />
       </head>
