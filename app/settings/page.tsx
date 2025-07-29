@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Brain, Bell, Shield, Eye, Download, Trash2, Save } from "lucide-react"
+import { Brain, Bell, Shield, Palette, Globe, Download, Trash2 } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
@@ -13,33 +13,22 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState({
     emailNotifications: true,
     pushNotifications: false,
-    weeklyReports: true,
+    assessmentReminders: true,
     marketingEmails: false,
     dataSharing: false,
-    profileVisibility: "private",
-    twoFactorAuth: false,
-    sessionTimeout: "30",
+    theme: "light",
     language: "en",
     timezone: "America/New_York",
-    theme: "light",
   })
-
-  const handleSettingChange = (key: string, value: boolean | string) => {
-    setSettings((prev) => ({
-      ...prev,
-      [key]: value,
-    }))
-  }
-
-  const handleSaveSettings = () => {
-    // Save settings logic here
-    console.log("Settings saved:", settings)
-  }
 
   const breadcrumbItems = [
     { label: "Dashboard", href: "/dashboard" },
-    { label: "Account Settings", current: true },
+    { label: "Settings", current: true },
   ]
+
+  const handleSettingChange = (key: string, value: boolean | string) => {
+    setSettings((prev) => ({ ...prev, [key]: value }))
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -68,7 +57,7 @@ export default function SettingsPage() {
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Account Settings</h1>
-            <p className="text-slate-600">Manage your account preferences and privacy settings.</p>
+            <p className="text-slate-600">Manage your preferences and account settings</p>
           </div>
 
           <div className="space-y-8">
@@ -79,11 +68,11 @@ export default function SettingsPage() {
                   <Bell className="h-5 w-5 text-slate-600" />
                   <CardTitle>Notifications</CardTitle>
                 </div>
-                <CardDescription>Choose what notifications you'd like to receive</CardDescription>
+                <CardDescription>Choose what notifications you want to receive</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
+                  <div>
                     <Label htmlFor="email-notifications">Email Notifications</Label>
                     <p className="text-sm text-slate-600">Receive assessment results and updates via email</p>
                   </div>
@@ -95,9 +84,9 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
+                  <div>
                     <Label htmlFor="push-notifications">Push Notifications</Label>
-                    <p className="text-sm text-slate-600">Get notified about new features and updates</p>
+                    <p className="text-sm text-slate-600">Receive browser notifications for important updates</p>
                   </div>
                   <Switch
                     id="push-notifications"
@@ -107,21 +96,21 @@ export default function SettingsPage() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="weekly-reports">Weekly Progress Reports</Label>
-                    <p className="text-sm text-slate-600">Receive weekly summaries of your assessment progress</p>
+                  <div>
+                    <Label htmlFor="assessment-reminders">Assessment Reminders</Label>
+                    <p className="text-sm text-slate-600">Get reminded to take regular assessments</p>
                   </div>
                   <Switch
-                    id="weekly-reports"
-                    checked={settings.weeklyReports}
-                    onCheckedChange={(checked) => handleSettingChange("weeklyReports", checked)}
+                    id="assessment-reminders"
+                    checked={settings.assessmentReminders}
+                    onCheckedChange={(checked) => handleSettingChange("assessmentReminders", checked)}
                   />
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
+                  <div>
                     <Label htmlFor="marketing-emails">Marketing Emails</Label>
-                    <p className="text-sm text-slate-600">Receive promotional content and special offers</p>
+                    <p className="text-sm text-slate-600">Receive updates about new features and promotions</p>
                   </div>
                   <Switch
                     id="marketing-emails"
@@ -132,20 +121,20 @@ export default function SettingsPage() {
               </CardContent>
             </Card>
 
-            {/* Privacy */}
+            {/* Privacy & Security */}
             <Card>
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <Eye className="h-5 w-5 text-slate-600" />
-                  <CardTitle>Privacy</CardTitle>
+                  <Shield className="h-5 w-5 text-slate-600" />
+                  <CardTitle>Privacy & Security</CardTitle>
                 </div>
-                <CardDescription>Control how your data is used and shared</CardDescription>
+                <CardDescription>Control your privacy and data sharing preferences</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
+                  <div>
                     <Label htmlFor="data-sharing">Anonymous Data Sharing</Label>
-                    <p className="text-sm text-slate-600">Help improve our assessments by sharing anonymized data</p>
+                    <p className="text-sm text-slate-600">Help improve our assessments by sharing anonymous data</p>
                   </div>
                   <Switch
                     id="data-sharing"
@@ -154,172 +143,123 @@ export default function SettingsPage() {
                   />
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="profile-visibility">Profile Visibility</Label>
-                    <p className="text-sm text-slate-600">Control who can see your profile information</p>
-                  </div>
-                  <Select
-                    value={settings.profileVisibility}
-                    onValueChange={(value) => handleSettingChange("profileVisibility", value)}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="public">Public</SelectItem>
-                      <SelectItem value="private">Private</SelectItem>
-                      <SelectItem value="friends">Friends Only</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Download className="h-4 w-4 mr-2" />
+                    Download My Data
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    View Privacy Policy
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    Manage Cookie Preferences
+                  </Button>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Security */}
+            {/* Appearance */}
             <Card>
               <CardHeader>
                 <div className="flex items-center space-x-2">
-                  <Shield className="h-5 w-5 text-slate-600" />
-                  <CardTitle>Security</CardTitle>
+                  <Palette className="h-5 w-5 text-slate-600" />
+                  <CardTitle>Appearance</CardTitle>
                 </div>
-                <CardDescription>Manage your account security settings</CardDescription>
+                <CardDescription>Customize how DataVine.ai looks and feels</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="two-factor">Two-Factor Authentication</Label>
-                    <p className="text-sm text-slate-600">Add an extra layer of security to your account</p>
-                  </div>
-                  <Switch
-                    id="two-factor"
-                    checked={settings.twoFactorAuth}
-                    onCheckedChange={(checked) => handleSettingChange("twoFactorAuth", checked)}
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label htmlFor="session-timeout">Session Timeout</Label>
-                    <p className="text-sm text-slate-600">Automatically log out after period of inactivity</p>
-                  </div>
-                  <Select
-                    value={settings.sessionTimeout}
-                    onValueChange={(value) => handleSettingChange("sessionTimeout", value)}
-                  >
-                    <SelectTrigger className="w-32">
+                <div>
+                  <Label htmlFor="theme">Theme</Label>
+                  <Select value={settings.theme} onValueChange={(value) => handleSettingChange("theme", value)}>
+                    <SelectTrigger className="w-full mt-2">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="15">15 minutes</SelectItem>
-                      <SelectItem value="30">30 minutes</SelectItem>
-                      <SelectItem value="60">1 hour</SelectItem>
-                      <SelectItem value="never">Never</SelectItem>
+                      <SelectItem value="light">Light</SelectItem>
+                      <SelectItem value="dark">Dark</SelectItem>
+                      <SelectItem value="system">System</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Language & Region */}
+            <Card>
+              <CardHeader>
+                <div className="flex items-center space-x-2">
+                  <Globe className="h-5 w-5 text-slate-600" />
+                  <CardTitle>Language & Region</CardTitle>
+                </div>
+                <CardDescription>Set your language and regional preferences</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div>
+                  <Label htmlFor="language">Language</Label>
+                  <Select value={settings.language} onValueChange={(value) => handleSettingChange("language", value)}>
+                    <SelectTrigger className="w-full mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="en">English</SelectItem>
+                      <SelectItem value="es">Español</SelectItem>
+                      <SelectItem value="fr">Français</SelectItem>
+                      <SelectItem value="de">Deutsch</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="pt-4 border-t">
-                  <Button variant="outline" className="w-full bg-transparent">
-                    Change Password
-                  </Button>
+                <div>
+                  <Label htmlFor="timezone">Timezone</Label>
+                  <Select value={settings.timezone} onValueChange={(value) => handleSettingChange("timezone", value)}>
+                    <SelectTrigger className="w-full mt-2">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="America/New_York">Eastern Time (ET)</SelectItem>
+                      <SelectItem value="America/Chicago">Central Time (CT)</SelectItem>
+                      <SelectItem value="America/Denver">Mountain Time (MT)</SelectItem>
+                      <SelectItem value="America/Los_Angeles">Pacific Time (PT)</SelectItem>
+                      <SelectItem value="Europe/London">London (GMT)</SelectItem>
+                      <SelectItem value="Europe/Paris">Paris (CET)</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Preferences */}
-            <Card>
+            {/* Danger Zone */}
+            <Card className="border-red-200 bg-red-50">
               <CardHeader>
-                <CardTitle>Preferences</CardTitle>
-                <CardDescription>Customize your DataVine.ai experience</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="language">Language</Label>
-                    <Select value={settings.language} onValueChange={(value) => handleSettingChange("language", value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="es">Spanish</SelectItem>
-                        <SelectItem value="fr">French</SelectItem>
-                        <SelectItem value="de">German</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="timezone">Timezone</Label>
-                    <Select value={settings.timezone} onValueChange={(value) => handleSettingChange("timezone", value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="America/New_York">Eastern Time</SelectItem>
-                        <SelectItem value="America/Chicago">Central Time</SelectItem>
-                        <SelectItem value="America/Denver">Mountain Time</SelectItem>
-                        <SelectItem value="America/Los_Angeles">Pacific Time</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="theme">Theme</Label>
-                    <Select value={settings.theme} onValueChange={(value) => handleSettingChange("theme", value)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="light">Light</SelectItem>
-                        <SelectItem value="dark">Dark</SelectItem>
-                        <SelectItem value="system">System</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <Trash2 className="h-5 w-5 text-red-600" />
+                  <CardTitle className="text-red-900">Danger Zone</CardTitle>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Data Management */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Data Management</CardTitle>
-                <CardDescription>Export or delete your account data</CardDescription>
+                <CardDescription className="text-red-700">Irreversible and destructive actions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 border border-slate-200 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-slate-900">Export Data</h3>
-                    <p className="text-sm text-slate-600">Download all your assessment data and results</p>
-                  </div>
-                  <Button variant="outline">
-                    <Download className="h-4 w-4 mr-2" />
-                    Export
-                  </Button>
-                </div>
-
-                <div className="flex items-center justify-between p-4 border border-red-200 rounded-lg bg-red-50">
-                  <div>
-                    <h3 className="font-medium text-red-900">Delete Account</h3>
-                    <p className="text-sm text-red-700">Permanently delete your account and all data</p>
-                  </div>
-                  <Button variant="destructive">
-                    <Trash2 className="h-4 w-4 mr-2" />
-                    Delete
-                  </Button>
-                </div>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-red-300 text-red-700 hover:bg-red-100 bg-transparent"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete All Assessment Data
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start border-red-300 text-red-700 hover:bg-red-100 bg-transparent"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Delete Account Permanently
+                </Button>
               </CardContent>
             </Card>
+          </div>
 
-            {/* Save Button */}
-            <div className="flex justify-end">
-              <Button onClick={handleSaveSettings} className="bg-slate-900 hover:bg-slate-800">
-                <Save className="h-4 w-4 mr-2" />
-                Save Settings
-              </Button>
-            </div>
+          {/* Save Changes */}
+          <div className="mt-8 flex justify-end space-x-4">
+            <Button variant="outline">Cancel</Button>
+            <Button className="bg-slate-900 hover:bg-slate-800 text-white">Save Changes</Button>
           </div>
         </div>
       </main>

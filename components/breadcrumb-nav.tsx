@@ -1,7 +1,7 @@
 "use client"
 
 import { ChevronRight, Home } from "lucide-react"
-import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 interface BreadcrumbItem {
   label: string
@@ -15,21 +15,30 @@ interface BreadcrumbNavProps {
 
 export function BreadcrumbNav({ items }: BreadcrumbNavProps) {
   return (
-    <nav className="flex items-center space-x-1 text-sm text-slate-600 mb-6">
-      <Link href="/" className="flex items-center hover:text-slate-900 transition-colors">
+    <nav className="flex items-center space-x-2 text-sm text-slate-600 mb-6">
+      <Button
+        variant="ghost"
+        size="sm"
+        className="h-auto p-1 text-slate-600 hover:text-slate-900"
+        onClick={() => (window.location.href = "/")}
+      >
         <Home className="h-4 w-4" />
-        <span className="sr-only">Home</span>
-      </Link>
+      </Button>
 
       {items.map((item, index) => (
-        <div key={index} className="flex items-center space-x-1">
+        <div key={index} className="flex items-center space-x-2">
           <ChevronRight className="h-4 w-4 text-slate-400" />
-          {item.href && !item.current ? (
-            <Link href={item.href} className="hover:text-slate-900 transition-colors">
-              {item.label}
-            </Link>
+          {item.current ? (
+            <span className="font-medium text-slate-900">{item.label}</span>
           ) : (
-            <span className={item.current ? "text-slate-900 font-medium" : ""}>{item.label}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-auto p-1 text-slate-600 hover:text-slate-900"
+              onClick={() => item.href && (window.location.href = item.href)}
+            >
+              {item.label}
+            </Button>
           )}
         </div>
       ))}

@@ -1,17 +1,14 @@
-import { BreadcrumbNav } from "@/components/breadcrumb-nav"
+import { Brain, Users, Award, Target, Heart, Lightbulb } from "lucide-react"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function AboutPage() {
-  const breadcrumbItems = [{ label: "About Us", current: true }]
-
   return (
     <div className="min-h-screen bg-white">
       <header className="container mx-auto px-4 py-6 border-b border-slate-100">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-              <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
-              </svg>
+              <Brain className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
@@ -27,66 +24,209 @@ export default function AboutPage() {
       </header>
 
       <main className="container mx-auto px-4 py-12">
-        <div className="max-w-4xl mx-auto">
-          <BreadcrumbNav items={breadcrumbItems} />
-
-          <div className="text-center mb-12">
+        <div className="max-w-6xl mx-auto">
+          {/* Hero Section */}
+          <div className="text-center mb-16">
             <h1 className="text-4xl font-bold text-slate-900 mb-4">About DataVine.ai</h1>
-            <p className="text-xl text-slate-600">
-              Empowering individuals through scientifically-validated cognitive assessments
+            <p className="text-xl text-slate-600 max-w-3xl mx-auto">
+              We're on a mission to make professional-grade psychological assessments accessible to everyone, helping
+              individuals understand their cognitive abilities and mental health patterns.
             </p>
           </div>
 
-          <div className="prose prose-slate max-w-none">
-            <h2>Our Mission</h2>
-            <p>
-              At DataVine.ai, we believe that understanding your cognitive abilities is the first step toward personal
-              growth and self-improvement. Our mission is to make professional-grade psychological assessments
-              accessible to everyone, providing insights that were once only available through expensive clinical
-              evaluations.
-            </p>
+          {/* Mission, Vision, Values */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <Card className="border border-slate-200 shadow-sm text-center">
+              <CardHeader>
+                <div className="bg-blue-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Target className="h-8 w-8 text-blue-600" />
+                </div>
+                <CardTitle>Our Mission</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700">
+                  To democratize access to scientifically validated psychological assessments, empowering individuals
+                  with insights into their cognitive and emotional well-being.
+                </p>
+              </CardContent>
+            </Card>
 
-            <h2>Our Story</h2>
-            <p>
-              Founded in 2024 by a team of cognitive psychologists and data scientists, DataVine.ai emerged from the
-              recognition that traditional psychological testing was often inaccessible, expensive, and time-consuming.
-              We set out to democratize cognitive assessment by leveraging cutting-edge technology and established
-              psychological methodologies.
-            </p>
+            <Card className="border border-slate-200 shadow-sm text-center">
+              <CardHeader>
+                <div className="bg-purple-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Lightbulb className="h-8 w-8 text-purple-600" />
+                </div>
+                <CardTitle>Our Vision</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700">
+                  A world where everyone has access to professional-grade mental health and cognitive assessments,
+                  leading to better self-understanding and improved outcomes.
+                </p>
+              </CardContent>
+            </Card>
 
-            <h2>Scientific Foundation</h2>
-            <p>Our assessments are based on well-established psychological testing frameworks:</p>
-            <ul>
-              <li>
-                <strong>IQ Assessment:</strong> Based on Raven's Progressive Matrices and WAIS-IV principles
-              </li>
-              <li>
-                <strong>ADHD Screening:</strong> Adapted from ASRS-v1.1 and DSM-5 criteria
-              </li>
-              <li>
-                <strong>Autism Screening:</strong> Based on the Autism Spectrum Quotient (AQ) research
-              </li>
-            </ul>
+            <Card className="border border-slate-200 shadow-sm text-center">
+              <CardHeader>
+                <div className="bg-green-100 p-4 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Heart className="h-8 w-8 text-green-600" />
+                </div>
+                <CardTitle>Our Values</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-slate-700">
+                  Scientific rigor, accessibility, privacy, and compassion guide everything we do. We believe in
+                  evidence-based approaches and treating every user with dignity.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
 
-            <h2>Our Team</h2>
-            <p>
-              Our multidisciplinary team includes licensed psychologists, data scientists, and user experience designers
-              who work together to ensure our assessments are both scientifically rigorous and user-friendly.
-            </p>
+          {/* Our Story */}
+          <div className="bg-slate-50 rounded-xl p-8 mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">Our Story</h2>
+            <div className="max-w-4xl mx-auto">
+              <p className="text-slate-700 mb-4 text-lg">
+                DataVine.ai was founded in 2023 by a team of clinical psychologists, data scientists, and technology
+                experts who recognized a critical gap in mental health accessibility. Traditional psychological
+                assessments were often expensive, time-consuming, and difficult to access for many people who could
+                benefit from them.
+              </p>
+              <p className="text-slate-700 mb-4 text-lg">
+                Our founders, having worked in clinical settings for years, witnessed firsthand how early identification
+                of cognitive patterns and mental health indicators could dramatically improve outcomes. They envisioned
+                a platform that could bring the same level of scientific rigor found in clinical settings to anyone with
+                an internet connection.
+              </p>
+              <p className="text-slate-700 text-lg">
+                Today, DataVine.ai serves thousands of users worldwide, providing scientifically validated assessments
+                that help people understand their cognitive abilities, identify potential mental health concerns, and
+                make informed decisions about their well-being.
+              </p>
+            </div>
+          </div>
 
-            <h2>Privacy & Security</h2>
-            <p>
-              We take your privacy seriously. All assessment data is encrypted and stored securely. We never share
-              individual results with third parties and comply with all relevant data protection regulations.
-            </p>
+          {/* Team Section */}
+          <div className="mb-16">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Meet Our Team</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <div className="bg-slate-200 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                    <Users className="h-12 w-12 text-slate-600" />
+                  </div>
+                  <CardTitle>Dr. Sarah Chen</CardTitle>
+                  <CardDescription>Co-Founder & Chief Clinical Officer</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    Clinical psychologist with 15+ years of experience in cognitive assessment. Ph.D. from Stanford
+                    University, specializing in neuropsychological testing.
+                  </p>
+                </CardContent>
+              </Card>
 
-            <h2>Contact Us</h2>
-            <p>
-              Have questions about our assessments or need support? Reach out to us at{" "}
-              <a href="mailto:support@datavine.ai" className="text-blue-600 hover:text-blue-800">
-                support@datavine.ai
-              </a>
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <div className="bg-slate-200 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                    <Users className="h-12 w-12 text-slate-600" />
+                  </div>
+                  <CardTitle>Michael Rodriguez</CardTitle>
+                  <CardDescription>Co-Founder & CEO</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    Former tech executive with a passion for mental health accessibility. MBA from Wharton, previously
+                    led product teams at major healthcare companies.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <div className="bg-slate-200 rounded-full w-24 h-24 mx-auto mb-4 flex items-center justify-center">
+                    <Users className="h-12 w-12 text-slate-600" />
+                  </div>
+                  <CardTitle>Dr. James Park</CardTitle>
+                  <CardDescription>Chief Technology Officer</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    AI researcher and software architect with expertise in machine learning applications in healthcare.
+                    Ph.D. in Computer Science from MIT.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+
+          {/* Statistics */}
+          <div className="bg-slate-900 rounded-xl p-8 text-white mb-16">
+            <h2 className="text-3xl font-bold mb-8 text-center">Our Impact</h2>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl font-bold mb-2">50,000+</div>
+                <div className="text-slate-300">Assessments Completed</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold mb-2">25,000+</div>
+                <div className="text-slate-300">Active Users</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold mb-2">98%</div>
+                <div className="text-slate-300">User Satisfaction</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold mb-2">15+</div>
+                <div className="text-slate-300">Countries Served</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Partnerships */}
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8">Trusted Partners</h2>
+            <p className="text-slate-600 mb-8 max-w-3xl mx-auto">
+              We collaborate with leading academic institutions, healthcare organizations, and research centers to
+              ensure our assessments meet the highest standards of scientific validity and clinical utility.
             </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <Award className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+                  <CardTitle>Academic Partnerships</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    Collaborating with top universities for ongoing research and validation studies.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <Heart className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+                  <CardTitle>Healthcare Integration</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    Working with healthcare providers to integrate our assessments into clinical workflows.
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className="border border-slate-200 shadow-sm">
+                <CardHeader className="text-center">
+                  <Brain className="h-12 w-12 text-slate-600 mx-auto mb-4" />
+                  <CardTitle>Research Initiatives</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-700 text-sm">
+                    Contributing to mental health research through data insights and collaborative studies.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </main>

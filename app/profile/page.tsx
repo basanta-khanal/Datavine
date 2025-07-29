@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Brain, User, Mail, Phone, Calendar, MapPin, Edit3, Save, X } from "lucide-react"
+import { Brain, User, Mail, Phone, Calendar, Edit, Save, X } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -16,20 +16,17 @@ export default function ProfilePage() {
     email: "john.doe@example.com",
     phone: "+1 (555) 123-4567",
     dateOfBirth: "1990-05-15",
-    location: "New York, NY",
-    bio: "Passionate about cognitive development and mental health awareness. Regular user of DataVine.ai assessments.",
-    joinDate: "January 2024",
-    totalAssessments: 12,
-    averageIQ: 125,
-    subscription: "Premium",
+    occupation: "Software Engineer",
+    education: "Bachelor's Degree",
+    location: "San Francisco, CA",
   })
 
   const [editedProfile, setEditedProfile] = useState(profile)
 
-  const handleEdit = () => {
-    setIsEditing(true)
-    setEditedProfile(profile)
-  }
+  const breadcrumbItems = [
+    { label: "Dashboard", href: "/dashboard" },
+    { label: "Profile", current: true },
+  ]
 
   const handleSave = () => {
     setProfile(editedProfile)
@@ -40,18 +37,6 @@ export default function ProfilePage() {
     setEditedProfile(profile)
     setIsEditing(false)
   }
-
-  const handleInputChange = (field: string, value: string) => {
-    setEditedProfile((prev) => ({
-      ...prev,
-      [field]: value,
-    }))
-  }
-
-  const breadcrumbItems = [
-    { label: "Dashboard", href: "/dashboard" },
-    { label: "My Profile", current: true },
-  ]
 
   return (
     <div className="min-h-screen bg-white">
@@ -80,236 +65,203 @@ export default function ProfilePage() {
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">My Profile</h1>
-            <p className="text-slate-600">Manage your personal information and preferences.</p>
+            <p className="text-slate-600">Manage your personal information and preferences</p>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Profile Overview */}
-            <Card className="lg:col-span-1">
+            {/* Profile Picture and Basic Info */}
+            <Card>
               <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
-                  <Avatar className="h-24 w-24">
-                    <AvatarImage src="/placeholder-avatar.jpg" alt={profile.name} />
-                    <AvatarFallback className="bg-slate-900 text-white text-xl">
-                      {profile.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
+                <Avatar className="h-24 w-24 mx-auto mb-4">
+                  <AvatarImage src="/placeholder-avatar.jpg" alt={profile.name} />
+                  <AvatarFallback className="bg-slate-900 text-white text-xl">
+                    {profile.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
                 <CardTitle>{profile.name}</CardTitle>
-                <CardDescription>
-                  {profile.subscription} Member since {profile.joinDate}
-                </CardDescription>
+                <CardDescription>{profile.occupation}</CardDescription>
               </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="text-center p-4 bg-slate-50 rounded-lg">
-                    <p className="text-2xl font-bold text-slate-900">{profile.totalAssessments}</p>
-                    <p className="text-sm text-slate-600">Total Assessments</p>
-                  </div>
-                  <div className="text-center p-4 bg-slate-50 rounded-lg">
-                    <p className="text-2xl font-bold text-slate-900">{profile.averageIQ}</p>
-                    <p className="text-sm text-slate-600">Average IQ Score</p>
-                  </div>
+              <CardContent className="text-center">
+                <Button variant="outline" className="w-full mb-4 bg-transparent">
+                  Change Photo
+                </Button>
+                <div className="text-sm text-slate-600 space-y-1">
+                  <p>Member since January 2024</p>
+                  <p>5 assessments completed</p>
+                  <p>Premium subscriber</p>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Profile Details */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <div className="flex items-center justify-between">
+            {/* Personal Information */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
                   <div>
                     <CardTitle>Personal Information</CardTitle>
-                    <CardDescription>Update your personal details and contact information</CardDescription>
+                    <CardDescription>Update your personal details</CardDescription>
                   </div>
                   {!isEditing ? (
-                    <Button onClick={handleEdit} variant="outline" size="sm">
-                      <Edit3 className="h-4 w-4 mr-2" />
+                    <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+                      <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </Button>
                   ) : (
                     <div className="flex space-x-2">
-                      <Button onClick={handleSave} size="sm">
-                        <Save className="h-4 w-4 mr-2" />
-                        Save
-                      </Button>
-                      <Button onClick={handleCancel} variant="outline" size="sm">
+                      <Button variant="outline" size="sm" onClick={handleCancel}>
                         <X className="h-4 w-4 mr-2" />
                         Cancel
                       </Button>
+                      <Button size="sm" onClick={handleSave} className="bg-slate-900 hover:bg-slate-800 text-white">
+                        <Save className="h-4 w-4 mr-2" />
+                        Save
+                      </Button>
                     </div>
                   )}
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6">
+                </CardHeader>
+                <CardContent className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="name">Full Name</Label>
                       {isEditing ? (
                         <Input
                           id="name"
                           value={editedProfile.name}
-                          onChange={(e) => handleInputChange("name", e.target.value)}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, name: e.target.value })}
                         />
                       ) : (
-                        <div className="flex items-center space-x-2 p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <User className="h-4 w-4 text-slate-500" />
+                        <div className="flex items-center mt-2">
+                          <User className="h-4 w-4 text-slate-400 mr-2" />
                           <span>{profile.name}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="email">Email Address</Label>
                       {isEditing ? (
                         <Input
                           id="email"
                           type="email"
                           value={editedProfile.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, email: e.target.value })}
                         />
                       ) : (
-                        <div className="flex items-center space-x-2 p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <Mail className="h-4 w-4 text-slate-500" />
+                        <div className="flex items-center mt-2">
+                          <Mail className="h-4 w-4 text-slate-400 mr-2" />
                           <span>{profile.email}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="phone">Phone Number</Label>
                       {isEditing ? (
                         <Input
                           id="phone"
                           value={editedProfile.phone}
-                          onChange={(e) => handleInputChange("phone", e.target.value)}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, phone: e.target.value })}
                         />
                       ) : (
-                        <div className="flex items-center space-x-2 p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <Phone className="h-4 w-4 text-slate-500" />
+                        <div className="flex items-center mt-2">
+                          <Phone className="h-4 w-4 text-slate-400 mr-2" />
                           <span>{profile.phone}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-2">
+                    <div>
                       <Label htmlFor="dateOfBirth">Date of Birth</Label>
                       {isEditing ? (
                         <Input
                           id="dateOfBirth"
                           type="date"
                           value={editedProfile.dateOfBirth}
-                          onChange={(e) => handleInputChange("dateOfBirth", e.target.value)}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, dateOfBirth: e.target.value })}
                         />
                       ) : (
-                        <div className="flex items-center space-x-2 p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <Calendar className="h-4 w-4 text-slate-500" />
+                        <div className="flex items-center mt-2">
+                          <Calendar className="h-4 w-4 text-slate-400 mr-2" />
                           <span>{new Date(profile.dateOfBirth).toLocaleDateString()}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="location">Location</Label>
+                    <div>
+                      <Label htmlFor="occupation">Occupation</Label>
                       {isEditing ? (
                         <Input
-                          id="location"
-                          value={editedProfile.location}
-                          onChange={(e) => handleInputChange("location", e.target.value)}
+                          id="occupation"
+                          value={editedProfile.occupation}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, occupation: e.target.value })}
                         />
                       ) : (
-                        <div className="flex items-center space-x-2 p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <MapPin className="h-4 w-4 text-slate-500" />
-                          <span>{profile.location}</span>
+                        <div className="flex items-center mt-2">
+                          <span className="ml-6">{profile.occupation}</span>
                         </div>
                       )}
                     </div>
 
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="bio">Bio</Label>
+                    <div>
+                      <Label htmlFor="education">Education</Label>
                       {isEditing ? (
-                        <textarea
-                          id="bio"
-                          className="w-full p-2 border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-500 focus:border-slate-500"
-                          rows={3}
-                          value={editedProfile.bio}
-                          onChange={(e) => handleInputChange("bio", e.target.value)}
+                        <Input
+                          id="education"
+                          value={editedProfile.education}
+                          onChange={(e) => setEditedProfile({ ...editedProfile, education: e.target.value })}
                         />
                       ) : (
-                        <div className="p-2 border border-slate-200 rounded-md bg-slate-50">
-                          <span>{profile.bio}</span>
+                        <div className="flex items-center mt-2">
+                          <span className="ml-6">{profile.education}</span>
                         </div>
                       )}
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+
+                  <div>
+                    <Label htmlFor="location">Location</Label>
+                    {isEditing ? (
+                      <Input
+                        id="location"
+                        value={editedProfile.location}
+                        onChange={(e) => setEditedProfile({ ...editedProfile, location: e.target.value })}
+                      />
+                    ) : (
+                      <div className="flex items-center mt-2">
+                        <span className="ml-6">{profile.location}</span>
+                      </div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Account Security */}
+              <Card className="mt-8">
+                <CardHeader>
+                  <CardTitle>Account Security</CardTitle>
+                  <CardDescription>Manage your password and security settings</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    Change Password
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    Enable Two-Factor Authentication
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-red-600 hover:text-red-700 bg-transparent"
+                  >
+                    Delete Account
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
           </div>
-
-          {/* Account Settings */}
-          <Card className="mt-8">
-            <CardHeader>
-              <CardTitle>Account Settings</CardTitle>
-              <CardDescription>Manage your account preferences and security settings</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-slate-900">Privacy Settings</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Email notifications</span>
-                      <Button variant="outline" size="sm">
-                        Manage
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Data sharing preferences</span>
-                      <Button variant="outline" size="sm">
-                        Configure
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Assessment history visibility</span>
-                      <Button variant="outline" size="sm">
-                        Settings
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h3 className="text-lg font-semibold text-slate-900">Security</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Change password</span>
-                      <Button variant="outline" size="sm">
-                        Update
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Two-factor authentication</span>
-                      <Button variant="outline" size="sm">
-                        Enable
-                      </Button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-slate-700">Login sessions</span>
-                      <Button variant="outline" size="sm">
-                        Manage
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </main>
     </div>

@@ -1,5 +1,6 @@
+import type React from "react"
 import type { Metadata } from "next"
-import { Inter } from 'next/font/google'
+import { Inter } from "next/font/google"
 import "./globals.css"
 import { Toaster } from "@/components/ui/toaster"
 
@@ -7,7 +8,8 @@ const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
   title: "DataVine.ai - Professional Cognitive Assessments",
-  description: "Discover your unique cognitive profile with scientifically validated assessments. Take IQ tests, ADHD screenings, and autism assessments with AI-powered insights.",
+  description:
+    "Discover your unique cognitive profile with scientifically validated assessments. Take IQ tests, ADHD screenings, and autism assessments with AI-powered insights.",
   keywords: "IQ test, cognitive assessment, ADHD screening, autism test, brain training, psychology, mental health",
   authors: [{ name: "DataVine.ai Team" }],
   creator: "DataVine.ai",
@@ -54,7 +56,7 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
         <meta name="msapplication-TileColor" content="#1e293b" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -62,34 +64,34 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              "name": "DataVine.ai",
-              "description": "Professional cognitive assessments and brain training platform",
-              "url": "https://datavine.ai",
-              "applicationCategory": "HealthApplication",
-              "operatingSystem": "Web",
-              "offers": {
+              name: "DataVine.ai",
+              description: "Professional cognitive assessments and brain training platform",
+              url: "https://datavine.ai",
+              applicationCategory: "HealthApplication",
+              operatingSystem: "Web",
+              offers: {
                 "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "USD"
+                price: "0",
+                priceCurrency: "USD",
               },
-              "author": {
+              author: {
                 "@type": "Organization",
-                "name": "DataVine.ai"
-              }
-            })
+                name: "DataVine.ai",
+              },
+            }),
           }}
         />
-        
+
         {/* Google Analytics */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=GA_MEASUREMENT_ID"></script>
         <script
           dangerouslySetInnerHTML={{
             __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'GA_MEASUREMENT_ID');
-            `,
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'GA_MEASUREMENT_ID');
+          `,
           }}
         />
       </head>

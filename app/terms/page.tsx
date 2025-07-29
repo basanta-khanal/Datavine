@@ -1,3 +1,5 @@
+import { Brain } from "lucide-react"
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-white">
@@ -5,9 +7,7 @@ export default function TermsPage() {
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-              <svg className="h-7 w-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-              </svg>
+              <Brain className="h-7 w-7 text-white" />
             </div>
             <div>
               <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
@@ -24,118 +24,59 @@ export default function TermsPage() {
 
       <main className="container mx-auto px-4 py-12">
         <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-slate-900 mb-4">Terms of Service</h1>
-            <p className="text-xl text-slate-600">
-              Last updated: January 2024
-            </p>
-          </div>
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">Terms of Service</h1>
 
           <div className="prose prose-slate max-w-none">
-            <h2>Acceptance of Terms</h2>
-            <p>
-              By accessing and using DataVine.ai, you accept and agree to be bound by the terms 
-              and provision of this agreement.
-            </p>
+            <p className="text-lg text-slate-700 mb-8">Last updated: January 2024</p>
 
-            <h2>Description of Service</h2>
-            <p>
-              DataVine.ai provides online cognitive assessments and related services. Our assessments 
-              are designed for educational and informational purposes and should not be considered 
-              as professional medical or psychological diagnosis.
-            </p>
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">Acceptance of Terms</h2>
+              <p className="text-slate-700">
+                By accessing and using DataVine.ai, you accept and agree to be bound by the terms and provision of this
+                agreement.
+              </p>
+            </section>
 
-            <h2>User Accounts</h2>
-            <p>
-              To access certain features, you must create an account. You are responsible for:
-            </p>
-            <ul>
-              <li>Maintaining the confidentiality of your account credentials</li>
-              <li>All activities that occur under your account</li>
-              <li>Providing accurate and complete information</li>
-              <li>Notifying us immediately of any unauthorized use</li>
-            </ul>
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">Use License</h2>
+              <p className="text-slate-700 mb-4">
+                Permission is granted to temporarily use DataVine.ai for personal, non-commercial transitory viewing
+                only.
+              </p>
+              <ul className="list-disc list-inside text-slate-700 space-y-2">
+                <li>This is the grant of a license, not a transfer of title</li>
+                <li>You may not modify or copy the materials</li>
+                <li>You may not use the materials for commercial purposes</li>
+                <li>You may not reverse engineer any software</li>
+              </ul>
+            </section>
 
-            <h2>Acceptable Use</h2>
-            <p>You agree not to:</p>
-            <ul>
-              <li>Use the service for any unlawful purpose</li>
-              <li>Attempt to gain unauthorized access to our systems</li>
-              <li>Interfere with or disrupt the service</li>
-              <li>Share your account credentials with others</li>
-              <li>Use automated systems to access the service</li>
-            </ul>
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">Disclaimer</h2>
+              <p className="text-slate-700">
+                The materials on DataVine.ai are provided on an 'as is' basis. DataVine.ai makes no warranties,
+                expressed or implied, and hereby disclaims and negates all other warranties including without
+                limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or
+                non-infringement of intellectual property or other violation of rights.
+              </p>
+            </section>
 
-            <h2>Assessment Limitations</h2>
-            <p>
-              Our assessments are screening tools and should not be used as:
-            </p>
-            <ul>
-              <li>Professional medical or psychological diagnosis</li>
-              <li>Substitute for professional consultation</li>
-              <li>Basis for making important life decisions without professional guidance</li>
-            </ul>
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">Limitations</h2>
+              <p className="text-slate-700">
+                In no event shall DataVine.ai or its suppliers be liable for any damages (including, without limitation,
+                damages for loss of data or profit, or due to business interruption) arising out of the use or inability
+                to use the materials on DataVine.ai, even if DataVine.ai or an authorized representative has been
+                notified orally or in writing of the possibility of such damage.
+              </p>
+            </section>
 
-            <h2>Intellectual Property</h2>
-            <p>
-              All content, features, and functionality of DataVine.ai are owned by us and are 
-              protected by copyright, trademark, and other intellectual property laws.
-            </p>
-
-            <h2>Payment Terms</h2>
-            <p>
-              For paid services:
-            </p>
-            <ul>
-              <li>Payments are processed securely through third-party providers</li>
-              <li>Subscriptions automatically renew unless cancelled</li>
-              <li>Refunds are available within 30 days of purchase</li>
-              <li>Prices may change with notice to existing subscribers</li>
-            </ul>
-
-            <h2>Privacy</h2>
-            <p>
-              Your privacy is important to us. Please review our Privacy Policy, which also 
-              governs your use of the service.
-            </p>
-
-            <h2>Disclaimers</h2>
-            <p>
-              The service is provided "as is" without warranties of any kind. We do not guarantee 
-              that the service will be uninterrupted, secure, or error-free.
-            </p>
-
-            <h2>Limitation of Liability</h2>
-            <p>
-              In no event shall DataVine.ai be liable for any indirect, incidental, special, 
-              consequential, or punitive damages arising out of your use of the service.
-            </p>
-
-            <h2>Termination</h2>
-            <p>
-              We may terminate or suspend your account at any time for violations of these terms. 
-              You may also terminate your account at any time.
-            </p>
-
-            <h2>Changes to Terms</h2>
-            <p>
-              We reserve the right to modify these terms at any time. We will notify users of 
-              material changes via email or through the service.
-            </p>
-
-            <h2>Governing Law</h2>
-            <p>
-              These terms are governed by and construed in accordance with applicable laws, 
-              without regard to conflict of law principles.
-            </p>
-
-            <h2>Contact Information</h2>
-            <p>
-              Questions about these terms should be sent to{' '}
-              <a href="mailto:legal@datavine.ai" className="text-blue-600 hover:text-blue-800">
-                legal@datavine.ai
-              </a>
-            </p>
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-slate-900 mb-4">Contact Information</h2>
+              <p className="text-slate-700">
+                If you have any questions about these Terms of Service, please contact us at legal@datavine.ai
+              </p>
+            </section>
           </div>
         </div>
       </main>

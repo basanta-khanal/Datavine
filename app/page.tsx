@@ -10,94 +10,760 @@ import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/comp
 import { toast } from "@/components/ui/use-toast"
 import { UserProfileDropdown } from "@/components/user-profile-dropdown"
 
-// ADHD Assessment Questions - Based on ASRS-v1.1 and DSM-5 criteria
-const ADHD_QUESTIONS = [
+// IQ Test Questions - 30 comprehensive questions with improved visuals
+const IQ_QUESTIONS = [
   {
     id: 1,
-    category: "Inattention",
-    question:
-      "How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Difficulty completing tasks is a hallmark of inattention.",
+    type: "visual",
+    category: "Pattern Recognition",
+    question: "Which shape completes the pattern?",
+    visualType: "pattern_sequence",
+    pattern: [
+      { shape: "circle", color: "blue", size: "small" },
+      { shape: "square", color: "red", size: "medium" },
+      { shape: "triangle", color: "green", size: "large" },
+      { shape: "?", color: "?", size: "?" },
+    ],
+    options: [
+      { shape: "circle", color: "yellow", size: "small", label: "A" },
+      { shape: "diamond", color: "blue", size: "large", label: "B" },
+      { shape: "circle", color: "purple", size: "large", label: "C" },
+      { shape: "square", color: "blue", size: "small", label: "D" },
+    ],
+    correctAnswer: "C",
+    difficulty: "easy",
+    explanation:
+      "The pattern shows increasing size with different shapes and colors. The missing piece should be a large circle with a new color.",
+    cognitiveArea: "Spatial Intelligence",
   },
   {
     id: 2,
-    category: "Inattention",
-    question:
-      "How often do you have difficulty getting things in order when you have to do a task that requires organization?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Poor organizational skills are common in ADHD.",
+    type: "numerical",
+    category: "Number Series",
+    question: "What number comes next in the series: 2, 6, 18, 54, ?",
+    options: ["108", "162", "216", "324"],
+    correctAnswer: "162",
+    difficulty: "medium",
+    explanation: "Each number is multiplied by 3 to get the next number (2×3=6, 6×3=18, 18×3=54, 54×3=162).",
+    cognitiveArea: "Mathematical Intelligence",
   },
   {
     id: 3,
-    category: "Inattention",
-    question: "How often do you have trouble remembering appointments or obligations?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Forgetfulness is a common symptom of inattentive ADHD.",
+    type: "verbal",
+    category: "Analogies",
+    question: "Book is to Reading as Fork is to:",
+    options: ["Eating", "Kitchen", "Spoon", "Food"],
+    correctAnswer: "Eating",
+    difficulty: "easy",
+    explanation: "A book is used for reading, just as a fork is used for eating.",
+    cognitiveArea: "Verbal Intelligence",
   },
   {
     id: 4,
-    category: "Inattention",
-    question: "When you have a task that requires a lot of thought, how often do you avoid or delay getting started?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Procrastination on mentally demanding tasks is typical.",
+    type: "visual",
+    category: "Matrix Reasoning",
+    question: "Select the missing piece that completes the 3x3 matrix.",
+    visualType: "matrix_3x3",
+    matrix: [
+      [
+        { shape: "circle", filled: true, color: "blue" },
+        { shape: "square", filled: false, color: "red" },
+        { shape: "triangle", filled: true, color: "green" },
+      ],
+      [
+        { shape: "square", filled: true, color: "red" },
+        { shape: "triangle", filled: false, color: "green" },
+        { shape: "circle", filled: true, color: "blue" },
+      ],
+      [
+        { shape: "triangle", filled: true, color: "green" },
+        { shape: "circle", filled: false, color: "blue" },
+        { shape: "?", filled: "?", color: "?" },
+      ],
+    ],
+    options: [
+      { shape: "square", filled: false, color: "red", label: "A" },
+      { shape: "square", filled: true, color: "red", label: "B" },
+      { shape: "circle", filled: true, color: "blue", label: "C" },
+      { shape: "triangle", filled: false, color: "green", label: "D" },
+    ],
+    correctAnswer: "A",
+    difficulty: "medium",
+    explanation: "Each row and column contains each shape exactly once, alternating between filled and unfilled.",
+    cognitiveArea: "Fluid Intelligence",
   },
   {
     id: 5,
-    category: "Inattention",
-    question: "How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Fidgeting is a sign of hyperactivity and restlessness.",
+    type: "logical",
+    category: "Logical Reasoning",
+    question: "If all roses are flowers, and some flowers are red, which statement must be true?",
+    options: ["All roses are red", "Some roses are red", "No roses are red", "Some roses might be red"],
+    correctAnswer: "Some roses might be red",
+    difficulty: "hard",
+    explanation: "We cannot determine if roses are red from the given information, but it's possible.",
+    cognitiveArea: "Logical Intelligence",
   },
   {
     id: 6,
-    category: "Hyperactivity",
-    question:
-      "How often do you leave your seat in meetings or other situations in which you are expected to remain seated?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Inability to stay seated is a sign of hyperactivity.",
+    type: "numerical",
+    category: "Mathematical Problem",
+    question: "If 3x + 7 = 22, what is the value of x?",
+    options: ["3", "5", "7", "9"],
+    correctAnswer: "5",
+    difficulty: "medium",
+    explanation: "3x + 7 = 22, so 3x = 15, therefore x = 5.",
+    cognitiveArea: "Mathematical Intelligence",
   },
   {
     id: 7,
-    category: "Hyperactivity",
-    question: "How often do you feel overly active and compelled to do things, like you have to be busy and on the go?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Feeling restless and driven is a sign of hyperactivity.",
+    type: "visual",
+    category: "Spatial Rotation",
+    question: "Which of these shapes is the same as the first one, just rotated?",
+    visualType: "rotation",
+    baseShape: { type: "L_shape", orientation: 0, color: "blue" },
+    options: [
+      { type: "L_shape", orientation: 180, color: "blue", label: "A" },
+      { type: "L_shape", orientation: 90, color: "red", label: "B" },
+      { type: "T_shape", orientation: 0, color: "blue", label: "C" },
+      { type: "L_shape", orientation: 270, color: "blue", label: "D" },
+    ],
+    correctAnswer: "A",
+    difficulty: "medium",
+    explanation: "Shape A is the original L-shape rotated 180 degrees, maintaining the same color.",
+    cognitiveArea: "Spatial Intelligence",
   },
   {
     id: 8,
-    category: "Impulsivity",
-    question: "How often do you find yourself talking too much, when you are in social situations?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Excessive talking is a sign of impulsivity.",
+    type: "verbal",
+    category: "Word Relationships",
+    question: "Which word is most similar in meaning to 'Ephemeral'?",
+    options: ["Permanent", "Temporary", "Beautiful", "Complex"],
+    correctAnswer: "Temporary",
+    difficulty: "hard",
+    explanation: "Ephemeral means lasting for a very short time, which is synonymous with temporary.",
+    cognitiveArea: "Verbal Intelligence",
   },
   {
     id: 9,
-    category: "Impulsivity",
-    question: "When you're in a conversation, how often do you find it difficult to wait your turn to speak?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Difficulty waiting one's turn is a sign of impulsivity.",
+    type: "numerical",
+    category: "Number Patterns",
+    question: "What is the next number in the sequence: 1, 4, 9, 16, 25, ?",
+    options: ["30", "36", "42", "49"],
+    correctAnswer: "36",
+    difficulty: "easy",
+    explanation: "These are perfect squares: 1², 2², 3², 4², 5², 6² = 36.",
+    cognitiveArea: "Mathematical Intelligence",
   },
   {
     id: 10,
-    category: "Impulsivity",
-    question: "How often do you interrupt others when they are busy?",
-    options: ["Rarely", "Sometimes", "Often", "Very Often"],
-    scoring: [0, 1, 2, 3],
-    explanation: "Interrupting others is a sign of impulsivity.",
+    type: "visual",
+    category: "Pattern Completion",
+    question: "Which piece fits in the missing section?",
+    visualType: "puzzle_completion",
+    puzzle: {
+      grid: [
+        ["filled", "empty", "filled"],
+        ["empty", "filled", "empty"],
+        ["filled", "empty", "?"],
+      ],
+      colors: ["#3b82f6", "#ef4444", "#22c55e"],
+    },
+    options: [
+      { pattern: "empty", color: "#3b82f6", label: "A" },
+      { pattern: "filled", color: "#ef4444", label: "B" },
+      { pattern: "filled", color: "#22c55e", label: "C" },
+      { pattern: "empty", color: "#22c55e", label: "D" },
+    ],
+    correctAnswer: "C",
+    difficulty: "hard",
+    explanation: "The pattern alternates filled/empty in a checkerboard pattern with rotating colors.",
+    cognitiveArea: "Spatial Intelligence",
+  },
+  {
+    id: 11,
+    type: "logical",
+    category: "Deductive Reasoning",
+    question: "All birds can fly. Penguins are birds. Therefore:",
+    options: ["Penguins can fly", "The premise is incorrect", "Penguins are not birds", "Birds cannot fly"],
+    correctAnswer: "The premise is incorrect",
+    difficulty: "medium",
+    explanation: "The logical conclusion reveals that the initial premise 'all birds can fly' is false.",
+    cognitiveArea: "Logical Intelligence",
+  },
+  {
+    id: 12,
+    type: "numerical",
+    category: "Arithmetic Reasoning",
+    question: "A train travels 120 miles in 2 hours. At this rate, how far will it travel in 5 hours?",
+    options: ["240 miles", "300 miles", "360 miles", "480 miles"],
+    correctAnswer: "300 miles",
+    difficulty: "easy",
+    explanation: "Speed = 120/2 = 60 mph. Distance in 5 hours = 60 × 5 = 300 miles.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 13,
+    type: "visual",
+    category: "Abstract Reasoning",
+    question: "Which figure continues the logical sequence?",
+    visualType: "sequence",
+    sequence: [
+      { shapes: [{ type: "circle", color: "red" }] },
+      {
+        shapes: [
+          { type: "circle", color: "red" },
+          { type: "square", color: "blue" },
+        ],
+      },
+      {
+        shapes: [
+          { type: "square", color: "blue" },
+          { type: "triangle", color: "green" },
+        ],
+      },
+      { shapes: [{ type: "?", color: "?" }] },
+    ],
+    options: [
+      {
+        shapes: [
+          { type: "triangle", color: "green" },
+          { type: "diamond", color: "yellow" },
+        ],
+        label: "A",
+      },
+      { shapes: [{ type: "circle", color: "red" }], label: "B" },
+      { shapes: [{ type: "triangle", color: "green" }], label: "C" },
+      { shapes: [{ type: "diamond", color: "yellow" }], label: "D" },
+    ],
+    correctAnswer: "A",
+    difficulty: "medium",
+    explanation:
+      "The sequence shows transformation where the second shape becomes the first, and a new shape is added.",
+    cognitiveArea: "Abstract Intelligence",
+  },
+  {
+    id: 14,
+    type: "verbal",
+    category: "Synonyms",
+    question: "Which word means the same as 'Meticulous'?",
+    options: ["Careless", "Detailed", "Quick", "Loud"],
+    correctAnswer: "Detailed",
+    difficulty: "medium",
+    explanation: "Meticulous means showing great attention to detail; very careful and precise.",
+    cognitiveArea: "Verbal Intelligence",
+  },
+  {
+    id: 15,
+    type: "numerical",
+    category: "Percentage",
+    question: "What is 15% of 240?",
+    options: ["24", "36", "48", "60"],
+    correctAnswer: "36",
+    difficulty: "easy",
+    explanation: "15% of 240 = 0.15 × 240 = 36.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 16,
+    type: "logical",
+    category: "Pattern Logic",
+    question: "In a certain code, FLOWER is written as EKNVDQ. How is GARDEN written?",
+    options: ["FZQCDM", "FZQCDK", "FZQCDL", "FZQCDN"],
+    correctAnswer: "FZQCDN",
+    difficulty: "hard",
+    explanation: "Each letter is replaced by the letter that comes one position before it in the alphabet.",
+    cognitiveArea: "Logical Intelligence",
+  },
+  {
+    id: 17,
+    type: "visual",
+    category: "Mirror Images",
+    question: "Which is the mirror image of the given figure?",
+    visualType: "mirror",
+    baseShape: { type: "arrow_right", color: "blue" },
+    options: [
+      { type: "arrow_left", color: "blue", label: "A" },
+      { type: "arrow_up", color: "blue", label: "B" },
+      { type: "arrow_down", color: "blue", label: "C" },
+      { type: "arrow_right", color: "red", label: "D" },
+    ],
+    correctAnswer: "A",
+    difficulty: "easy",
+    explanation: "The mirror image of a right-pointing arrow is a left-pointing arrow.",
+    cognitiveArea: "Spatial Intelligence",
+  },
+  {
+    id: 18,
+    type: "numerical",
+    category: "Fractions",
+    question: "What is 3/4 + 2/3?",
+    options: ["5/7", "17/12", "5/12", "1"],
+    correctAnswer: "17/12",
+    difficulty: "medium",
+    explanation: "3/4 + 2/3 = 9/12 + 8/12 = 17/12.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 19,
+    type: "verbal",
+    category: "Antonyms",
+    question: "What is the opposite of 'Abundant'?",
+    options: ["Plentiful", "Scarce", "Multiple", "Rich"],
+    correctAnswer: "Scarce",
+    difficulty: "easy",
+    explanation: "Abundant means existing in large quantities; scarce means insufficient or in short supply.",
+    cognitiveArea: "Verbal Intelligence",
+  },
+  {
+    id: 20,
+    type: "logical",
+    category: "Series Completion",
+    question: "Complete the series: AZ, BY, CX, DW, ?",
+    options: ["EV", "FU", "EW", "FV"],
+    correctAnswer: "EV",
+    difficulty: "medium",
+    explanation: "First letter increases by 1, second letter decreases by 1 in the alphabet.",
+    cognitiveArea: "Logical Intelligence",
+  },
+  {
+    id: 21,
+    type: "visual",
+    category: "Cube Folding",
+    question: "If this net is folded into a cube, which faces will be opposite to each other?",
+    visualType: "cube_net",
+    net: {
+      pattern: [
+        [null, "A", null],
+        ["B", "C", "D"],
+        [null, "E", null],
+        [null, "F", null],
+      ],
+    },
+    options: [
+      "A and F, B and D, C and E",
+      "A and E, B and D, C and F",
+      "A and C, B and F, D and E",
+      "A and B, C and D, E and F",
+    ],
+    correctAnswer: "A and F, B and D, C and E",
+    difficulty: "hard",
+    explanation: "In this net pattern, opposite faces are A-F, B-D, and C-E.",
+    cognitiveArea: "Spatial Intelligence",
+  },
+  {
+    id: 22,
+    type: "numerical",
+    category: "Algebra",
+    question: "If 2x - 5 = 11, what is x + 3?",
+    options: ["8", "11", "13", "16"],
+    correctAnswer: "11",
+    difficulty: "medium",
+    explanation: "2x - 5 = 11, so 2x = 16, x = 8. Therefore x + 3 = 8 + 3 = 11.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 23,
+    type: "verbal",
+    category: "Analogies",
+    question: "Doctor is to Hospital as Teacher is to:",
+    options: ["Student", "School", "Book", "Lesson"],
+    correctAnswer: "School",
+    difficulty: "easy",
+    explanation: "A doctor works in a hospital, just as a teacher works in a school.",
+    cognitiveArea: "Verbal Intelligence",
+  },
+  {
+    id: 24,
+    type: "logical",
+    category: "Classification",
+    question: "Which one doesn't belong in this group: Rose, Tulip, Carrot, Lily?",
+    options: ["Rose", "Tulip", "Carrot", "Lily"],
+    correctAnswer: "Carrot",
+    difficulty: "easy",
+    explanation: "Rose, Tulip, and Lily are flowers; Carrot is a vegetable.",
+    cognitiveArea: "Logical Intelligence",
+  },
+  {
+    id: 25,
+    type: "numerical",
+    category: "Geometry",
+    question: "What is the area of a rectangle with length 8 and width 5?",
+    options: ["13", "26", "40", "80"],
+    correctAnswer: "40",
+    difficulty: "easy",
+    explanation: "Area of rectangle = length × width = 8 × 5 = 40.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 26,
+    type: "visual",
+    category: "Pattern Recognition",
+    question: "What comes next in this pattern?",
+    visualType: "pattern_sequence",
+    pattern: [
+      { shape: "triangle", color: "red", size: "small", rotation: 0 },
+      { shape: "triangle", color: "blue", size: "medium", rotation: 90 },
+      { shape: "triangle", color: "green", size: "large", rotation: 180 },
+      { shape: "?", color: "?", size: "?", rotation: "?" },
+    ],
+    options: [
+      { shape: "triangle", color: "yellow", size: "small", rotation: 270, label: "A" },
+      { shape: "square", color: "red", size: "large", rotation: 0, label: "B" },
+      { shape: "triangle", color: "purple", size: "medium", rotation: 90, label: "C" },
+      { shape: "circle", color: "orange", size: "small", rotation: 0, label: "D" },
+    ],
+    correctAnswer: "A",
+    difficulty: "hard",
+    explanation:
+      "Pattern shows triangles with changing colors, increasing then decreasing size, and 90° rotation increments.",
+    cognitiveArea: "Spatial Intelligence",
+  },
+  {
+    id: 27,
+    type: "verbal",
+    category: "Word Completion",
+    question: "Complete the word: _ _ A C E",
+    options: ["SPACE", "PLACE", "TRACE", "All of the above"],
+    correctAnswer: "All of the above",
+    difficulty: "medium",
+    explanation: "SPACE, PLACE, and TRACE all fit the pattern _ _ A C E.",
+    cognitiveArea: "Verbal Intelligence",
+  },
+  {
+    id: 28,
+    type: "numerical",
+    category: "Time and Distance",
+    question: "If a car travels at 60 mph for 2.5 hours, how far does it travel?",
+    options: ["120 miles", "150 miles", "180 miles", "200 miles"],
+    correctAnswer: "150 miles",
+    difficulty: "easy",
+    explanation: "Distance = Speed × Time = 60 × 2.5 = 150 miles.",
+    cognitiveArea: "Mathematical Intelligence",
+  },
+  {
+    id: 29,
+    type: "logical",
+    category: "Conditional Reasoning",
+    question: "If it rains, then the ground gets wet. The ground is not wet. What can we conclude?",
+    options: ["It rained", "It did not rain", "The ground is dry", "Cannot determine"],
+    correctAnswer: "It did not rain",
+    difficulty: "medium",
+    explanation: "This is modus tollens: If P then Q, not Q, therefore not P.",
+    cognitiveArea: "Logical Intelligence",
+  },
+  {
+    id: 30,
+    type: "visual",
+    category: "3D Visualization",
+    question: "How many cubes are in this 3D structure?",
+    visualType: "cube_counting",
+    structure: {
+      layers: [
+        [
+          [1, 1, 1],
+          [1, 0, 1],
+          [1, 1, 1],
+        ],
+        [
+          [0, 1, 0],
+          [1, 1, 1],
+          [0, 1, 0],
+        ],
+        [
+          [0, 0, 0],
+          [0, 1, 0],
+          [0, 0, 0],
+        ],
+      ],
+    },
+    options: ["12", "15", "18", "21"],
+    correctAnswer: "15",
+    difficulty: "hard",
+    explanation: "Count all visible and hidden cubes in the 3D structure: 7 + 5 + 3 = 15 cubes total.",
+    cognitiveArea: "Spatial Intelligence",
   },
 ]
 
-// Autism Spectrum Quotient - Short (AQ-10) Questions
+// ADHD Assessment Questions - 30 questions based on ASRS-v1.1 and DSM-5 criteria
+const ADHD_QUESTIONS = [
+  {
+    id: 1,
+    type: "attention",
+    category: "Inattention",
+    question:
+      "How often do you have trouble wrapping up the final details of a project, once the challenging parts have been done?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty completing tasks is a common symptom of ADHD inattention.",
+  },
+  {
+    id: 2,
+    type: "attention",
+    category: "Organization",
+    question:
+      "How often do you have difficulty getting things in order when you have to do a task that requires organization?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Problems with organization are characteristic of ADHD.",
+  },
+  {
+    id: 3,
+    type: "attention",
+    category: "Memory",
+    question: "How often do you have problems remembering appointments or obligations?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Forgetfulness and memory issues are common in ADHD.",
+  },
+  {
+    id: 4,
+    type: "attention",
+    category: "Procrastination",
+    question: "When you have a task that requires a lot of thought, how often do you avoid or delay getting started?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Procrastination on mentally demanding tasks is typical in ADHD.",
+  },
+  {
+    id: 5,
+    type: "hyperactivity",
+    category: "Restlessness",
+    question: "How often do you fidget or squirm with your hands or feet when you have to sit down for a long time?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Physical restlessness is a hallmark of ADHD hyperactivity.",
+  },
+  {
+    id: 6,
+    type: "hyperactivity",
+    category: "Activity Level",
+    question: "How often do you feel overly active and compelled to do things, like you were driven by a motor?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Feeling driven by internal restlessness is common in ADHD.",
+  },
+  {
+    id: 7,
+    type: "attention",
+    category: "Concentration",
+    question:
+      "How often do you have difficulty concentrating on what people say to you, even when they are speaking to you directly?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty maintaining attention in conversations is an ADHD symptom.",
+  },
+  {
+    id: 8,
+    type: "attention",
+    category: "Focus",
+    question: "How often do you have trouble staying focused on activities or tasks?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Sustained attention difficulties are core to ADHD diagnosis.",
+  },
+  {
+    id: 9,
+    type: "impulsivity",
+    category: "Decision Making",
+    question: "How often do you make careless mistakes when you have to work on a boring or difficult project?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Careless errors due to inattention are common in ADHD.",
+  },
+  {
+    id: 10,
+    type: "attention",
+    category: "Task Management",
+    question: "How often do you have difficulty keeping your attention when you are doing boring or repetitive work?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty with sustained attention on routine tasks is typical in ADHD.",
+  },
+  {
+    id: 11,
+    type: "impulsivity",
+    category: "Interrupting",
+    question: "How often do you interrupt others when they are busy?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Impulsive interrupting behavior is a sign of ADHD impulsivity.",
+  },
+  {
+    id: 12,
+    type: "hyperactivity",
+    category: "Sitting Still",
+    question:
+      "How often do you leave your seat in meetings or other situations where you are expected to remain seated?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty remaining seated is a hyperactivity symptom.",
+  },
+  {
+    id: 13,
+    type: "attention",
+    category: "Listening",
+    question:
+      "How often do you have trouble listening to what people are saying, even when they are speaking directly to you?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Listening difficulties reflect attention problems in ADHD.",
+  },
+  {
+    id: 14,
+    type: "impulsivity",
+    category: "Patience",
+    question: "How often do you have difficulty waiting your turn in situations when turn taking is required?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Impatience and difficulty waiting are impulsivity symptoms.",
+  },
+  {
+    id: 15,
+    type: "attention",
+    category: "Following Through",
+    question: "How often do you fail to follow through on instructions and fail to finish work?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty following through on tasks is an attention deficit symptom.",
+  },
+  {
+    id: 16,
+    type: "hyperactivity",
+    category: "Restlessness",
+    question: "How often do you feel restless or fidgety?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Internal restlessness is a common hyperactivity symptom.",
+  },
+  {
+    id: 17,
+    type: "attention",
+    category: "Details",
+    question: "How often do you fail to give close attention to details or make careless mistakes?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Attention to detail problems are characteristic of ADHD inattention.",
+  },
+  {
+    id: 18,
+    type: "impulsivity",
+    category: "Blurting Out",
+    question: "How often do you blurt out answers before questions have been completed?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Impulsive responding is a key symptom of ADHD.",
+  },
+  {
+    id: 19,
+    type: "attention",
+    category: "Losing Things",
+    question: "How often do you lose things necessary for tasks or activities?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Frequently losing items is an organizational symptom of ADHD.",
+  },
+  {
+    id: 20,
+    type: "attention",
+    category: "Distractibility",
+    question: "How often are you easily distracted by external stimuli?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Easy distractibility is a core attention deficit symptom.",
+  },
+  {
+    id: 21,
+    type: "hyperactivity",
+    category: "Talking",
+    question: "How often do you talk excessively?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Excessive talking can be a hyperactivity symptom in ADHD.",
+  },
+  {
+    id: 22,
+    type: "attention",
+    category: "Mental Effort",
+    question: "How often do you avoid tasks that require sustained mental effort?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Avoidance of mentally demanding tasks is common in ADHD.",
+  },
+  {
+    id: 23,
+    type: "impulsivity",
+    category: "Decision Making",
+    question: "How often do you make decisions impulsively?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Impulsive decision-making is a hallmark of ADHD impulsivity.",
+  },
+  {
+    id: 24,
+    type: "attention",
+    category: "Forgetfulness",
+    question: "How often are you forgetful in daily activities?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Daily forgetfulness is a common attention deficit symptom.",
+  },
+  {
+    id: 25,
+    type: "hyperactivity",
+    category: "Energy Level",
+    question: "How often do you have difficulty engaging in leisure activities quietly?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Difficulty with quiet activities reflects hyperactivity symptoms.",
+  },
+  {
+    id: 26,
+    type: "impulsivity",
+    category: "Interrupting",
+    question: "How often do you interrupt or intrude on others' conversations or games?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Intrusive behavior is an impulsivity symptom of ADHD.",
+  },
+  {
+    id: 27,
+    type: "attention",
+    category: "Task Switching",
+    question: "How often do you have trouble organizing tasks and activities?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Organizational difficulties are executive function problems in ADHD.",
+  },
+  {
+    id: 28,
+    type: "hyperactivity",
+    category: "Physical Activity",
+    question: "How often do you feel like you're 'on the go' or act as if 'driven by a motor'?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Feeling constantly driven is a hyperactivity symptom.",
+  },
+  {
+    id: 29,
+    type: "attention",
+    category: "Instructions",
+    question: "How often do you have difficulty following through on instructions?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Problems following instructions reflect attention and executive function issues.",
+  },
+  {
+    id: 30,
+    type: "impulsivity",
+    category: "Self-Control",
+    question: "How often do you have trouble controlling your behavior in social situations?",
+    options: ["Never", "Rarely", "Sometimes", "Often", "Very Often"],
+    scoring: [0, 1, 2, 3, 4],
+    explanation: "Social self-control difficulties are related to ADHD impulsivity.",
+  },
+]
+
+// Autism Spectrum Quotient - 30 Questions (Extended AQ)
 const ASD_QUESTIONS = [
   {
     id: 1,
@@ -143,24 +809,24 @@ const ASD_QUESTIONS = [
   },
   {
     id: 7,
-    question: "I am good at social chit-chat.",
+    question: "When I'm reading a story, I find it difficult to work out the characters' intentions.",
     options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
-    scoring: [1, 1, 0, 0],
-    explanation: "Difficulty with casual social interactions.",
+    scoring: [0, 0, 1, 1],
+    explanation: "Difficulty understanding character motivations.",
   },
   {
     id: 8,
-    question: "When I talk to people, I tend to have a hard time knowing when it's their turn to speak.",
+    question: "I like to collect information about categories of things.",
     options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
     scoring: [0, 0, 1, 1],
-    explanation: "Difficulty with turn-taking in conversations.",
+    explanation: "Special interests and collecting information are common in ASD.",
   },
   {
     id: 9,
-    question: "I am often unsure how to react in social situations.",
+    question: "I find it easy to work out what someone is thinking or feeling just by looking at their face.",
     options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
-    scoring: [0, 0, 1, 1],
-    explanation: "Uncertainty in social situations.",
+    scoring: [1, 1, 0, 0],
+    explanation: "Difficulty reading facial expressions.",
   },
   {
     id: 10,
@@ -169,9 +835,149 @@ const ASD_QUESTIONS = [
     scoring: [0, 0, 1, 1],
     explanation: "Difficulty understanding others' intentions.",
   },
+  {
+    id: 11,
+    question: "New situations make me anxious.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Anxiety about new situations is common in ASD.",
+  },
+  {
+    id: 12,
+    question: "I enjoy meeting new people.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Social interaction preferences in ASD.",
+  },
+  {
+    id: 13,
+    question: "I am a good diplomat.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Diplomatic skills require social understanding.",
+  },
+  {
+    id: 14,
+    question: "I am not very good at remembering people's date of birth.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Memory for social details may vary in ASD.",
+  },
+  {
+    id: 15,
+    question: "I find it very easy to play games with children that involve pretending.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Pretend play can be challenging in ASD.",
+  },
+  {
+    id: 16,
+    question: "I prefer to do things with others rather than on my own.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Social preferences in ASD.",
+  },
+  {
+    id: 17,
+    question: "I prefer to do things the same way over and over again.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Preference for routine and repetition in ASD.",
+  },
+  {
+    id: 18,
+    question: "If I try to imagine something, I find it very easy to create a picture in my mind.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Imagination abilities may vary in ASD.",
+  },
+  {
+    id: 19,
+    question: "I frequently get so strongly absorbed in one thing that I lose sight of other things.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Intense focus on interests is common in ASD.",
+  },
+  {
+    id: 20,
+    question: "I find it easy to do more than one thing at once.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Multitasking difficulties in ASD.",
+  },
+  {
+    id: 21,
+    question: "When I talk on the phone, I'm not sure when it's my turn to speak.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Difficulty with conversational turn-taking.",
+  },
+  {
+    id: 22,
+    question: "I enjoy doing things spontaneously.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Preference for routine over spontaneity in ASD.",
+  },
+  {
+    id: 23,
+    question: "I am often the last to understand the point of a joke.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Difficulty understanding humor and social context.",
+  },
+  {
+    id: 24,
+    question: "I find it easy to work out what someone is thinking or feeling just by looking at their face.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Challenges with reading facial expressions.",
+  },
+  {
+    id: 25,
+    question: "If there is an interruption, I can switch back to what I was doing very quickly.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Difficulty with task switching after interruptions.",
+  },
+  {
+    id: 26,
+    question: "I am good at social chit-chat.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Difficulty with casual social interactions.",
+  },
+  {
+    id: 27,
+    question: "People often tell me that I keep going on and on about the same thing.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Tendency to perseverate on topics of interest.",
+  },
+  {
+    id: 28,
+    question: "When I was young, I used to enjoy playing games involving pretending with other children.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Early pretend play development in ASD.",
+  },
+  {
+    id: 29,
+    question: "I like to plan any activities I participate in carefully.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [0, 0, 1, 1],
+    explanation: "Need for planning and structure in ASD.",
+  },
+  {
+    id: 30,
+    question: "I find social situations easy.",
+    options: ["Definitely Disagree", "Slightly Disagree", "Slightly Agree", "Definitely Agree"],
+    scoring: [1, 1, 0, 0],
+    explanation: "Social situations are typically challenging in ASD.",
+  },
 ]
 
-// Anxiety Assessment Questions - Based on GAD-7 and Beck Anxiety Inventory
+// Anxiety Assessment Questions - 30 questions based on GAD-7, Beck Anxiety Inventory, and other validated scales
 const ANXIETY_QUESTIONS = [
   {
     id: 1,
@@ -447,325 +1253,595 @@ const ANXIETY_QUESTIONS = [
   },
 ]
 
-// Visual Questions for Cognitive Assessment
-const VISUAL_QUESTIONS = [
-  {
-    id: 1,
-    question: "Select the missing piece in the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+1",
-    explanation: "The pattern follows a sequence where the shape rotates 90 degrees clockwise.",
-  },
-  {
-    id: 2,
-    question: "Which of the following completes the sequence?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+2",
-    explanation: "The sequence alternates between adding and subtracting a circle.",
-  },
-  {
-    id: 3,
-    question: "Identify the next logical image in the series.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "A",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+3",
-    explanation: "The pattern involves shifting the shaded area one position to the right.",
-  },
-  {
-    id: 4,
-    question: "Choose the image that continues the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "D",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+4",
-    explanation: "The sequence adds one line to the shape in each step.",
-  },
-  {
-    id: 5,
-    question: "Which image should come next in the series?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+5",
-    explanation: "The pattern involves flipping the image vertically and changing the color.",
-  },
-  {
-    id: 6,
-    question: "Select the missing piece in the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+6",
-    explanation: "The pattern follows a sequence where the shape rotates 90 degrees clockwise.",
-  },
-  {
-    id: 7,
-    question: "Which of the following completes the sequence?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "A",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+7",
-    explanation: "The sequence alternates between adding and subtracting a circle.",
-  },
-  {
-    id: 8,
-    question: "Identify the next logical image in the series.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "D",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+8",
-    explanation: "The pattern involves shifting the shaded area one position to the right.",
-  },
-  {
-    id: 9,
-    question: "Choose the image that continues the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+9",
-    explanation: "The sequence adds one line to the shape in each step.",
-  },
-  {
-    id: 10,
-    question: "Which image should come next in the series?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+10",
-    explanation: "The pattern involves flipping the image vertically and changing the color.",
-  },
-  {
-    id: 11,
-    question: "Select the missing piece in the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+11",
-    explanation: "The pattern follows a sequence where the shape rotates 90 degrees clockwise.",
-  },
-  {
-    id: 12,
-    question: "Which of the following completes the sequence?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+12",
-    explanation: "The sequence alternates between adding and subtracting a circle.",
-  },
-  {
-    id: 13,
-    question: "Identify the next logical image in the series.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "A",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+13",
-    explanation: "The pattern involves shifting the shaded area one position to the right.",
-  },
-  {
-    id: 14,
-    question: "Choose the image that continues the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "D",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+14",
-    explanation: "The sequence adds one line to the shape in each step.",
-  },
-  {
-    id: 15,
-    question: "Which image should come next in the series?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+15",
-    explanation: "The pattern involves flipping the image vertically and changing the color.",
-  },
-  {
-    id: 16,
-    question: "Select the missing piece in the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+16",
-    explanation: "The pattern follows a sequence where the shape rotates 90 degrees clockwise.",
-  },
-  {
-    id: 17,
-    question: "Which of the following completes the sequence?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "A",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+17",
-    explanation: "The sequence alternates between adding and subtracting a circle.",
-  },
-  {
-    id: 18,
-    question: "Identify the next logical image in the series.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "D",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+18",
-    explanation: "The pattern involves shifting the shaded area one position to the right.",
-  },
-  {
-    id: 19,
-    question: "Choose the image that continues the pattern.",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "B",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+19",
-    explanation: "The sequence adds one line to the shape in each step.",
-  },
-  {
-    id: 20,
-    question: "Which image should come next in the series?",
-    options: ["A", "B", "C", "D"],
-    correctAnswer: "C",
-    image: "/placeholder.svg?height=200&width=300&text=Pattern+Question+20",
-    explanation: "The pattern involves flipping the image vertically and changing the color.",
-  },
-]
+// Enhanced Visual Question Renderer Component with improved styling
+const VisualQuestionRenderer = ({ question, selectedAnswer, onAnswerSelect }: any) => {
+  const renderShape = (shapeData: any, size = 50) => {
+    const { shape, type, color, filled, pattern, orientation = 0, rotation = 0 } = shapeData
+    const shapeType = shape || type
+
+    const getShapeColor = (colorName: string) => {
+      const colors: any = {
+        red: "#ef4444",
+        blue: "#3b82f6",
+        green: "#22c55e",
+        yellow: "#eab308",
+        purple: "#a855f7",
+        orange: "#f97316",
+        pink: "#ec4899",
+        gray: "#6b7280",
+        cyan: "#06b6d4",
+        indigo: "#6366f1",
+      }
+      return colors[colorName] || colorName || "#6b7280"
+    }
+
+    const finalRotation = rotation || orientation || 0
+    const shapeColor = getShapeColor(color)
+
+    const shapeStyle = {
+      width: size,
+      height: size,
+      backgroundColor: filled !== false ? shapeColor : "transparent",
+      border: `3px solid ${shapeColor}`,
+      display: "inline-block",
+      margin: "4px",
+      transform: `rotate(${finalRotation}deg)`,
+      transition: "all 0.2s ease",
+    }
+
+    switch (shapeType) {
+      case "circle":
+        return <div style={{ ...shapeStyle, borderRadius: "50%" }} />
+      case "square":
+        return <div style={shapeStyle} />
+      case "triangle":
+        return (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: `${size / 2}px solid transparent`,
+              borderRight: `${size / 2}px solid transparent`,
+              borderBottom: `${size}px solid ${filled !== false ? shapeColor : "transparent"}`,
+              borderTop: filled === false ? `3px solid ${shapeColor}` : "none",
+              margin: "4px",
+              transform: `rotate(${finalRotation}deg)`,
+              transition: "all 0.2s ease",
+            }}
+          />
+        )
+      case "diamond":
+        return (
+          <div
+            style={{
+              ...shapeStyle,
+              transform: `rotate(45deg) rotate(${finalRotation}deg)`,
+              width: size * 0.8,
+              height: size * 0.8,
+            }}
+          />
+        )
+      case "L_shape":
+        return (
+          <div
+            style={{
+              width: size,
+              height: size,
+              position: "relative",
+              transform: `rotate(${finalRotation}deg)`,
+              margin: "4px",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <div
+              style={{
+                width: size * 0.7,
+                height: size * 0.35,
+                backgroundColor: shapeColor,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                border: `2px solid ${shapeColor}`,
+              }}
+            />
+            <div
+              style={{
+                width: size * 0.35,
+                height: size * 0.7,
+                backgroundColor: shapeColor,
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                border: `2px solid ${shapeColor}`,
+              }}
+            />
+          </div>
+        )
+      case "T_shape":
+        return (
+          <div
+            style={{
+              width: size,
+              height: size,
+              position: "relative",
+              transform: `rotate(${finalRotation}deg)`,
+              margin: "4px",
+              transition: "all 0.2s ease",
+            }}
+          >
+            <div
+              style={{
+                width: size,
+                height: size * 0.35,
+                backgroundColor: shapeColor,
+                position: "absolute",
+                top: 0,
+                left: 0,
+                border: `2px solid ${shapeColor}`,
+              }}
+            />
+            <div
+              style={{
+                width: size * 0.35,
+                height: size * 0.7,
+                backgroundColor: shapeColor,
+                position: "absolute",
+                bottom: 0,
+                left: "50%",
+                transform: "translateX(-50%)",
+                border: `2px solid ${shapeColor}`,
+              }}
+            />
+          </div>
+        )
+      case "arrow_right":
+        return (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderTop: `${size / 2}px solid transparent`,
+              borderBottom: `${size / 2}px solid transparent`,
+              borderLeft: `${size}px solid ${shapeColor}`,
+              margin: "4px",
+              transform: `rotate(${finalRotation}deg)`,
+              transition: "all 0.2s ease",
+            }}
+          />
+        )
+      case "arrow_left":
+        return (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderTop: `${size / 2}px solid transparent`,
+              borderBottom: `${size / 2}px solid transparent`,
+              borderRight: `${size}px solid ${shapeColor}`,
+              margin: "4px",
+              transform: `rotate(${finalRotation}deg)`,
+              transition: "all 0.2s ease",
+            }}
+          />
+        )
+      case "arrow_up":
+        return (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: `${size / 2}px solid transparent`,
+              borderRight: `${size / 2}px solid transparent`,
+              borderBottom: `${size}px solid ${shapeColor}`,
+              margin: "4px",
+              transform: `rotate(${finalRotation}deg)`,
+              transition: "all 0.2s ease",
+            }}
+          />
+        )
+      case "arrow_down":
+        return (
+          <div
+            style={{
+              width: 0,
+              height: 0,
+              borderLeft: `${size / 2}px solid transparent`,
+              borderRight: `${size / 2}px solid transparent`,
+              borderTop: `${size}px solid ${shapeColor}`,
+              margin: "4px",
+              transform: `rotate(${finalRotation}deg)`,
+              transition: "all 0.2s ease",
+            }}
+          />
+        )
+      case "?":
+        return (
+          <div
+            style={{
+              ...shapeStyle,
+              backgroundColor: "#f8fafc",
+              border: "3px dashed #94a3b8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: size * 0.5,
+              fontWeight: "bold",
+              color: "#64748b",
+            }}
+          >
+            ?
+          </div>
+        )
+      default:
+        return <div style={shapeStyle} />
+    }
+  }
+
+  const renderVisualQuestion = () => {
+    switch (question.visualType) {
+      case "pattern_sequence":
+        return (
+          <div className="mb-8">
+            <div className="flex justify-center items-center space-x-6 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              {question.pattern.map((item: any, index: number) => (
+                <div key={index} className="text-center">
+                  <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                    {renderShape(item, 60)}
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2 font-medium">{index + 1}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "matrix_3x3":
+        return (
+          <div className="mb-8">
+            <div className="grid grid-cols-3 gap-3 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200 max-w-sm mx-auto">
+              {question.matrix.flat().map((cell: any, index: number) => (
+                <div
+                  key={index}
+                  className="w-20 h-20 bg-white border-2 border-slate-300 rounded-lg flex items-center justify-center shadow-sm hover:shadow-md transition-shadow"
+                >
+                  {renderShape(cell, 40)}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "rotation":
+        return (
+          <div className="mb-8">
+            <div className="text-center p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              <p className="text-sm text-slate-600 mb-4 font-medium">Original Shape:</p>
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 inline-block">
+                {renderShape(question.baseShape, 80)}
+              </div>
+            </div>
+          </div>
+        )
+
+      case "puzzle_completion":
+        return (
+          <div className="mb-8">
+            <div className="grid grid-cols-3 gap-2 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200 max-w-xs mx-auto">
+              {question.puzzle.grid.flat().map((cell: any, index: number) => (
+                <div
+                  key={index}
+                  className="w-16 h-16 bg-white border-2 border-slate-300 rounded-lg flex items-center justify-center shadow-sm"
+                >
+                  {cell === "?" ? (
+                    renderShape({ shape: "?", color: "gray" }, 30)
+                  ) : (
+                    <div
+                      style={{
+                        width: 30,
+                        height: 30,
+                        backgroundColor:
+                          cell === "filled"
+                            ? question.puzzle.colors[index % question.puzzle.colors.length]
+                            : "transparent",
+                        border: cell === "empty" ? "2px solid #cbd5e1" : "none",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "sequence":
+        return (
+          <div className="mb-8">
+            <div className="flex justify-center items-center space-x-8 p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              {question.sequence.map((step: any, index: number) => (
+                <div key={index} className="text-center">
+                  <div className="bg-white p-4 rounded-lg shadow-sm border border-slate-200 min-w-[80px] min-h-[80px] flex items-center justify-center">
+                    <div className="flex justify-center space-x-1">
+                      {step.shapes.map((shape: any, shapeIndex: number) => (
+                        <div key={shapeIndex}>{renderShape(shape, 35)}</div>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-2 font-medium">Step {index + 1}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      case "mirror":
+        return (
+          <div className="mb-8">
+            <div className="text-center p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              <p className="text-sm text-slate-600 mb-4 font-medium">Find the mirror image:</p>
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 inline-block">
+                {renderShape(question.baseShape, 80)}
+              </div>
+            </div>
+          </div>
+        )
+
+      case "cube_net":
+        return (
+          <div className="mb-8">
+            <div className="text-center p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              <p className="text-sm text-slate-600 mb-4 font-medium">Cube Net:</p>
+              <div className="inline-block bg-white p-4 rounded-lg shadow-sm border border-slate-200">
+                <div className="grid grid-cols-3 gap-1">
+                  {question.net.pattern.map((row: any, rowIndex: number) =>
+                    row.map((cell: any, colIndex: number) => (
+                      <div
+                        key={`${rowIndex}-${colIndex}`}
+                        className={`w-12 h-12 border-2 flex items-center justify-center text-sm font-bold ${
+                          cell ? "bg-blue-100 border-blue-300 text-blue-800" : "border-transparent"
+                        }`}
+                      >
+                        {cell}
+                      </div>
+                    )),
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )
+
+      case "cube_counting":
+        return (
+          <div className="mb-8">
+            <div className="text-center p-6 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border-2 border-slate-200">
+              <p className="text-sm text-slate-600 mb-4 font-medium">3D Structure (count all cubes):</p>
+              <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200 inline-block">
+                <div className="text-6xl">🧊</div>
+                <p className="text-xs text-slate-500 mt-2">3D Cube Structure</p>
+              </div>
+            </div>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  const renderOptions = () => {
+    if (question.type === "visual" && question.options) {
+      return (
+        <div className="grid grid-cols-2 gap-4">
+          {question.options.map((option: any, index: number) => (
+            <Button
+              key={index}
+              variant={selectedAnswer === option.label ? "default" : "outline"}
+              className={`h-24 flex flex-col items-center justify-center space-y-3 transition-all duration-200 ${
+                selectedAnswer === option.label
+                  ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg scale-105"
+                  : "hover:bg-slate-50 hover:border-slate-300 hover:shadow-md"
+              }`}
+              onClick={() => onAnswerSelect(option.label)}
+            >
+              <div className="flex items-center justify-center">
+                {option.shapes ? (
+                  <div className="flex space-x-1">
+                    {option.shapes.map((shape: any, shapeIndex: number) => (
+                      <div key={shapeIndex}>{renderShape(shape, 30)}</div>
+                    ))}
+                  </div>
+                ) : (
+                  renderShape(option, 40)
+                )}
+              </div>
+              <span className="font-bold text-lg">{option.label}</span>
+            </Button>
+          ))}
+        </div>
+      )
+    }
+
+    // Regular text options for non-visual questions
+    return (
+      <div className="space-y-3">
+        {question.options.map((option: string, index: number) => (
+          <Button
+            key={index}
+            variant={selectedAnswer === option ? "default" : "outline"}
+            className={`w-full justify-start text-left p-4 h-auto min-h-[3rem] transition-all duration-200 ${
+              selectedAnswer === option
+                ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg"
+                : "hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
+            }`}
+            onClick={() => onAnswerSelect(option)}
+          >
+            <div className="flex items-center space-x-3">
+              <div
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                  selectedAnswer === option ? "border-white bg-white" : "border-slate-300"
+                }`}
+              >
+                {selectedAnswer === option && <div className="w-3 h-3 rounded-full bg-slate-900"></div>}
+              </div>
+              <span className="text-sm leading-relaxed">{option}</span>
+            </div>
+          </Button>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {question.type === "visual" && renderVisualQuestion()}
+      {renderOptions()}
+    </div>
+  )
+}
 
 const getIQClassification = (score: number) => {
   if (score >= 140) {
     return {
       category: "Genius or near genius",
-      range: "140+",
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      range: "Above 140",
+      color: "text-red-500",
+      bgColor: "bg-red-100",
     }
   } else if (score >= 120) {
     return {
       category: "Very superior intelligence",
       range: "120-139",
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
+      color: "text-orange-500",
+      bgColor: "bg-orange-100",
     }
   } else if (score >= 110) {
     return {
       category: "Superior intelligence",
       range: "110-119",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100",
     }
   } else if (score >= 90) {
     return {
       category: "Normal or average intelligence",
       range: "90-109",
-      color: "text-slate-600",
-      bgColor: "bg-slate-50",
+      color: "text-green-500",
+      bgColor: "bg-green-100",
     }
   } else if (score >= 80) {
     return {
       category: "Dullness",
       range: "80-89",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
+      color: "text-blue-500",
+      bgColor: "bg-blue-100",
     }
   } else if (score >= 70) {
     return {
       category: "Borderline deficiency",
       range: "70-79",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
+      color: "text-purple-500",
+      bgColor: "bg-purple-100",
     }
   } else {
     return {
       category: "Deficiency",
       range: "Below 70",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
+      color: "text-gray-500",
+      bgColor: "bg-gray-100",
     }
   }
 }
 
 const getADHDAssessment = (score: number) => {
-  const maxScore = 54
-  if (score <= 17) {
+  if (score >= 60) {
     return {
-      category: "No indication of ADHD",
-      description: "Your score suggests that you do not exhibit significant symptoms of ADHD.",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      maxScore,
+      category: "Likely ADHD",
+      description:
+        "Your score suggests a high likelihood of ADHD. It is recommended to consult with a healthcare professional for a comprehensive evaluation.",
+      color: "text-red-500",
+      bgColor: "bg-red-100",
     }
-  } else if (score <= 35) {
+  } else if (score >= 40) {
     return {
-      category: "Possible indication of ADHD",
-      description: "Your score indicates some symptoms of ADHD. Further evaluation may be beneficial.",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      maxScore,
+      category: "Possible ADHD",
+      description:
+        "Your score indicates a possibility of ADHD. Further assessment and consultation with a healthcare provider are advisable.",
+      color: "text-orange-500",
+      bgColor: "bg-orange-100",
     }
   } else {
     return {
-      category: "Likely indication of ADHD",
+      category: "Unlikely ADHD",
       description:
-        "Your score suggests a higher likelihood of ADHD. Consulting with a healthcare professional is recommended.",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
-      maxScore,
+        "Your score suggests a low likelihood of ADHD. However, if you have concerns, consider discussing them with a healthcare professional.",
+      color: "text-green-500",
+      bgColor: "bg-green-100",
     }
   }
 }
 
 const getASDAssessment = (score: number) => {
-  const maxScore = 50
-  if (score <= 15) {
+  if (score >= 18) {
     return {
-      category: "No indication of ASD",
-      description: "Your score suggests that you do not exhibit significant characteristics of ASD.",
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      maxScore,
+      category: "Likely ASD",
+      description:
+        "Your score suggests a high likelihood of ASD. It is recommended to consult with a healthcare professional for a comprehensive evaluation.",
+      color: "text-red-500",
+      bgColor: "bg-red-100",
     }
-  } else if (score <= 30) {
+  } else if (score >= 12) {
     return {
-      category: "Possible indication of ASD",
-      description: "Your score indicates some characteristics of ASD. Further evaluation may be beneficial.",
-      color: "text-orange-600",
-      bgColor: "bg-orange-50",
-      maxScore,
+      category: "Possible ASD",
+      description:
+        "Your score indicates a possibility of ASD. Further assessment and consultation with a healthcare provider are advisable.",
+      color: "text-orange-500",
+      bgColor: "bg-orange-100",
     }
   } else {
     return {
-      category: "Likely indication of ASD",
-      description: "Your score suggests a higher likelihood of ASD. Consulting with a specialist is recommended.",
-      color: "text-red-600",
-      bgColor: "bg-red-50",
-      maxScore,
+      category: "Unlikely ASD",
+      description:
+        "Your score suggests a low likelihood of ASD. However, if you have concerns, consider discussing them with a healthcare professional.",
+      color: "text-green-500",
+      bgColor: "bg-green-100",
     }
   }
 }
 
 const getAnxietyAssessment = (score: number) => {
-  if (score <= 15) {
+  if (score >= 20) {
     return {
-      category: "Minimal anxiety",
-      description: "Your responses suggest minimal anxiety symptoms.",
-      color: "text-slate-700",
-      bgColor: "bg-slate-50",
-      maxScore: 90,
+      category: "Severe Anxiety",
+      description:
+        "Your score indicates severe anxiety. It is highly recommended to seek professional help from a mental health provider.",
+      color: "text-red-500",
+      bgColor: "bg-red-100",
     }
-  }
-  if (score <= 30) {
+  } else if (score >= 15) {
     return {
-      category: "Mild anxiety",
-      description: "You may experience mild anxiety symptoms that could benefit from self-care strategies.",
-      color: "text-slate-700",
-      bgColor: "bg-slate-100",
-      maxScore: 90,
+      category: "Moderate Anxiety",
+      description:
+        "Your score suggests moderate anxiety. Consider seeking therapy or counseling to manage your symptoms.",
+      color: "text-orange-500",
+      bgColor: "bg-orange-100",
     }
-  }
-  if (score <= 45) {
+  } else if (score >= 10) {
     return {
-      category: "Moderate anxiety",
-      description: "You show moderate anxiety symptoms that may benefit from professional support.",
-      color: "text-slate-800",
-      bgColor: "bg-slate-100",
-      maxScore: 90,
+      category: "Mild Anxiety",
+      description:
+        "Your score indicates mild anxiety. Lifestyle changes and stress management techniques may be helpful.",
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100",
     }
-  }
-  if (score <= 60) {
+  } else {
     return {
-      category: "Severe anxiety",
-      description: "Consider consulting with a mental health professional for comprehensive evaluation and support.",
-      color: "text-slate-900",
-      bgColor: "bg-slate-100",
-      maxScore: 90,
+      category: "Minimal Anxiety",
+      description:
+        "Your score suggests minimal anxiety. Continue to practice self-care and maintain a healthy lifestyle.",
+      color: "text-green-500",
+      bgColor: "bg-green-100",
     }
-  }
-  return {
-    category: "Very severe anxiety",
-    description: "Strongly recommend seeking immediate professional mental health support.",
-    color: "text-slate-900",
-    bgColor: "bg-slate-100",
-    maxScore: 90,
   }
 }
 
@@ -779,7 +1855,6 @@ export default function Page() {
     name: "",
     confirmPassword: "",
   })
-
   const [appState, setAppState] = useState({
     currentView: "home",
     testType: null,
@@ -799,7 +1874,7 @@ export default function Page() {
     },
   } as any)
 
-  const [answers, setAnswers] = useState<number[]>([])
+  const [answers, setAnswers] = useState<(string | number)[]>([])
   const [questionIndex, setQuestionIndex] = useState(0)
   const [paymentProcessing, setPaymentProcessing] = useState(false)
   const [showCouponField, setShowCouponField] = useState(false)
@@ -817,6 +1892,22 @@ export default function Page() {
         testType: testParam,
       })
     }
+
+    // Check for stored authentication state
+    const storedAuth = localStorage.getItem("datavine_auth")
+    const storedUser = localStorage.getItem("datavine_user")
+
+    if (storedAuth === "true" && storedUser) {
+      try {
+        const userData = JSON.parse(storedUser)
+        setIsAuthenticated(true)
+        updateState({ user: userData })
+      } catch (error) {
+        // Clear invalid stored data
+        localStorage.removeItem("datavine_auth")
+        localStorage.removeItem("datavine_user")
+      }
+    }
   }, [])
 
   const updateState = (newState: any) => {
@@ -831,8 +1922,10 @@ export default function Page() {
         return ASD_QUESTIONS
       case "anxiety":
         return ANXIETY_QUESTIONS
+      case "iq":
+        return IQ_QUESTIONS
       default:
-        return VISUAL_QUESTIONS
+        return IQ_QUESTIONS // Default to IQ questions if testType is not recognized
     }
   }
 
@@ -856,18 +1949,23 @@ export default function Page() {
   }
 
   const handlePayment = () => {
-    alert("Payment processed successfully!")
-    updateState({ currentView: "detailed-results", user: { ...appState.user, hasPaid: true } })
+    setPaymentProcessing(true)
+    setTimeout(() => {
+      alert("Payment processed successfully!")
+      updateState({ currentView: "detailed-results", user: { ...appState.user, hasPaid: true } })
+      setPaymentProcessing(false)
+    }, 1500)
   }
 
-  const handleAnswer = (answer: number) => {
+  const handleAnswer = (answer: string | number) => {
     const newAnswers = [...answers]
     newAnswers[questionIndex] = answer
     setAnswers(newAnswers)
   }
 
   const handleNext = () => {
-    if (questionIndex < getCurrentQuestions().length - 1) {
+    const questions = getCurrentQuestions()
+    if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1)
     } else {
       const testResults = calculateResults()
@@ -879,7 +1977,7 @@ export default function Page() {
     if (questionIndex > 0) {
       setQuestionIndex(questionIndex - 1)
     } else {
-      updateState({ currentView: "home" })
+      updateState({ currentView: "gender" })
     }
   }
 
@@ -889,14 +1987,14 @@ export default function Page() {
 
     if (testType === "iq") {
       let totalCorrect = 0
-      questions.forEach((question, index) => {
+      questions.forEach((question: any, index) => {
         if (question.correctAnswer === answers[index]) {
           totalCorrect++
         }
       })
 
-      const iqScore = Math.round(70 + (totalCorrect / questions.length) * 60)
-      const percentile = Math.round((iqScore / 180) * 100)
+      const iqScore = Math.round(70 + (totalCorrect / questions.length) * 80)
+      const percentile = Math.round((iqScore / 160) * 100)
 
       return {
         iqScore,
@@ -910,26 +2008,39 @@ export default function Page() {
     } else {
       let totalScore = 0
       answers.forEach((answer, index) => {
-        if (questions[index] && questions[index].scoring) {
-          totalScore += questions[index].scoring[answer] || 0
+        const question: any = questions[index]
+        if (question && question.scoring && typeof answer === "number") {
+          totalScore += question.scoring[answer] || 0
         }
       })
 
+      let maxScore = 0
+      if (testType === "adhd") maxScore = ADHD_QUESTIONS.reduce((sum, q) => sum + Math.max(...q.scoring), 0)
+      if (testType === "asd") maxScore = ASD_QUESTIONS.reduce((sum, q) => sum + Math.max(...q.scoring), 0)
+      if (testType === "anxiety") maxScore = ANXIETY_QUESTIONS.reduce((sum, q) => sum + Math.max(...q.scoring), 0)
+
       return {
-        [testType === "adhd" ? "adhdScore" : testType === "asd" ? "asdScore" : "anxietyScore"]: totalScore,
+        score: totalScore,
         totalQuestions: questions.length,
-        maxScore: testType === "adhd" ? 120 : testType === "asd" ? 30 : 90,
+        maxScore,
       }
     }
   }
 
   const resetTest = () => {
+    setAnswers([])
+    setQuestionIndex(0)
     updateState({ currentView: "home", testType: null, testResults: null })
   }
 
   const handleLogout = () => {
     setIsAuthenticated(false)
     updateState({ user: null })
+
+    // Clear authentication state from localStorage
+    localStorage.removeItem("datavine_auth")
+    localStorage.removeItem("datavine_user")
+
     toast({
       title: "Logged out",
       description: "You have been successfully logged out.",
@@ -938,96 +2049,105 @@ export default function Page() {
 
   const handleAuth = (e: any) => {
     e.preventDefault()
+    if (authMode === "signup" && authForm.password !== authForm.confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Passwords do not match",
+        description: "Please check your password and try again.",
+      })
+      return
+    }
+
+    const userData = {
+      ...appState.user,
+      name: authForm.name || authForm.email.split("@")[0],
+      email: authForm.email,
+    }
+
     setIsAuthenticated(true)
     setShowAuthModal(false)
+    updateState({ user: userData })
 
-    // Update user state with form data
-    updateState({
-      user: {
-        ...appState.user,
-        name: authForm.name || authForm.email.split("@")[0],
-        email: authForm.email,
-      },
-    })
+    // Store authentication state in localStorage
+    localStorage.setItem("datavine_auth", "true")
+    localStorage.setItem("datavine_user", JSON.stringify(userData))
 
     toast({
       title: "Authentication successful",
       description: `Welcome, ${authForm.name || authForm.email}!`,
     })
 
-    // If user just completed a test, redirect to results
     if (appState.testResults && appState.currentView === "success") {
       updateState({ currentView: "free-results" })
     }
   }
 
-  // Home Page Component
+  // Common header component for authenticated users
+  const AuthenticatedHeader = () => (
+    <header className="container mx-auto px-4 py-6 border-b border-slate-100">
+      <nav className="flex items-center justify-between">
+        <div
+          className="flex items-center space-x-3 cursor-pointer"
+          onClick={() => updateState({ currentView: "home" })}
+        >
+          <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
+            <Brain className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
+            <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
+          </div>
+        </div>
+        <div className="flex items-center space-x-4">
+          {isAuthenticated ? (
+            <UserProfileDropdown
+              userName={appState.user?.name || "User"}
+              userEmail={appState.user?.email || "user@example.com"}
+              onLogout={handleLogout}
+              onNavigate={(view) => {
+                if (view === "dashboard") window.location.href = "/dashboard"
+                else if (view === "profile") window.location.href = "/profile"
+                else if (view === "settings") window.location.href = "/settings"
+                else if (view === "billing") window.location.href = "/billing"
+              }}
+            />
+          ) : (
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setAuthMode("signin")
+                  setShowAuthModal(true)
+                }}
+              >
+                Sign In
+              </Button>
+              <Button
+                onClick={() => {
+                  setAuthMode("signup")
+                  setShowAuthModal(true)
+                }}
+                className="bg-slate-900 hover:bg-slate-800 text-white"
+              >
+                Sign Up
+              </Button>
+            </div>
+          )}
+        </div>
+      </nav>
+    </header>
+  )
+
   const HomePage = () => (
     <div className="min-h-screen bg-white">
-      <header className="container mx-auto px-4 py-6 border-b border-slate-100">
-        <nav className="flex items-center justify-between">
-          <div
-            className="flex items-center space-x-3 cursor-pointer"
-            onClick={() => updateState({ currentView: "home" })}
-          >
-            <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-              <Brain className="h-7 w-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
-              <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-4">
-            {isAuthenticated ? (
-              <UserProfileDropdown
-                userName={appState.user?.name || "User"}
-                userEmail={appState.user?.email || "user@example.com"}
-                onLogout={handleLogout}
-                onNavigate={(view) => {
-                  // Handle navigation to different views
-                  if (view === "dashboard") {
-                    window.location.href = "/dashboard"
-                  } else if (view === "profile") {
-                    window.location.href = "/profile"
-                  } else if (view === "settings") {
-                    window.location.href = "/settings"
-                  } else if (view === "billing") {
-                    window.location.href = "/billing"
-                  }
-                }}
-              />
-            ) : (
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setAuthMode("signin")
-                    setShowAuthModal(true)
-                  }}
-                >
-                  Sign In
-                </Button>
-                <Button
-                  onClick={() => {
-                    setAuthMode("signup")
-                    setShowAuthModal(true)
-                  }}
-                  className="bg-slate-900 hover:bg-slate-800 text-white"
-                >
-                  Sign Up
-                </Button>
-              </div>
-            )}
-          </div>
-        </nav>
-      </header>
+      <AuthenticatedHeader />
 
       <main className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">Unlock Your Potential with DataVine.ai</h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">Unlock Your Mind's Potential</h1>
           <p className="text-slate-700 text-lg mb-12">
-            Discover your strengths and areas for growth with our scientifically validated assessments.
+            Take science-backed IQ, ASD, ADHD, and anxiety assessments. Get personalized insights and improve with
+            interactive brain training games.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1099,203 +2219,336 @@ export default function Page() {
               </CardFooter>
             </Card>
           </div>
-        </div>
-        <footer className="border-t border-slate-100 py-12 mt-32">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-4">
-                <div className="bg-slate-900 p-2 rounded-lg">
-                  <Brain className="h-5 w-5 text-white" />
-                </div>
-                <h4 className="text-lg font-semibold text-slate-900">DataVine.ai</h4>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 mb-16">
+            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Brain className="h-8 w-8 text-blue-600" />
               </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Science-Backed Assessments</h3>
               <p className="text-slate-600 text-sm">
-                Scientifically validated assessments to help you understand your cognitive abilities and mental health.
+                Our assessments are based on validated psychological instruments and research-backed methodologies for
+                accurate results.
               </p>
             </div>
-            <div>
-              <h4 className="text-lg font-semibold text-slate-900 mb-4">Assessments</h4>
-              <ul className="text-slate-600 space-y-2 text-sm">
-                <li>
-                  <button
-                    onClick={() => updateState({ currentView: "gender", testType: "iq" })}
-                    className="hover:text-slate-900 transition-colors"
-                  >
-                    IQ Assessment
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => updateState({ currentView: "gender", testType: "adhd" })}
-                    className="hover:text-slate-900 transition-colors"
-                  >
-                    ADHD Assessment
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => updateState({ currentView: "gender", testType: "asd" })}
-                    className="hover:text-slate-900 transition-colors"
-                  >
-                    ASD Assessment
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => updateState({ currentView: "gender", testType: "anxiety" })}
-                    className="hover:text-slate-900 transition-colors"
-                  >
-                    Anxiety Assessment
-                  </button>
-                </li>
-              </ul>
+
+            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Instant Results</h3>
+              <p className="text-slate-600 text-sm">
+                Get immediate feedback on your cognitive abilities, mental health indicators, and personalized
+                recommendations.
+              </p>
             </div>
-            <div>
-              <h4 className="text-lg font-semibold text-slate-900 mb-4">Company</h4>
-              <ul className="text-slate-600 space-y-2 text-sm">
-                <li>
-                  <a href="/about" className="hover:text-slate-900 transition-colors">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="/research" className="hover:text-slate-900 transition-colors">
-                    Research
-                  </a>
-                </li>
-                <li>
-                  <a href="/privacy" className="hover:text-slate-900 transition-colors">
-                    Privacy Policy
-                  </a>
-                </li>
-                <li>
-                  <a href="/terms" className="hover:text-slate-900 transition-colors">
-                    Terms of Service
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold text-slate-900 mb-4">Support</h4>
-              <ul className="text-slate-600 space-y-2 text-sm">
-                <li>
-                  <a href="/contact" className="hover:text-slate-900 transition-colors">
-                    Contact Us
-                  </a>
-                </li>
-                <li>
-                  <span className="text-slate-500">1-800-DATAVINE</span>
-                </li>
-              </ul>
+
+            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <CreditCard className="h-8 w-8 text-purple-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Progress Tracking</h3>
+              <p className="text-slate-600 text-sm">
+                Monitor your mental health journey over time with detailed analytics and historical data comparison.
+              </p>
             </div>
           </div>
-          <div className="border-t border-slate-100 mt-8 pt-8 text-center">
-            <p className="text-slate-500 text-sm">
-              © 2024 DataVine.ai. All rights reserved. | Made with ❤️ for better mental health awareness.
-            </p>
-          </div>
-        </footer>
+
+          <footer className="border-t border-slate-100 py-12 mt-32">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div>
+                <div className="flex items-center space-x-3 mb-4">
+                  <div className="bg-slate-900 p-2 rounded-lg">
+                    <Brain className="h-5 w-5 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-slate-900">DataVine.ai</h4>
+                </div>
+                <p className="text-slate-600 text-sm">
+                  Scientifically validated assessments to help you understand your cognitive abilities and mental
+                  health.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-slate-900 mb-4">Assessments</h4>
+                <ul className="text-slate-600 space-y-2 text-sm">
+                  <li>
+                    <button
+                      onClick={() => updateState({ currentView: "gender", testType: "iq" })}
+                      className="hover:text-slate-900 transition-colors"
+                    >
+                      IQ Assessment
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => updateState({ currentView: "gender", testType: "adhd" })}
+                      className="hover:text-slate-900 transition-colors"
+                    >
+                      ADHD Assessment
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => updateState({ currentView: "gender", testType: "asd" })}
+                      className="hover:text-slate-900 transition-colors"
+                    >
+                      ASD Assessment
+                    </button>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => updateState({ currentView: "gender", testType: "anxiety" })}
+                      className="hover:text-slate-900 transition-colors"
+                    >
+                      Anxiety Assessment
+                    </button>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-slate-900 mb-4">Company</h4>
+                <ul className="text-slate-600 space-y-2 text-sm">
+                  <li>
+                    <a href="/about" className="hover:text-slate-900 transition-colors">
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/research" className="hover:text-slate-900 transition-colors">
+                      Research
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/privacy" className="hover:text-slate-900 transition-colors">
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/terms" className="hover:text-slate-900 transition-colors">
+                      Terms of Service
+                    </a>
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-slate-900 mb-4">Support</h4>
+                <ul className="text-slate-600 space-y-2 text-sm">
+                  <li>
+                    <a href="/contact" className="hover:text-slate-900 transition-colors">
+                      Contact Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/help" className="hover:text-slate-900 transition-colors">
+                      Help & Support
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div className="border-t border-slate-100 mt-8 pt-8 text-center">
+              <p className="text-slate-500 text-sm">
+                © 2024 DataVine.ai. All rights reserved. | Made for better mental health awareness.
+              </p>
+            </div>
+          </footer>
+        </div>
       </main>
     </div>
   )
 
-  // Gender Selection Page Component
   const GenderSelectionPage = () => (
-    <div className="min-h-screen bg-white flex items-center justify-center">
-      <div className="max-w-md w-full p-6 bg-slate-50 rounded-xl shadow-lg border border-slate-200">
-        <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Select Your Gender</h2>
-        <div className="flex justify-center space-x-4">
-          <Button
-            onClick={() => updateState({ currentView: "test" })}
-            className="bg-slate-900 hover:bg-slate-800 text-white"
-          >
-            Male
-          </Button>
-          <Button
-            onClick={() => updateState({ currentView: "test" })}
-            className="bg-slate-900 hover:bg-slate-800 text-white"
-          >
-            Female
-          </Button>
-          <Button
-            onClick={() => updateState({ currentView: "test" })}
-            className="bg-slate-900 hover:bg-slate-800 text-white"
-          >
-            Other
-          </Button>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50">
+      {isAuthenticated && <AuthenticatedHeader />}
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-lg">
+          {/* Header Section */}
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 shadow-lg">
+              <Brain className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-3xl font-bold text-slate-900 mb-3">Personal Information</h1>
+            <p className="text-slate-600 text-lg leading-relaxed">
+              Help us personalize your assessment experience by selecting your gender identity
+            </p>
+          </div>
+
+          {/* Gender Options */}
+          <div className="space-y-4 mb-8">
+            {[
+              {
+                id: "male",
+                label: "Male",
+                icon: "👨",
+                gradient: "from-blue-500 to-cyan-500",
+                hoverGradient: "from-blue-600 to-cyan-600",
+              },
+              {
+                id: "female",
+                label: "Female",
+                icon: "👩",
+                gradient: "from-pink-500 to-rose-500",
+                hoverGradient: "from-pink-600 to-rose-600",
+              },
+              {
+                id: "prefer-not-to-say",
+                label: "Prefer not to say",
+                icon: "✨",
+                gradient: "from-slate-500 to-gray-600",
+                hoverGradient: "from-slate-600 to-gray-700",
+              },
+            ].map((option) => (
+              <button
+                key={option.id}
+                onClick={() => updateState({ currentView: "test" })}
+                className={`group w-full p-6 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02] hover:border-slate-300 focus:outline-none focus:ring-4 focus:ring-blue-100`}
+              >
+                <div className="flex items-center space-x-4">
+                  <div
+                    className={`flex items-center justify-center w-14 h-14 bg-gradient-to-br ${option.gradient} group-hover:${option.hoverGradient} rounded-xl text-white text-2xl transition-all duration-300 shadow-md`}
+                  >
+                    {option.icon}
+                  </div>
+                  <div className="flex-1 text-left">
+                    <h3 className="text-xl font-semibold text-slate-900 group-hover:text-slate-700 transition-colors">
+                      {option.label}
+                    </h3>
+                    <p className="text-slate-500 text-sm mt-1">
+                      {option.id === "male" && "Identifies as male"}
+                      {option.id === "female" && "Identifies as female"}
+                      {option.id === "prefer-not-to-say" && "Keep this information private"}
+                    </p>
+                  </div>
+                  <div className="text-slate-400 group-hover:text-slate-600 transition-colors">
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Footer Actions */}
+          <div className="flex flex-col space-y-4">
+            <div className="text-center">
+              <p className="text-sm text-slate-500 leading-relaxed">
+                This information helps us provide more accurate assessment results and is kept completely confidential.
+              </p>
+            </div>
+
+            <button
+              onClick={() => updateState({ currentView: "home" })}
+              className="flex items-center justify-center space-x-2 text-slate-600 hover:text-slate-800 transition-colors py-3 px-4 rounded-xl hover:bg-slate-50"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              <span className="font-medium">Back to Home</span>
+            </button>
+          </div>
         </div>
-        <Button
-          onClick={() => updateState({ currentView: "home" })}
-          variant="ghost"
-          className="mt-6 w-full text-slate-600"
-        >
-          ← Go Back
-        </Button>
       </div>
     </div>
   )
 
-  // Test Page Component
   const TestPage = () => {
     const questions = getCurrentQuestions()
-    const currentQuestion = questions[questionIndex]
+    const currentQuestion: any = questions[questionIndex]
+
+    // Get source information based on test type
+    const getSourceInfo = () => {
+      switch (appState.testType) {
+        case "iq":
+          return "Based on Wechsler Adult Intelligence Scale (WAIS-IV) and Raven's Progressive Matrices"
+        case "adhd":
+          return "Based on DSM-5 criteria and Adult ADHD Self-Report Scale (ASRS-v1.1)"
+        case "asd":
+          return "Based on Autism Spectrum Quotient (AQ) and Social Responsiveness Scale"
+        case "anxiety":
+          return "Based on GAD-7, Beck Anxiety Inventory, and validated anxiety scales"
+        default:
+          return ""
+      }
+    }
 
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="max-w-md w-full p-6 bg-slate-50 rounded-xl shadow-lg border border-slate-200">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6 text-center">Assessment in Progress</h2>
-          <p className="text-slate-700 text-center mb-8">
-            Please answer the following questions to the best of your ability.
-          </p>
-          <Progress value={((questionIndex + 1) / questions.length) * 100} className="mb-4" />
+      <div className="min-h-screen bg-white">
+        {/* Fixed progress bar at top of viewport */}
+        <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-slate-200">
+          <Progress value={((questionIndex + 1) / questions.length) * 100} className="h-1 rounded-none" />
+        </div>
 
-          {appState.testType === "iq" && currentQuestion.image && (
-            <div className="mb-4">
-              <img
-                src={currentQuestion.image || "/placeholder.svg"}
-                alt={`Question ${questionIndex + 1}`}
-                className="mx-auto max-w-full h-auto"
-              />
-            </div>
-          )}
-
-          <p className="text-slate-800 font-semibold mb-4">{currentQuestion.question}</p>
-
-          <div className="space-y-3">
-            {currentQuestion.options.map((option, index) => (
-              <Button
-                key={index}
-                variant={answers[questionIndex] === index ? "default" : "outline"}
-                className={`w-full justify-start ${
-                  answers[questionIndex] === index ? "bg-slate-900 hover:bg-slate-800 text-white" : ""
-                }`}
-                onClick={() => handleAnswer(index)}
-              >
-                {option}
-              </Button>
-            ))}
+        {isAuthenticated && (
+          <div className="pt-1">
+            <AuthenticatedHeader />
           </div>
+        )}
 
-          <div className="flex justify-between mt-8">
-            <Button variant="ghost" onClick={handleBack} className="text-slate-600">
-              ← Go Back
-            </Button>
-            <Button
-              onClick={handleNext}
-              disabled={answers[questionIndex] === undefined}
-              className="bg-slate-900 hover:bg-slate-800 text-white"
-            >
-              {questionIndex === questions.length - 1 ? "Get Results" : "Next Question →"}
-            </Button>
+        <div className="flex items-center justify-center min-h-screen pt-4">
+          <div className="max-w-4xl w-full p-8 bg-white rounded-2xl shadow-xl border border-slate-200 mx-4">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-slate-900 mb-3">{getTestTitle()}</h2>
+
+              {/* Source attribution */}
+              <p className="text-xs text-slate-400 mb-4 leading-relaxed">{getSourceInfo()}</p>
+
+              <div className="flex items-center justify-center space-x-4 mb-6">
+                <div className="bg-slate-100 px-4 py-2 rounded-full">
+                  <span className="text-sm font-medium text-slate-700">
+                    Question {questionIndex + 1} of {questions.length}
+                  </span>
+                </div>
+                <div className="bg-blue-100 px-4 py-2 rounded-full">
+                  <span className="text-sm font-medium text-blue-700">
+                    {Math.round(((questionIndex + 1) / questions.length) * 100)}% Complete
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-50 p-6 rounded-xl mb-8 border border-slate-200">
+              <h3 className="text-xl font-semibold text-slate-800 text-center leading-relaxed">
+                {currentQuestion.question}
+              </h3>
+            </div>
+
+            <VisualQuestionRenderer
+              question={currentQuestion}
+              selectedAnswer={answers[questionIndex]}
+              onAnswerSelect={handleAnswer}
+            />
+
+            <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200">
+              <Button
+                variant="ghost"
+                onClick={handleBack}
+                className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+              >
+                ← Back
+              </Button>
+
+              <div className="text-center">
+                <p className="text-xs text-slate-500 mb-2">
+                  {answers[questionIndex] ? "Answer selected" : "Please select an answer"}
+                </p>
+              </div>
+
+              <Button
+                onClick={handleNext}
+                disabled={answers[questionIndex] === undefined}
+                className="bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {questionIndex === questions.length - 1 ? "Get Results" : "Next →"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
     )
   }
 
-  // Success Page Component
   const SuccessPage = () => {
-    // Check if user is authenticated before showing results
     if (!isAuthenticated) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
@@ -1339,27 +2592,28 @@ export default function Page() {
     }
 
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <div className="max-w-md w-full p-6 bg-slate-50 rounded-xl shadow-lg border border-slate-200 text-center">
-          <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-slate-900 mb-4">Assessment Completed!</h2>
-          <p className="text-slate-700 mb-6">
-            Thank you for completing the assessment. Your results are being processed.
-          </p>
-          <Button
-            onClick={() => updateState({ currentView: "free-results" })}
-            className="w-full bg-slate-900 hover:bg-slate-800 text-white"
-          >
-            View Results
-          </Button>
+      <div className="min-h-screen bg-white">
+        {isAuthenticated && <AuthenticatedHeader />}
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="max-w-md w-full p-6 bg-slate-50 rounded-xl shadow-lg border border-slate-200 text-center">
+            <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-slate-900 mb-4">Assessment Completed!</h2>
+            <p className="text-slate-700 mb-6">
+              Thank you for completing the assessment. Your results are being processed.
+            </p>
+            <Button
+              onClick={() => updateState({ currentView: "free-results" })}
+              className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+            >
+              View Results
+            </Button>
+          </div>
         </div>
       </div>
     )
   }
 
-  // Free Results Page Component
   const FreeResultsPage = () => {
-    // Check if user is authenticated
     if (!isAuthenticated) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
@@ -1404,11 +2658,8 @@ export default function Page() {
       )
     }
 
-    const { testType } = appState
+    const { testType, testResults } = appState
     const isIQTest = testType === "iq"
-    const isADHDTest = testType === "adhd"
-    const isASDTest = testType === "asd"
-    const isAnxietyTest = testType === "anxiety"
 
     const handleSecretClick = () => {
       setShowCouponField(true)
@@ -1430,12 +2681,12 @@ export default function Page() {
       }
     }
 
-    if (!appState.testResults) {
+    if (!testResults) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
             <p className="text-slate-600">No test results available.</p>
-            <Button onClick={() => updateState({ currentView: "home" })} className="mt-4">
+            <Button onClick={resetTest} className="mt-4">
               Take Assessment
             </Button>
           </div>
@@ -1445,39 +2696,22 @@ export default function Page() {
 
     let classification: any = {}
     let score = 0
+    let maxScore = 0
 
-    if (isIQTest && appState.testResults.iqScore) {
-      score = appState.testResults.iqScore
+    if (isIQTest) {
+      score = testResults.iqScore
       classification = getIQClassification(score)
-    } else if (isADHDTest && appState.testResults.adhdScore !== undefined) {
-      score = appState.testResults.adhdScore
-      classification = getADHDAssessment(score)
-    } else if (isASDTest && appState.testResults.asdScore !== undefined) {
-      score = appState.testResults.asdScore
-      classification = getASDAssessment(score)
-    } else if (isAnxietyTest && appState.testResults.anxietyScore !== undefined) {
-      score = appState.testResults.anxietyScore
-      classification = getAnxietyAssessment(score)
+    } else {
+      score = testResults.score
+      maxScore = testResults.maxScore
+      if (testType === "adhd") classification = getADHDAssessment(score)
+      if (testType === "asd") classification = getASDAssessment(score)
+      if (testType === "anxiety") classification = getAnxietyAssessment(score)
     }
 
     return (
       <div className="min-h-screen bg-white">
-        <header className="container mx-auto px-4 py-6 border-b border-slate-100">
-          <nav className="flex items-center justify-between">
-            <div
-              className="flex items-center space-x-3 cursor-pointer"
-              onClick={() => updateState({ currentView: "home" })}
-            >
-              <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-                <Brain className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
-                <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
-              </div>
-            </div>
-          </nav>
-        </header>
+        <AuthenticatedHeader />
 
         <main className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
@@ -1498,15 +2732,15 @@ export default function Page() {
                 </Button>
               </div>
 
-              {isIQTest && (
+              {isIQTest ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{appState.testResults.iqScore}</div>
+                      <div className="text-4xl font-bold text-slate-900">{testResults.iqScore}</div>
                       <div className="text-sm text-slate-600">IQ Score</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{appState.testResults.percentile}%</div>
+                      <div className="text-4xl font-bold text-slate-900">{testResults.percentile}%</div>
                       <div className="text-sm text-slate-600">Percentile</div>
                     </div>
                   </div>
@@ -1523,27 +2757,25 @@ export default function Page() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     <div>
                       <div className="text-lg font-semibold text-slate-900 mb-2">Correct Answers</div>
-                      <Progress value={appState.testResults.accuracy} />
+                      <Progress value={testResults.accuracy} />
                       <div className="text-sm text-slate-600 mt-2">
-                        {appState.testResults.totalCorrect} out of {appState.testResults.totalQuestions}
+                        {testResults.totalCorrect} out of {testResults.totalQuestions}
                       </div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-slate-900 mb-2">Points Earned</div>
-                      <Progress value={(appState.testResults.totalPoints / appState.testResults.maxPoints) * 100} />
+                      <Progress value={(testResults.totalPoints / testResults.maxPoints) * 100} />
                       <div className="text-sm text-slate-600 mt-2">
-                        {appState.testResults.totalPoints} out of {appState.testResults.maxPoints}
+                        {testResults.totalPoints} out of {testResults.maxPoints}
                       </div>
                     </div>
                   </div>
                 </>
-              )}
-
-              {(isADHDTest || isASDTest || isAnxietyTest) && (
+              ) : (
                 <>
                   <div className="text-center mb-8">
                     <div className="text-4xl font-bold text-slate-900">
-                      {score} / {classification.maxScore}
+                      {score} / {maxScore}
                     </div>
                     <div className="text-sm text-slate-600">Total Score</div>
                   </div>
@@ -1561,28 +2793,26 @@ export default function Page() {
               )}
 
               <div className="space-y-4">
-                {appState.user?.usedCoupon ? (
-                  <div className="bg-green-50 border border-green-200 text-green-800 rounded-xl p-4">
-                    <p className="font-medium">
-                      <CheckCircle className="inline-block h-5 w-5 mr-2 align-middle" />
-                      Coupon applied! You're viewing detailed results.
-                    </p>
-                  </div>
-                ) : appState.user?.hasPaid ? (
-                  <div className="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-4">
-                    <p className="font-medium">
-                      <CheckCircle className="inline-block h-5 w-5 mr-2 align-middle" />
-                      Thank you for your purchase! You're viewing detailed results.
-                    </p>
-                  </div>
+                {appState.user?.usedCoupon || appState.user?.hasPaid ? (
+                  <Button
+                    onClick={() => updateState({ currentView: "detailed-results" })}
+                    className="w-full h-14 text-lg bg-green-600 hover:bg-green-700 text-white"
+                  >
+                    View Detailed Results
+                  </Button>
                 ) : (
                   <>
                     <Button
                       onClick={() => updateState({ currentView: "payment" })}
                       className="w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white"
                     >
-                      Unlock Detailed Results
+                      Unlock Detailed Results for $9.99
                     </Button>
+                    {!showCouponField && (
+                      <Button variant="ghost" onClick={handleSecretClick} className="w-full text-slate-600">
+                        I have a coupon code
+                      </Button>
+                    )}
                     {showCouponField && (
                       <div className="flex items-center space-x-3">
                         <Input
@@ -1595,9 +2825,6 @@ export default function Page() {
                         <Button onClick={handleCouponApply}>Apply</Button>
                       </div>
                     )}
-                    <Button variant="ghost" onClick={handleSecretClick} className="w-full text-slate-600">
-                      I have a coupon code
-                    </Button>
                   </>
                 )}
                 <Button onClick={resetTest} variant="outline" className="w-full h-12 bg-transparent">
@@ -1611,67 +2838,68 @@ export default function Page() {
     )
   }
 
-  // Payment Page Component
   const PaymentPage = () => (
-    <div className="min-h-screen bg-white flex items-center justify-center p-4">
-      <div className="max-w-md w-full">
-        <div className="text-center mb-8">
-          <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-            <CreditCard className="h-8 w-8 text-white" />
+    <div className="min-h-screen bg-white">
+      {isAuthenticated && <AuthenticatedHeader />}
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <div className="max-w-md w-full">
+          <div className="text-center mb-8">
+            <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+              <CreditCard className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-slate-900 mb-2">Unlock Detailed Results</h1>
+            <p className="text-slate-600">Upgrade to Premium for in-depth analysis and personalized insights</p>
           </div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">Unlock Detailed Results</h1>
-          <p className="text-slate-600">Upgrade to Premium for in-depth analysis and personalized insights</p>
-        </div>
 
-        <div className="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-xl font-semibold text-slate-900">Premium Access</div>
-            <div className="text-xl font-bold text-slate-900">$9.99/month</div>
+          <div className="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="text-xl font-semibold text-slate-900">Premium Access</div>
+              <div className="text-xl font-bold text-slate-900">$9.99</div>
+            </div>
+            <ul className="list-disc list-inside text-slate-600 space-y-2">
+              <li>Unlimited assessments</li>
+              <li>Detailed analysis reports</li>
+              <li>Personalized recommendations</li>
+              <li>Progress tracking & history</li>
+            </ul>
           </div>
-          <ul className="list-disc list-inside text-slate-600 space-y-2">
-            <li>Unlimited assessments</li>
-            <li>Detailed analysis reports</li>
-            <li>Personalized recommendations</li>
-            <li>Progress tracking & history</li>
-          </ul>
-        </div>
 
-        <div className="space-y-4">
-          <Button
-            onClick={handlePayment}
-            disabled={paymentProcessing}
-            className={`w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white ${
-              paymentProcessing ? "cursor-not-allowed" : ""
-            }`}
-          >
-            {paymentProcessing ? (
-              <>
-                Processing Payment...
-                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
-              </>
-            ) : (
-              "Complete Payment"
-            )}
-          </Button>
-          <Button
-            onClick={() => updateState({ currentView: "free-results" })}
-            variant="outline"
-            className="w-full h-12 bg-transparent"
-          >
-            ← Back to Results
-          </Button>
-        </div>
+          <div className="space-y-4">
+            <Button
+              onClick={handlePayment}
+              disabled={paymentProcessing}
+              className={`w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white ${
+                paymentProcessing ? "cursor-not-allowed opacity-50" : ""
+              }`}
+            >
+              {paymentProcessing ? (
+                <div className="flex items-center justify-center">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Processing...
+                </div>
+              ) : (
+                "Complete Payment"
+              )}
+            </Button>
+            <Button
+              onClick={() => updateState({ currentView: "free-results" })}
+              variant="outline"
+              className="w-full h-12 bg-transparent"
+              disabled={paymentProcessing}
+            >
+              ← Back to Results
+            </Button>
+          </div>
 
-        <p className="text-sm text-slate-500 mt-6 text-center">
-          Secure payment powered by Stripe. Your information is encrypted and protected.
-        </p>
+          <p className="text-sm text-slate-500 mt-6 text-center">
+            Secure payment powered by Stripe. Your information is encrypted and protected.
+          </p>
+        </div>
       </div>
     </div>
   )
 
-  // Detailed Results Page Component
   const DetailedResultsPage = () => {
-    // Check if user is authenticated
     if (!isAuthenticated) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
@@ -1716,13 +2944,10 @@ export default function Page() {
       )
     }
 
-    const { testType } = appState
+    const { testType, testResults } = appState
     const isIQTest = testType === "iq"
-    const isADHDTest = testType === "adhd"
-    const isASDTest = testType === "asd"
-    const isAnxietyTest = testType === "anxiety"
 
-    if (!appState.testResults) {
+    if (!testResults) {
       return (
         <div className="min-h-screen bg-white flex items-center justify-center">
           <div className="text-center">
@@ -1737,39 +2962,22 @@ export default function Page() {
 
     let classification: any = {}
     let score = 0
+    let maxScore = 0
 
-    if (isIQTest && appState.testResults.iqScore) {
-      score = appState.testResults.iqScore
+    if (isIQTest) {
+      score = testResults.iqScore
       classification = getIQClassification(score)
-    } else if (isADHDTest && appState.testResults.adhdScore !== undefined) {
-      score = appState.testResults.adhdScore
-      classification = getADHDAssessment(score)
-    } else if (isASDTest && appState.testResults.asdScore !== undefined) {
-      score = appState.testResults.asdScore
-      classification = getASDAssessment(score)
-    } else if (isAnxietyTest && appState.testResults.anxietyScore !== undefined) {
-      score = appState.testResults.anxietyScore
-      classification = getAnxietyAssessment(score)
+    } else {
+      score = testResults.score
+      maxScore = testResults.maxScore
+      if (testType === "adhd") classification = getADHDAssessment(score)
+      if (testType === "asd") classification = getASDAssessment(score)
+      if (testType === "anxiety") classification = getAnxietyAssessment(score)
     }
 
     return (
       <div className="min-h-screen bg-white">
-        <header className="container mx-auto px-4 py-6 border-b border-slate-100">
-          <nav className="flex items-center justify-between">
-            <div
-              className="flex items-center space-x-3 cursor-pointer"
-              onClick={() => updateState({ currentView: "home" })}
-            >
-              <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-                <Brain className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
-                <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
-              </div>
-            </div>
-          </nav>
-        </header>
+        <AuthenticatedHeader />
 
         <main className="container mx-auto px-4 py-20">
           <div className="max-w-4xl mx-auto">
@@ -1790,15 +2998,15 @@ export default function Page() {
                 </Button>
               </div>
 
-              {isIQTest && (
+              {isIQTest ? (
                 <>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{appState.testResults.iqScore}</div>
+                      <div className="text-4xl font-bold text-slate-900">{testResults.iqScore}</div>
                       <div className="text-sm text-slate-600">IQ Score</div>
                     </div>
                     <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{appState.testResults.percentile}%</div>
+                      <div className="text-4xl font-bold text-slate-900">{testResults.percentile}%</div>
                       <div className="text-sm text-slate-600">Percentile</div>
                     </div>
                   </div>
@@ -1819,16 +3027,16 @@ export default function Page() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
                     <div>
                       <div className="text-lg font-semibold text-slate-900 mb-2">Correct Answers</div>
-                      <Progress value={appState.testResults.accuracy} />
+                      <Progress value={testResults.accuracy} />
                       <div className="text-sm text-slate-600 mt-2">
-                        {appState.testResults.totalCorrect} out of {appState.testResults.totalQuestions}
+                        {testResults.totalCorrect} out of {testResults.totalQuestions}
                       </div>
                     </div>
                     <div>
                       <div className="text-lg font-semibold text-slate-900 mb-2">Points Earned</div>
-                      <Progress value={(appState.testResults.totalPoints / appState.testResults.maxPoints) * 100} />
+                      <Progress value={(testResults.totalPoints / testResults.maxPoints) * 100} />
                       <div className="text-sm text-slate-600 mt-2">
-                        {appState.testResults.totalPoints} out of {appState.testResults.maxPoints}
+                        {testResults.totalPoints} out of {testResults.maxPoints}
                       </div>
                     </div>
                   </div>
@@ -1842,13 +3050,11 @@ export default function Page() {
                     </p>
                   </div>
                 </>
-              )}
-
-              {(isADHDTest || isASDTest || isAnxietyTest) && (
+              ) : (
                 <>
                   <div className="text-center mb-8">
                     <div className="text-4xl font-bold text-slate-900">
-                      {score} / {classification.maxScore}
+                      {score} / {maxScore}
                     </div>
                     <div className="text-sm text-slate-600">Total Score</div>
                   </div>
@@ -1865,38 +3071,17 @@ export default function Page() {
 
                   <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
                     <h3 className="text-xl font-semibold text-slate-900 mb-4">Personalized Recommendations</h3>
-                    <ul className="list-disc list-inside text-slate-700 space-y-2">
-                      {isADHDTest && (
-                        <>
-                          <li>Consider strategies for improving focus and time management.</li>
-                          <li>Explore mindfulness techniques to reduce restlessness.</li>
-                          <li>Consult with a healthcare professional for further evaluation.</li>
-                        </>
-                      )}
-                      {isASDTest && (
-                        <>
-                          <li>Identify and leverage your unique strengths and interests.</li>
-                          <li>Create a structured environment to reduce sensory overload.</li>
-                          <li>Seek support groups or therapy to improve social communication skills.</li>
-                        </>
-                      )}
-                      {isAnxietyTest && (
-                        <>
-                          <li>Practice relaxation techniques such as deep breathing and meditation.</li>
-                          <li>Engage in regular physical activity to reduce tension.</li>
-                          <li>Seek therapy or counseling to address underlying anxiety triggers.</li>
-                        </>
-                      )}
-                    </ul>
+                    <p className="text-slate-700">
+                      Based on your assessment results, we recommend exploring strategies to manage anxiety, such as
+                      mindfulness exercises, cognitive behavioral therapy (CBT), and lifestyle adjustments.
+                    </p>
                   </div>
                 </>
               )}
 
-              <div className="space-y-4">
-                <Button onClick={resetTest} variant="outline" className="w-full h-12 bg-transparent">
-                  Take Another Assessment
-                </Button>
-              </div>
+              <Button onClick={resetTest} variant="outline" className="w-full h-12 bg-transparent">
+                Take Another Assessment
+              </Button>
             </div>
           </div>
         </main>
@@ -1904,109 +3089,8 @@ export default function Page() {
     )
   }
 
-  // Authentication Modal Component
-  const AuthModal = () =>
-    showAuthModal && (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-xl p-8 w-full max-w-md">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">{authMode === "signin" ? "Sign In" : "Sign Up"}</h2>
-            <Button
-              variant="ghost"
-              onClick={() => setShowAuthModal(false)}
-              className="text-slate-500 hover:text-slate-700"
-            >
-              ✕
-            </Button>
-          </div>
-
-          <form onSubmit={handleAuth} className="space-y-4">
-            {authMode === "signup" && (
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                  Full Name
-                </label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={authForm.name}
-                  onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
-                  className="w-full"
-                  required
-                />
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-                Email Address
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={authForm.email}
-                onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
-                className="w-full"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={authForm.password}
-                onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
-                className="w-full"
-                required
-              />
-            </div>
-
-            {authMode === "signup" && (
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
-                  Confirm Password
-                </label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  value={authForm.confirmPassword}
-                  onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
-                  className="w-full"
-                  required
-                />
-              </div>
-            )}
-
-            <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white">
-              {authMode === "signin" ? "Sign In" : "Create Account"}
-            </Button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-sm text-slate-600">
-              {authMode === "signin" ? "Don't have an account?" : "Already have an account?"}
-              <button
-                onClick={() => setAuthMode(authMode === "signin" ? "signup" : "signin")}
-                className="ml-1 text-slate-900 font-medium hover:underline"
-              >
-                {authMode === "signin" ? "Sign up" : "Sign in"}
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    )
-
-  // Conditional rendering based on appState
   let content
+
   switch (appState.currentView) {
     case "home":
       content = <HomePage />
@@ -2035,8 +3119,81 @@ export default function Page() {
 
   return (
     <>
-      <AuthModal />
       {content}
+
+      {showAuthModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+            <h2 className="text-2xl font-bold text-slate-900 mb-4 text-center">
+              {authMode === "signin" ? "Sign In" : "Create Account"}
+            </h2>
+            <form onSubmit={handleAuth} className="space-y-4">
+              {authMode === "signup" && (
+                <div>
+                  <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+                    Name
+                  </label>
+                  <Input
+                    type="text"
+                    id="name"
+                    placeholder="Your Name"
+                    value={authForm.name}
+                    onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                    required
+                  />
+                </div>
+              )}
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                  Email
+                </label>
+                <Input
+                  type="email"
+                  id="email"
+                  placeholder="you@example.com"
+                  value={authForm.email}
+                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  id="password"
+                  placeholder="Password"
+                  value={authForm.password}
+                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                  required
+                />
+              </div>
+              {authMode === "signup" && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+                    Confirm Password
+                  </label>
+                  <Input
+                    type="password"
+                    id="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={authForm.confirmPassword}
+                    onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                    required
+                  />
+                </div>
+              )}
+              <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white">
+                {authMode === "signin" ? "Sign In" : "Create Account"}
+              </Button>
+            </form>
+            <Button variant="ghost" onClick={() => setShowAuthModal(false)} className="w-full mt-4 text-slate-600">
+              Cancel
+            </Button>
+          </div>
+        </div>
+      )}
     </>
   )
 }
