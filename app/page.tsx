@@ -1678,7 +1678,7 @@ const VisualQuestionRenderer = ({ question, selectedAnswer, onAnswerSelect }: an
                 ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg"
                 : "hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
             }`}
-            onClick={() => onAnswerSelect(option)}
+            onClick={() => onAnswerSelect(index)}
           >
             <div className="flex items-center space-x-3">
               <div
