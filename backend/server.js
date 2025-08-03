@@ -23,14 +23,6 @@ connectDB();
 app.use(helmet());
 app.use(compression());
 
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-app.use('/api/', limiter);
-
 // CORS Configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -48,7 +40,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-// Health Check Route
+// Health Check Route (must be before rate limiting)
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
@@ -57,6 +49,24 @@ app.get('/api/health', (req, res) => {
     version: '1.0.0'
   });
 });
+
+// Root endpoint for Railway health checks
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'OK', 
+    message: 'DataVine.ai Backend is running',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  });
+});
+
+// Rate Limiting (after health check)
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.'
+});
+app.use('/api/', limiter);
 
 // API Routes
 app.use('/api/auth', authRoutes);
