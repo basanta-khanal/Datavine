@@ -74,3 +74,89 @@ Should return:
 - ⏳ **Ready for Railway deployment**
 
 **Your DataVine.ai will deploy successfully now!** 🚀 
+
+## 🚀 **DEPLOY NOW - Step by Step**
+
+### **Step 1: Deploy Backend to Railway**
+
+1. **Go to Railway Dashboard**
+   - Open: https://railway.app/dashboard
+   - Sign in with GitHub
+
+2. **Create New Project**
+   - Click "New Project"
+   - Select "Deploy from GitHub repo"
+   - Choose your repository: `basanta-khanal/Datavine`
+
+3. **Configure Backend**
+   - Set **Root Directory** to: `backend`
+   - Railway will auto-detect it's a Node.js app
+
+4. **Add Environment Variables**
+   In Railway dashboard → Variables tab, add:
+   ```
+   PORT=5001
+   JWT_SECRET=datavine-super-secret-jwt-key-2025
+   NODE_ENV=production
+   ```
+
+5. **Deploy**
+   - Click "Deploy Now"
+   - Wait 2-3 minutes for build
+
+### **Step 2: Get Your Railway URL**
+
+After deployment completes:
+- Go to your Railway project
+- Copy the **Domain** (e.g., `https://your-app-name.railway.app`)
+- This is your backend API URL
+
+### **Step 3: Deploy Frontend to Vercel**
+
+1. **Go to Vercel**
+   - Open: https://vercel.com
+   - Sign in with GitHub
+
+2. **Import Repository**
+   - Click "New Project"
+   - Import your repository: `basanta-khanal/Datavine`
+   - Keep **Root Directory** as `./` (root)
+
+3. **Add Environment Variable**
+   - Add: `NEXT_PUBLIC_API_URL=https://your-railway-app-name.railway.app`
+   - Replace with your actual Railway URL from Step 2
+
+4. **Deploy**
+   - Click "Deploy"
+   - Wait 1-2 minutes
+
+### **Step 4: Test Your Deployment**
+
+Once both are deployed, test your API:
+```bash
+curl https://your-railway-app-name.railway.app/api/health
+```
+
+You should see:
+```json
+{
+  "status": "OK",
+  "message": "DataVine.ai Backend is running",
+  "timestamp": "2025-08-03T23:21:11.542Z",
+  "version": "1.0.0"
+}
+```
+
+## 🎯 **Your DataVine.ai will be live in 10 minutes!**
+
+**Repository**: https://github.com/basanta-khanal/Datavine
+
+**All fixes applied**:
+- ✅ Vercel configuration fixed
+- ✅ Railway health check improved
+- ✅ Code pushed to GitHub
+- ✅ Local testing passed
+
+**Just follow the steps above and your app will be live!** 🚀
+
+Need help with any step? Let me know! 
