@@ -1859,6 +1859,14 @@ export default function Page() {
     name: "",
     confirmPassword: "",
   })
+  const [authErrors, setAuthErrors] = useState({
+    email: "",
+    password: "",
+    name: "",
+    confirmPassword: "",
+    general: ""
+  })
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const [appState, setAppState] = useState({
     currentView: "home",
     testType: null,
@@ -2203,16 +2211,135 @@ export default function Page() {
     fileInputRef.current?.click()
   }
 
+  // Validation functions
+  const validateEmail = (email: string): string => {
+    if (!email) return "Email is required"
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) return "Please enter a valid email address"
+    return ""
+  }
+
+  const validatePassword = (password: string): string => {
+    if (!password) return "Password is required"
+    if (password.length < 8) return "Password must be at least 8 characters long"
+    if (!/(?=.*[a-z])/.test(password)) return "Password must contain at least one lowercase letter"
+    if (!/(?=.*[A-Z])/.test(password)) return "Password must contain at least one uppercase letter"
+    if (!/(?=.*\d)/.test(password)) return "Password must contain at least one number"
+    return ""
+  }
+
+  const validateName = (name: string): string => {
+    if (!name) return "Name is required"
+    if (name.length < 2) return "Name must be at least 2 characters long"
+    if (name.length > 50) return "Name must be less than 50 characters"
+    return ""
+  }
+
+  const validateConfirmPassword = (password: string, confirmPassword: string): string => {
+    if (!confirmPassword) return "Please confirm your password"
+    if (password !== confirmPassword) return "Passwords do not match"
+    return ""
+  }
+
+  const clearAuthErrors = () => {
+    setAuthErrors({
+      email: "",
+      password: "",
+      name: "",
+      confirmPassword: "",
+      general: ""
+    })
+  }
+
+  // Real-time validation handlers
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const email = e.target.value
+    setAuthForm({ ...authForm, email })
+    if (email && authErrors.email) {
+      const error = validateEmail(email)
+      setAuthErrors(prev => ({ ...prev, email: error }))
+    }
+  }
+
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const password = e.target.value
+    setAuthForm({ ...authForm, password })
+    if (password && authErrors.password) {
+      const error = validatePassword(password)
+      setAuthErrors(prev => ({ ...prev, password: error }))
+    }
+    // Also validate confirm password if it exists
+    if (authForm.confirmPassword && authErrors.confirmPassword) {
+      const error = validateConfirmPassword(password, authForm.confirmPassword)
+      setAuthErrors(prev => ({ ...prev, confirmPassword: error }))
+    }
+  }
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const name = e.target.value
+    setAuthForm({ ...authForm, name })
+    if (name && authErrors.name) {
+      const error = validateName(name)
+      setAuthErrors(prev => ({ ...prev, name: error }))
+    }
+  }
+
+  const handleConfirmPasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const confirmPassword = e.target.value
+    setAuthForm({ ...authForm, confirmPassword })
+    if (confirmPassword && authErrors.confirmPassword) {
+      const error = validateConfirmPassword(authForm.password, confirmPassword)
+      setAuthErrors(prev => ({ ...prev, confirmPassword: error }))
+    }
+  }
+
+  const handleAuthModeChange = (mode: "signin" | "signup") => {
+    setAuthMode(mode)
+    clearAuthErrors()
+    setAuthForm({
+      email: "",
+      password: "",
+      name: "",
+      confirmPassword: "",
+    })
+  }
+
   const handleAuth = async (e: any) => {
     e.preventDefault()
-    if (authMode === "signup" && authForm.password !== authForm.confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Passwords do not match",
-        description: "Please check your password and try again.",
-      })
+    
+    // Clear previous errors
+    clearAuthErrors()
+    
+    // Validate form fields
+    const emailError = validateEmail(authForm.email)
+    const passwordError = validatePassword(authForm.password)
+    
+    let nameError = ""
+    let confirmPasswordError = ""
+    
+    if (authMode === "signup") {
+      nameError = validateName(authForm.name)
+      confirmPasswordError = validateConfirmPassword(authForm.password, authForm.confirmPassword)
+    }
+    
+    // Set errors if any validation failed
+    const newErrors = {
+      email: emailError,
+      password: passwordError,
+      name: nameError,
+      confirmPassword: confirmPasswordError,
+      general: ""
+    }
+    
+    setAuthErrors(newErrors)
+    
+    // Check if there are any errors
+    const hasErrors = Object.values(newErrors).some(error => error !== "")
+    if (hasErrors) {
       return
     }
+    
+    setIsSubmitting(true)
 
     try {
       let response;
@@ -2257,6 +2384,10 @@ export default function Page() {
           updateState({ currentView: "free-results" })
         }
       } else {
+        setAuthErrors(prev => ({
+          ...prev,
+          general: response.message || "Authentication failed. Please check your credentials."
+        }))
         toast({
           title: "Authentication Failed",
           description: response.message || "An error occurred during authentication.",
@@ -2265,11 +2396,17 @@ export default function Page() {
       }
     } catch (error) {
       console.error('Authentication error:', error)
+      setAuthErrors(prev => ({
+        ...prev,
+        general: "Network error. Please check your connection and try again."
+      }))
       toast({
         title: "Authentication Failed",
         description: "An error occurred during authentication. Please try again.",
         variant: "destructive",
       })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -2308,7 +2445,7 @@ export default function Page() {
               <Button
                 variant="ghost"
                 onClick={() => {
-                  setAuthMode("signin")
+                  handleAuthModeChange("signin")
                   setShowAuthModal(true)
                 }}
               >
@@ -2316,7 +2453,7 @@ export default function Page() {
               </Button>
               <Button
                 onClick={() => {
-                  setAuthMode("signup")
+                  handleAuthModeChange("signup")
                   setShowAuthModal(true)
                 }}
                 className="bg-slate-900 hover:bg-slate-800 text-white"
@@ -3343,14 +3480,22 @@ export default function Page() {
 
       {showAuthModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full">
+          <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-slate-900 mb-4 text-center">
               {authMode === "signin" ? "Sign In" : "Create Account"}
             </h2>
+            
+            {/* General error message */}
+            {authErrors.general && (
+              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+                <p className="text-sm text-red-600">{authErrors.general}</p>
+              </div>
+            )}
+            
             <form onSubmit={handleAuth} className="space-y-4">
               {authMode === "signup" && (
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-700">
+                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
                     Name
                   </label>
                   <Input
@@ -3358,13 +3503,18 @@ export default function Page() {
                     id="name"
                     placeholder="Your Name"
                     value={authForm.name}
-                    onChange={(e) => setAuthForm({ ...authForm, name: e.target.value })}
+                    onChange={handleNameChange}
+                    className={authErrors.name ? "border-red-300 focus:border-red-500" : ""}
                     required
                   />
+                  {authErrors.name && (
+                    <p className="text-sm text-red-600 mt-1">{authErrors.name}</p>
+                  )}
                 </div>
               )}
+              
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
                   Email
                 </label>
                 <Input
@@ -3372,12 +3522,17 @@ export default function Page() {
                   id="email"
                   placeholder="you@example.com"
                   value={authForm.email}
-                  onChange={(e) => setAuthForm({ ...authForm, email: e.target.value })}
+                  onChange={handleEmailChange}
+                  className={authErrors.email ? "border-red-300 focus:border-red-500" : ""}
                   required
                 />
+                {authErrors.email && (
+                  <p className="text-sm text-red-600 mt-1">{authErrors.email}</p>
+                )}
               </div>
+              
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
                   Password
                 </label>
                 <Input
@@ -3385,13 +3540,37 @@ export default function Page() {
                   id="password"
                   placeholder="Password"
                   value={authForm.password}
-                  onChange={(e) => setAuthForm({ ...authForm, password: e.target.value })}
+                  onChange={handlePasswordChange}
+                  className={authErrors.password ? "border-red-300 focus:border-red-500" : ""}
                   required
                 />
+                {authErrors.password && (
+                  <p className="text-sm text-red-600 mt-1">{authErrors.password}</p>
+                )}
+                {authMode === "signup" && (
+                  <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
+                    <p className="font-medium mb-1">Password requirements:</p>
+                    <ul className="space-y-1">
+                      <li className={authForm.password.length >= 8 ? "text-green-600" : ""}>
+                        • At least 8 characters
+                      </li>
+                      <li className={/(?=.*[a-z])/.test(authForm.password) ? "text-green-600" : ""}>
+                        • One lowercase letter
+                      </li>
+                      <li className={/(?=.*[A-Z])/.test(authForm.password) ? "text-green-600" : ""}>
+                        • One uppercase letter
+                      </li>
+                      <li className={/(?=.*\d)/.test(authForm.password) ? "text-green-600" : ""}>
+                        • One number
+                      </li>
+                    </ul>
+                  </div>
+                )}
               </div>
+              
               {authMode === "signup" && (
                 <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700">
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
                     Confirm Password
                   </label>
                   <Input
@@ -3399,21 +3578,54 @@ export default function Page() {
                     id="confirmPassword"
                     placeholder="Confirm Password"
                     value={authForm.confirmPassword}
-                    onChange={(e) => setAuthForm({ ...authForm, confirmPassword: e.target.value })}
+                    onChange={handleConfirmPasswordChange}
+                    className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
                     required
                   />
+                  {authErrors.confirmPassword && (
+                    <p className="text-sm text-red-600 mt-1">{authErrors.confirmPassword}</p>
+                  )}
                 </div>
               )}
-              <Button type="submit" className="w-full bg-slate-900 hover:bg-slate-800 text-white">
-                {authMode === "signin" ? "Sign In" : "Create Account"}
+              
+              <Button 
+                type="submit" 
+                className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? (
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    {authMode === "signin" ? "Signing In..." : "Creating Account..."}
+                  </div>
+                ) : (
+                  authMode === "signin" ? "Sign In" : "Create Account"
+                )}
               </Button>
             </form>
-            <Button variant="ghost" onClick={() => setShowAuthModal(false)} className="w-full mt-4 text-slate-600">
-              Cancel
-            </Button>
+            
+            <div className="mt-4 text-center">
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  setShowAuthModal(false)
+                  clearAuthErrors()
+                  setAuthForm({
+                    email: "",
+                    password: "",
+                    name: "",
+                    confirmPassword: "",
+                  })
+                }} 
+                className="w-full text-slate-600"
+              >
+                Cancel
+              </Button>
+            </div>
           </div>
         </div>
       )}
     </>
   )
 }
+
