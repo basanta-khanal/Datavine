@@ -1671,29 +1671,34 @@ const VisualQuestionRenderer = ({ question, selectedAnswer, onAnswerSelect }: an
     // Regular text options for non-visual questions
     return (
       <div className="space-y-2">
-        {question.options.map((option: string, index: number) => (
-          <Button
-            key={index}
-            variant={selectedAnswer === index ? "default" : "outline"}
-            className={`w-full justify-start text-left p-3 h-auto min-h-[2.5rem] transition-all duration-200 ${
-              selectedAnswer === index
-                ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg"
-                : "hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
-            }`}
-            onClick={() => onAnswerSelect(index)}
-          >
-            <div className="flex items-center space-x-3">
-              <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                  selectedAnswer === index ? "border-white bg-white" : "border-slate-300"
-                }`}
-              >
-                {selectedAnswer === index && <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>}
+        {question.options.map((option: string, index: number) => {
+          // Handle both string and number selectedAnswer types
+          const isSelected = selectedAnswer === index || selectedAnswer === option
+          
+          return (
+            <Button
+              key={index}
+              variant={isSelected ? "default" : "outline"}
+              className={`w-full justify-start text-left p-3 h-auto min-h-[2.5rem] transition-all duration-200 ${
+                isSelected
+                  ? "bg-slate-900 hover:bg-slate-800 text-white shadow-lg"
+                  : "hover:bg-slate-50 hover:border-slate-300 hover:shadow-sm"
+              }`}
+              onClick={() => onAnswerSelect(option)}
+            >
+              <div className="flex items-center space-x-3">
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    isSelected ? "border-white bg-white" : "border-slate-300"
+                  }`}
+                >
+                  {isSelected && <div className="w-2.5 h-2.5 rounded-full bg-slate-900"></div>}
+                </div>
+                <span className="text-sm leading-relaxed">{option}</span>
               </div>
-              <span className="text-sm leading-relaxed">{option}</span>
-            </div>
-          </Button>
-        ))}
+            </Button>
+          )
+        })}
       </div>
     )
   }
@@ -2013,6 +2018,7 @@ export default function Page() {
       const answerIndex = currentQuestion.options.indexOf(answer as string)
       newAnswers[questionIndex] = answerIndex
     } else {
+      // For IQ questions, store the answer as is (could be string label or number)
       newAnswers[questionIndex] = answer
     }
     
