@@ -137,6 +137,12 @@ class ApiClient {
     return response.json();
   }
 
+  async removeProfilePicture(): Promise<ApiResponse> {
+    return this.request('/users/remove-profile-picture', {
+      method: 'DELETE',
+    });
+  }
+
   async getDashboard(): Promise<ApiResponse> {
     return this.request('/users/dashboard');
   }

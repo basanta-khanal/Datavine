@@ -1892,33 +1892,62 @@ export default function Page() {
   const [couponCode, setCouponCode] = useState("")
 
   useEffect(() => {
-    // Check for test parameter in URL
-    const urlParams = new URLSearchParams(window.location.search)
-    const testParam = urlParams.get("test")
+    const initializeApp = async () => {
+      // Check for test parameter in URL
+      const urlParams = new URLSearchParams(window.location.search)
+      const testParam = urlParams.get("test")
 
-    if (testParam && ["iq", "adhd", "asd", "anxiety"].includes(testParam)) {
-      // Auto-start the specified test
-      updateState({
-        currentView: "gender",
-        testType: testParam,
-      })
-    }
+      if (testParam && ["iq", "adhd", "asd", "anxiety"].includes(testParam)) {
+        // Auto-start the specified test
+        updateState({
+          currentView: "gender",
+          testType: testParam,
+        })
+      }
 
-    // Check for stored authentication state
-    const storedAuth = localStorage.getItem("datavine_auth")
-    const storedUser = localStorage.getItem("datavine_user")
+      // Check for stored authentication state
+      const storedAuth = localStorage.getItem("datavine_auth")
+      const storedUser = localStorage.getItem("datavine_user")
 
-    if (storedAuth === "true" && storedUser) {
-      try {
-        const userData = JSON.parse(storedUser)
-        setIsAuthenticated(true)
-        updateState({ user: userData })
-      } catch (error) {
-        // Clear invalid stored data
-        localStorage.removeItem("datavine_auth")
-        localStorage.removeItem("datavine_user")
+      if (storedAuth === "true" && storedUser) {
+        try {
+          const userData = JSON.parse(storedUser)
+          setIsAuthenticated(true)
+          updateState({ user: userData })
+          
+          // Set the token for API calls
+          if (userData.token) {
+            apiClient.setToken(userData.token)
+          }
+          
+          // Refresh user data from backend to ensure we have the latest profile picture
+          try {
+            const userResponse = await apiClient.getCurrentUser()
+            if (userResponse.success) {
+              const refreshedUserData = {
+                ...userResponse.data,
+                assessmentHistory: userResponse.data.assessmentHistory || [],
+                subscription: userResponse.data.subscription?.type || "Free",
+                subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
+                usedCoupon: userResponse.data.usedCoupon || false,
+                hasPaid: userResponse.data.hasPaid || false,
+              }
+              updateState({ user: refreshedUserData })
+              localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
+            }
+          } catch (error) {
+            console.error('Error refreshing user data:', error)
+            // Keep the stored data if refresh fails
+          }
+        } catch (error) {
+          // Clear invalid stored data
+          localStorage.removeItem("datavine_auth")
+          localStorage.removeItem("datavine_user")
+        }
       }
     }
+
+    initializeApp()
   }, [])
 
   const updateState = (newState: any) => {
@@ -2192,17 +2221,37 @@ export default function Page() {
     }
   }
 
-  const handleRemoveProfilePicture = () => {
-    const updatedUser = { ...appState.user, profilePicture: null }
-    updateState({ user: updatedUser })
-    
-    // Save to localStorage
-    localStorage.setItem("datavine_user", JSON.stringify(updatedUser))
-    
-    toast({
-      title: "Profile picture removed",
-      description: "Your profile picture has been removed.",
-    })
+  const handleRemoveProfilePicture = async () => {
+    try {
+      // Call backend to remove profile picture
+      const response = await apiClient.removeProfilePicture();
+      
+      if (response.success) {
+        const updatedUser = { ...appState.user, profilePicture: null }
+        updateState({ user: updatedUser })
+        
+        // Save to localStorage
+        localStorage.setItem("datavine_user", JSON.stringify(updatedUser))
+        
+        toast({
+          title: "Profile picture removed",
+          description: "Your profile picture has been removed.",
+        })
+      } else {
+        toast({
+          title: "Remove Failed",
+          description: response.message || "Failed to remove profile picture.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error('Profile picture removal error:', error)
+      toast({
+        title: "Remove Failed",
+        description: "An error occurred while removing your profile picture.",
+        variant: "destructive",
+      })
+    }
   }
 
   const triggerFileInput = () => {
@@ -2358,16 +2407,67 @@ export default function Page() {
       }
 
       if (response.success) {
-        const userData = {
-          ...appState.user,
-          name: authForm.name || authForm.email.split("@")[0],
-          email: authForm.email,
-          profilePicture: null,
-          assessmentHistory: [],
-          subscription: "Free",
-          subscriptionExpiry: "N/A",
-          usedCoupon: false,
-          hasPaid: false,
+        // For login, try to get the user's complete profile from backend
+        let userData;
+        
+        if (authMode === "signin") {
+          try {
+            // Set the token first
+            apiClient.setToken(response.data.token);
+            
+            // Get complete user profile from backend
+            const userResponse = await apiClient.getCurrentUser();
+            if (userResponse.success) {
+              userData = {
+                ...userResponse.data,
+                assessmentHistory: userResponse.data.assessmentHistory || [],
+                subscription: userResponse.data.subscription?.type || "Free",
+                subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
+                usedCoupon: userResponse.data.usedCoupon || false,
+                hasPaid: userResponse.data.hasPaid || false,
+              };
+            } else {
+              // Fallback to basic user data if getCurrentUser fails
+              userData = {
+                ...appState.user,
+                name: response.data.user?.name || authForm.email.split("@")[0],
+                email: authForm.email,
+                profilePicture: response.data.user?.profilePicture || null,
+                assessmentHistory: response.data.user?.assessmentHistory || [],
+                subscription: response.data.user?.subscription?.type || "Free",
+                subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
+                usedCoupon: response.data.user?.usedCoupon || false,
+                hasPaid: response.data.user?.hasPaid || false,
+              };
+            }
+          } catch (error) {
+            console.error('Error fetching user profile:', error);
+            // Fallback to response data
+            userData = {
+              ...appState.user,
+              name: response.data.user?.name || authForm.email.split("@")[0],
+              email: authForm.email,
+              profilePicture: response.data.user?.profilePicture || null,
+              assessmentHistory: response.data.user?.assessmentHistory || [],
+              subscription: response.data.user?.subscription?.type || "Free",
+              subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
+              usedCoupon: response.data.user?.usedCoupon || false,
+              hasPaid: response.data.user?.hasPaid || false,
+            };
+          }
+        } else {
+          // For signup, use the response data
+          userData = {
+            ...appState.user,
+            name: authForm.name || authForm.email.split("@")[0],
+            email: authForm.email,
+            profilePicture: response.data.user?.profilePicture || null,
+            assessmentHistory: response.data.user?.assessmentHistory || [],
+            subscription: response.data.user?.subscription?.type || "Free",
+            subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
+            usedCoupon: response.data.user?.usedCoupon || false,
+            hasPaid: response.data.user?.hasPaid || false,
+          };
         }
 
         setIsAuthenticated(true)
