@@ -111,36 +111,7 @@ export default function ResearchPage() {
             </div>
           </div>
 
-          <div className="mb-16">
-            <h2 className="text-3xl font-bold text-slate-900 mb-8 text-center">Scientific Advisory Board</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="border border-slate-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Dr. Sarah Johnson, Ph.D.</CardTitle>
-                  <CardDescription>Clinical Psychologist, Harvard Medical School</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 text-sm">
-                    Specializes in cognitive assessment and neuropsychological testing. 20+ years of experience in
-                    clinical practice and research.
-                  </p>
-                </CardContent>
-              </Card>
 
-              <Card className="border border-slate-200 shadow-sm">
-                <CardHeader>
-                  <CardTitle>Dr. Michael Chen, Ph.D.</CardTitle>
-                  <CardDescription>Psychometrician, Stanford University</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-slate-600 text-sm">
-                    Expert in test development and validation. Published extensively on intelligence testing and
-                    psychometric theory.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
 
           <div className="bg-blue-50 rounded-xl p-8">
             <div className="text-center">

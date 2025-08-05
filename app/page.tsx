@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X } from "lucide-react"
+import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X, User } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -2579,18 +2579,32 @@ export default function Page() {
 
       <main className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">Unlock Your Mind's Potential</h1>
-          <p className="text-slate-700 text-lg mb-12">
-            Take science-backed IQ, ASD, ADHD, and anxiety assessments. Get personalized insights and improve with
-            interactive brain training games.
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">FREE Professional Cognitive Assessments</h1>
+          <p className="text-slate-700 text-lg mb-6">
+            Take <strong>completely FREE</strong> IQ tests, ADHD screenings, and autism assessments online. 
+            One of the few companies offering professional cognitive testing at no cost.
           </p>
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
+            <div className="flex items-center">
+              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+              <span className="text-green-800 font-medium">✓ No credit card required</span>
+              <span className="text-green-600 mx-2">•</span>
+              <span className="text-green-800 font-medium">✓ No hidden fees</span>
+              <span className="text-green-600 mx-2">•</span>
+              <span className="text-green-800 font-medium">✓ Instant results</span>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <CardTitle className="text-xl">IQ Assessment</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">FREE IQ Assessment</CardTitle>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                </div>
                 <CardDescription>
-                  Measure your cognitive abilities and identify your intellectual strengths.
+                  Measure your cognitive abilities and identify your intellectual strengths. 
+                  <strong>Completely free with instant results.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2598,16 +2612,20 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "iq" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start Assessment
+                  Start FREE Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <CardTitle className="text-xl">ADHD Assessment</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">FREE ADHD Assessment</CardTitle>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                </div>
                 <CardDescription>
                   Evaluate symptoms of ADHD and gain insights into your attention and hyperactivity levels.
+                  <strong>Professional screening at no cost.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2615,16 +2633,20 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "adhd" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start Assessment
+                  Start FREE Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <CardTitle className="text-xl">ASD Assessment</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">FREE ASD Assessment</CardTitle>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                </div>
                 <CardDescription>
                   Screen for Autism Spectrum Disorder and understand your social communication and interaction patterns.
+                  <strong>Free professional screening tool.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2632,16 +2654,20 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "asd" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start Assessment
+                  Start FREE Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <CardTitle className="text-xl">Anxiety Assessment</CardTitle>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">FREE Anxiety Assessment</CardTitle>
+                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                </div>
                 <CardDescription>
                   Assess your anxiety levels and identify potential triggers and coping mechanisms.
+                  <strong>Free mental health screening.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2649,7 +2675,7 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "anxiety" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start Assessment
+                  Start FREE Assessment
                 </Button>
               </CardFooter>
             </Card>
@@ -2670,6 +2696,16 @@ export default function Page() {
             <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
               <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <CheckCircle className="h-8 w-8 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">100% FREE</h3>
+              <p className="text-slate-600 text-sm">
+                One of the few companies offering completely free cognitive assessments. No credit card required, no hidden fees.
+              </p>
+            </div>
+
+            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <CheckCircle className="h-8 w-8 text-blue-600" />
               </div>
               <h3 className="text-xl font-semibold text-slate-900 mb-3">Instant Results</h3>
               <p className="text-slate-600 text-sm">
@@ -3576,30 +3612,108 @@ export default function Page() {
           <Card>
             <CardHeader>
               <CardTitle>Recent Activity</CardTitle>
+              <CardDescription>Your latest assessment results and progress</CardDescription>
             </CardHeader>
             <CardContent>
               {appState.user?.assessmentHistory?.length > 0 ? (
                 <div className="space-y-4">
                   {appState.user.assessmentHistory.slice(-5).reverse().map((assessment: any, index: number) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
-                      <div>
-                        <p className="font-medium">{assessment.testType}</p>
-                        <p className="text-sm text-slate-600">{assessment.testDate}</p>
+                    <div key={index} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg hover:bg-slate-100 transition-colors">
+                      <div className="flex items-center space-x-4">
+                        <div className={`p-2 rounded-full ${
+                          assessment.testType === 'iq' ? 'bg-blue-100' :
+                          assessment.testType === 'adhd' ? 'bg-orange-100' :
+                          assessment.testType === 'asd' ? 'bg-purple-100' :
+                          'bg-green-100'
+                        }`}>
+                          <Brain className={`h-4 w-4 ${
+                            assessment.testType === 'iq' ? 'text-blue-600' :
+                            assessment.testType === 'adhd' ? 'text-orange-600' :
+                            assessment.testType === 'asd' ? 'text-purple-600' :
+                            'text-green-600'
+                          }`} />
+                        </div>
+                        <div>
+                          <p className="font-medium capitalize">{assessment.testType} Assessment</p>
+                          <p className="text-sm text-slate-600">
+                            {assessment.testDate ? new Date(assessment.testDate).toLocaleDateString() : 'Recent'}
+                            {assessment.score && ` • Score: ${assessment.score}/${assessment.maxScore || 100}`}
+                          </p>
+                        </div>
                       </div>
-                      <Button variant="outline" size="sm">
-                        View Results
-                      </Button>
+                      <div className="flex items-center space-x-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => updateState({ 
+                            currentView: "detailed-results", 
+                            testResults: assessment 
+                          })}
+                        >
+                          View Results
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => updateState({ 
+                            currentView: "gender", 
+                            testType: assessment.testType 
+                          })}
+                        >
+                          Retake
+                        </Button>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-8">
+                  <Brain className="h-12 w-12 text-slate-400 mx-auto mb-4" />
                   <p className="text-slate-600 mb-4">No assessments completed yet.</p>
-                  <Button onClick={() => updateState({ currentView: "home" })}>
-                    Take Your First Assessment
+                  <Button 
+                    onClick={() => updateState({ currentView: "home" })}
+                    className="bg-slate-900 hover:bg-slate-800 text-white"
+                  >
+                    Start Your First Assessment
                   </Button>
                 </div>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Quick Actions */}
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Quick Actions</CardTitle>
+              <CardDescription>Common tasks and shortcuts</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => updateState({ currentView: "gender", testType: "iq" })}
+                >
+                  <Brain className="h-6 w-6 mb-2" />
+                  <span>Take IQ Test</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => updateState({ currentView: "profile" })}
+                >
+                  <User className="h-6 w-6 mb-2" />
+                  <span>Update Profile</span>
+                </Button>
+                <Button 
+                  variant="outline" 
+                  className="h-20 flex flex-col items-center justify-center"
+                  onClick={() => updateState({ currentView: "billing" })}
+                >
+                  <CreditCard className="h-6 w-6 mb-2" />
+                  <span>Manage Plan</span>
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -3670,6 +3784,8 @@ export default function Page() {
               </Card>
             </div>
           </div>
+
+
         </div>
       </main>
     </div>
@@ -3683,14 +3799,102 @@ export default function Page() {
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 mb-8">Account Settings</h1>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Account Information</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-slate-600">Settings functionality coming soon...</p>
-            </CardContent>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {/* Account Information */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Account Information</CardTitle>
+                <CardDescription>Manage your account details and preferences</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Name</label>
+                  <p className="text-lg">{appState.user?.name || 'Not set'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Email</label>
+                  <p className="text-lg">{appState.user?.email || 'Not set'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Account Created</label>
+                  <p className="text-lg">{appState.user?.createdAt ? new Date(appState.user.createdAt).toLocaleDateString() : 'Unknown'}</p>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Subscription Status</label>
+                  <p className="text-lg">{appState.user?.subscription || 'Free'}</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Privacy Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Privacy Settings</CardTitle>
+                <CardDescription>Control your data and privacy preferences</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Email Notifications</p>
+                    <p className="text-sm text-slate-600">Receive updates about your assessments</p>
+                  </div>
+                  <Button variant="outline" size="sm">Enable</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Data Sharing</p>
+                    <p className="text-sm text-slate-600">Allow anonymous data for research</p>
+                  </div>
+                  <Button variant="outline" size="sm">Disable</Button>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">Assessment History</p>
+                    <p className="text-sm text-slate-600">Keep your assessment results private</p>
+                  </div>
+                  <Button variant="outline" size="sm">Private</Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Security Settings */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Security</CardTitle>
+                <CardDescription>Manage your account security</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button variant="outline" className="w-full">
+                  Change Password
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Enable Two-Factor Authentication
+                </Button>
+                <Button variant="outline" className="w-full">
+                  View Login History
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Data Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Data Management</CardTitle>
+                <CardDescription>Control your data and account</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button variant="outline" className="w-full">
+                  Export My Data
+                </Button>
+                <Button variant="outline" className="w-full">
+                  Download Assessment History
+                </Button>
+                <Button variant="destructive" className="w-full">
+                  Delete Account
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </main>
     </div>
@@ -3701,15 +3905,184 @@ export default function Page() {
     <div className="min-h-screen bg-white">
       <AuthenticatedHeader />
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-6xl mx-auto">
           <h1 className="text-3xl font-bold text-slate-900 mb-8">Payment Plans</h1>
           
-          <Card>
+          {/* Current Plan Status */}
+          <Card className="mb-8">
             <CardHeader>
               <CardTitle>Current Plan</CardTitle>
+              <CardDescription>Your current subscription status</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-slate-600">Billing functionality coming soon...</p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-lg font-semibold">{appState.user?.subscription || 'Free'} Plan</p>
+                  <p className="text-slate-600">
+                    {appState.user?.subscription === 'Free' 
+                      ? 'Access to basic assessments and results'
+                      : `Premium features until ${appState.user?.subscriptionExpiry || 'N/A'}`
+                    }
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-slate-900">
+                    {appState.user?.subscription === 'Free' ? '$0' : '$19.99'}
+                  </p>
+                  <p className="text-sm text-slate-600">per month</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Available Plans */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {/* Free Plan */}
+            <Card className={`border-2 ${appState.user?.subscription === 'Free' ? 'border-slate-900' : 'border-slate-200'}`}>
+              <CardHeader>
+                <CardTitle className="text-xl">Free</CardTitle>
+                <CardDescription>Perfect for getting started</CardDescription>
+                <div className="text-3xl font-bold">$0<span className="text-lg font-normal text-slate-600">/month</span></div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Basic IQ Assessment</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">ADHD Screening</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">ASD Assessment</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Anxiety Assessment</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Basic Results</span>
+                  </div>
+                </div>
+                <Button 
+                  className="w-full" 
+                  variant={appState.user?.subscription === 'Free' ? 'outline' : 'default'}
+                  disabled={appState.user?.subscription === 'Free'}
+                >
+                  {appState.user?.subscription === 'Free' ? 'Current Plan' : 'Get Started'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Basic Plan */}
+            <Card className={`border-2 ${appState.user?.subscription === 'basic' ? 'border-slate-900' : 'border-slate-200'}`}>
+              <CardHeader>
+                <CardTitle className="text-xl">Basic</CardTitle>
+                <CardDescription>Enhanced features and insights</CardDescription>
+                <div className="text-3xl font-bold">$9.99<span className="text-lg font-normal text-slate-600">/month</span></div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Everything in Free</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Detailed Results</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Progress Tracking</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Assessment History</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Email Support</span>
+                  </div>
+                </div>
+                <Button 
+                  className="w-full" 
+                  variant={appState.user?.subscription === 'basic' ? 'outline' : 'default'}
+                  disabled={appState.user?.subscription === 'basic'}
+                  onClick={() => updateState({ currentView: "payment" })}
+                >
+                  {appState.user?.subscription === 'basic' ? 'Current Plan' : 'Upgrade to Basic'}
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* Premium Plan */}
+            <Card className={`border-2 ${appState.user?.subscription === 'premium' ? 'border-slate-900' : 'border-slate-200'}`}>
+              <CardHeader>
+                <CardTitle className="text-xl">Premium</CardTitle>
+                <CardDescription>Complete cognitive health suite</CardDescription>
+                <div className="text-3xl font-bold">$19.99<span className="text-lg font-normal text-slate-600">/month</span></div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Everything in Basic</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">AI-Powered Insights</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Personalized Recommendations</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Advanced Analytics</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">Priority Support</span>
+                  </div>
+                </div>
+                <Button 
+                  className="w-full" 
+                  variant={appState.user?.subscription === 'premium' ? 'outline' : 'default'}
+                  disabled={appState.user?.subscription === 'premium'}
+                  onClick={() => updateState({ currentView: "payment" })}
+                >
+                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Upgrade to Premium'}
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Billing History */}
+          <Card className="mt-8">
+            <CardHeader>
+              <CardTitle>Billing History</CardTitle>
+              <CardDescription>Your recent payments and invoices</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {appState.user?.subscription === 'Free' ? (
+                <p className="text-slate-600">No billing history available for free accounts.</p>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                    <div>
+                      <p className="font-medium">{appState.user?.subscription} Plan</p>
+                      <p className="text-sm text-slate-600">Monthly subscription</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-medium">$19.99</p>
+                      <p className="text-sm text-slate-600">Paid</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
