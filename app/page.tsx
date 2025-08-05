@@ -3234,12 +3234,15 @@ export default function Page() {
                 </>
               ) : (
                 <>
-                  <div className="text-center mb-8">
-                    <div className="text-4xl font-bold text-slate-900">
-                      {score} / {maxScore}
+                  {/* Hide score display for ADHD, ASD, and Anxiety tests */}
+                  {testType !== "adhd" && testType !== "asd" && testType !== "anxiety" && (
+                    <div className="text-center mb-8">
+                      <div className="text-4xl font-bold text-slate-900">
+                        {score} / {maxScore}
+                      </div>
+                      <div className="text-sm text-slate-600">Total Score</div>
                     </div>
-                    <div className="text-sm text-slate-600">Total Score</div>
-                  </div>
+                  )}
 
                   <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
                     <h3 className="text-xl font-semibold text-slate-900 mb-4">Assessment Insights</h3>
@@ -3513,12 +3516,15 @@ export default function Page() {
                 </>
               ) : (
                 <>
-                  <div className="text-center mb-8">
-                    <div className="text-4xl font-bold text-slate-900">
-                      {score} / {maxScore}
+                  {/* Hide score display for ADHD, ASD, and Anxiety tests */}
+                  {testType !== "adhd" && testType !== "asd" && testType !== "anxiety" && (
+                    <div className="text-center mb-8">
+                      <div className="text-4xl font-bold text-slate-900">
+                        {score} / {maxScore}
+                      </div>
+                      <div className="text-sm text-slate-600">Total Score</div>
                     </div>
-                    <div className="text-sm text-slate-600">Total Score</div>
-                  </div>
+                  )}
 
                   <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
                     <h3 className="text-xl font-semibold text-slate-900 mb-4">Assessment Insights</h3>
