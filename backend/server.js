@@ -43,16 +43,24 @@ if (process.env.FRONTEND_URL) {
 
 app.use(cors({
   origin: function (origin, callback) {
+    console.log('CORS request from origin:', origin);
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    
     // In development, allow all origins for easier testing
     if (process.env.NODE_ENV === 'development') {
+      console.log('Allowing all origins in development');
       return callback(null, true);
     }
     
     // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
+    if (!origin) {
+      console.log('Allowing request with no origin');
+      return callback(null, true);
+    }
     
     // Check if origin is in allowed list
     if (allowedOrigins.indexOf(origin) !== -1) {
+      console.log('Origin allowed from allowedOrigins list:', origin);
       callback(null, true);
     } 
     // Allow any Vercel domain in production
@@ -60,13 +68,20 @@ app.use(cors({
       console.log('Allowing Vercel domain:', origin);
       callback(null, true);
     }
+    // Allow datavine.ai domain
+    else if (origin === 'https://datavine.ai') {
+      console.log('Allowing datavine.ai domain:', origin);
+      callback(null, true);
+    }
     else {
       console.log('CORS blocked origin:', origin);
+      console.log('Allowed origins:', allowedOrigins);
       // In production, be more strict
       if (process.env.NODE_ENV === 'production') {
         callback(new Error('Not allowed by CORS'));
       } else {
         // In development, allow it anyway
+        console.log('Allowing blocked origin in development');
         callback(null, true);
       }
     }
