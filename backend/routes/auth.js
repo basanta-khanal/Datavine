@@ -18,8 +18,10 @@ const generateToken = (id) => {
 router.post('/register', [
   body('name')
     .trim()
+    .escape()
     .isLength({ min: 2, max: 50 })
-    .withMessage('Name must be between 2 and 50 characters'),
+    .withMessage('Name must be between 2 and 50 characters')
+    .matches(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'),
   body('email')
     .isEmail()
     .normalizeEmail()
@@ -27,6 +29,7 @@ router.post('/register', [
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number')
 ], async (req, res) => {
   try {
     // Check for validation errors

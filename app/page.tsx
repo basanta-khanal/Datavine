@@ -1892,59 +1892,67 @@ export default function Page() {
   const [showCouponField, setShowCouponField] = useState(false)
   const [couponCode, setCouponCode] = useState("")
 
+  const [isInitializing, setIsInitializing] = useState(true)
+
   useEffect(() => {
     const initializeApp = async () => {
-      // Check for test parameter in URL
-      const urlParams = new URLSearchParams(window.location.search)
-      const testParam = urlParams.get("test")
+      try {
+        // Check for test parameter in URL
+        const urlParams = new URLSearchParams(window.location.search)
+        const testParam = urlParams.get("test")
 
-      if (testParam && ["iq", "adhd", "asd", "anxiety"].includes(testParam)) {
-        // Auto-start the specified test
-        updateState({
-          currentView: "gender",
-          testType: testParam,
-        })
-      }
+        if (testParam && ["iq", "adhd", "asd", "anxiety"].includes(testParam)) {
+          // Auto-start the specified test
+          updateState({
+            currentView: "gender",
+            testType: testParam,
+          })
+        }
 
-      // Check for stored authentication state
-      const storedAuth = localStorage.getItem("datavine_auth")
-      const storedUser = localStorage.getItem("datavine_user")
+        // Check for stored authentication state
+        const storedAuth = localStorage.getItem("datavine_auth")
+        const storedUser = localStorage.getItem("datavine_user")
 
-      if (storedAuth === "true" && storedUser) {
-        try {
-          const userData = JSON.parse(storedUser)
-          setIsAuthenticated(true)
-          updateState({ user: userData })
-          
-          // Set the token for API calls
-          if (userData.token) {
-            apiClient.setToken(userData.token)
-          }
-          
-          // Refresh user data from backend to ensure we have the latest profile picture
+        if (storedAuth === "true" && storedUser) {
           try {
-            const userResponse = await apiClient.getCurrentUser()
-            if (userResponse.success) {
-              const refreshedUserData = {
-                ...userResponse.data,
-                assessmentHistory: userResponse.data.assessmentHistory || [],
-                subscription: userResponse.data.subscription?.type || "Free",
-                subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
-                usedCoupon: userResponse.data.usedCoupon || false,
-                hasPaid: userResponse.data.hasPaid || false,
+            const userData = JSON.parse(storedUser)
+            setIsAuthenticated(true)
+            updateState({ user: userData })
+            
+            // Set the token for API calls
+            if (userData.token) {
+              apiClient.setToken(userData.token)
+            }
+            
+            // Refresh user data from backend to ensure we have the latest profile picture
+            try {
+              const userResponse = await apiClient.getCurrentUser()
+              if (userResponse.success) {
+                const refreshedUserData = {
+                  ...userResponse.data,
+                  assessmentHistory: userResponse.data.assessmentHistory || [],
+                  subscription: userResponse.data.subscription?.type || "Free",
+                  subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
+                  usedCoupon: userResponse.data.usedCoupon || false,
+                  hasPaid: userResponse.data.hasPaid || false,
+                }
+                updateState({ user: refreshedUserData })
+                localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
               }
-              updateState({ user: refreshedUserData })
-              localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
+            } catch (error) {
+              console.error('Error refreshing user data:', error)
+              // Keep the stored data if refresh fails
             }
           } catch (error) {
-            console.error('Error refreshing user data:', error)
-            // Keep the stored data if refresh fails
+            // Clear invalid stored data
+            localStorage.removeItem("datavine_auth")
+            localStorage.removeItem("datavine_user")
           }
-        } catch (error) {
-          // Clear invalid stored data
-          localStorage.removeItem("datavine_auth")
-          localStorage.removeItem("datavine_user")
         }
+      } catch (error) {
+        console.error('App initialization error:', error)
+      } finally {
+        setIsInitializing(false)
       }
     }
 
@@ -2011,16 +2019,30 @@ export default function Page() {
     setAnswers(newAnswers)
   }
 
+  const [isSubmittingTest, setIsSubmittingTest] = useState(false)
+
   const handleNext = async () => {
     const questions = getCurrentQuestions()
     if (questionIndex < questions.length - 1) {
       setQuestionIndex(questionIndex + 1)
     } else {
-      const testResults = calculateResults()
-      updateState({ currentView: "success", testResults })
-      
-      // Save results to database if user is authenticated
-      await saveAssessmentResult(testResults)
+      setIsSubmittingTest(true)
+      try {
+        const testResults = calculateResults()
+        updateState({ currentView: "success", testResults })
+        
+        // Save results to database if user is authenticated
+        await saveAssessmentResult(testResults)
+      } catch (error) {
+        console.error('Error submitting test:', error)
+        toast({
+          title: "Submission Error",
+          description: "Failed to submit test results. Please try again.",
+          variant: "destructive",
+        })
+      } finally {
+        setIsSubmittingTest(false)
+      }
     }
   }
 
@@ -2968,10 +2990,17 @@ export default function Page() {
 
               <Button
                 onClick={handleNext}
-                disabled={answers[questionIndex] === undefined}
+                disabled={answers[questionIndex] === undefined || isSubmittingTest}
                 className="bg-slate-900 hover:bg-slate-800 text-white disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {questionIndex === questions.length - 1 ? "Get Results" : "Next →"}
+                {isSubmittingTest ? (
+                  <div className="flex items-center">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Submitting...
+                  </div>
+                ) : (
+                  questionIndex === questions.length - 1 ? "Get Results" : "Next →"
+                )}
               </Button>
             </div>
           </div>
@@ -3688,6 +3717,24 @@ export default function Page() {
     </div>
   )
 
+  // Show loading state while initializing
+  if (isInitializing) {
+    return (
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <div className="text-center">
+          <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+            <Brain className="h-8 w-8 text-white" />
+          </div>
+          <h2 className="text-xl font-semibold text-slate-900 mb-2">Loading DataVine...</h2>
+          <p className="text-slate-600">Please wait while we prepare your experience.</p>
+          <div className="mt-4">
+            <Loader2 className="h-6 w-6 animate-spin text-slate-600 mx-auto" />
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   let content
 
   switch (appState.currentView) {
@@ -3769,9 +3816,12 @@ export default function Page() {
                     onChange={handleNameChange}
                     className={authErrors.name ? "border-red-300 focus:border-red-500" : ""}
                     required
+                    minLength={2}
+                    maxLength={50}
+                    aria-describedby={authErrors.name ? "name-error" : undefined}
                   />
                   {authErrors.name && (
-                    <p className="text-sm text-red-600 mt-1">{authErrors.name}</p>
+                    <p id="name-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.name}</p>
                   )}
                 </div>
               )}
@@ -3780,17 +3830,18 @@ export default function Page() {
                 <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
                   Email
                 </label>
-                <Input
-                  type="email"
-                  id="email"
-                  placeholder="you@example.com"
-                  value={authForm.email}
-                  onChange={handleEmailChange}
-                  className={authErrors.email ? "border-red-300 focus:border-red-500" : ""}
-                  required
-                />
+                                  <Input
+                    type="email"
+                    id="email"
+                    placeholder="you@example.com"
+                    value={authForm.email}
+                    onChange={handleEmailChange}
+                    className={authErrors.email ? "border-red-300 focus:border-red-500" : ""}
+                    required
+                    aria-describedby={authErrors.email ? "email-error" : undefined}
+                  />
                 {authErrors.email && (
-                  <p className="text-sm text-red-600 mt-1">{authErrors.email}</p>
+                  <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.email}</p>
                 )}
               </div>
               
@@ -3807,9 +3858,11 @@ export default function Page() {
                     className={authErrors.password ? "border-red-300 focus:border-red-500" : ""}
                     autoComplete="new-password"
                     required
+                    minLength={8}
+                    aria-describedby={authErrors.password ? "password-error" : undefined}
                   />
                 {authErrors.password && (
-                  <p className="text-sm text-red-600 mt-1">{authErrors.password}</p>
+                  <p id="password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.password}</p>
                 )}
                 {authMode === "signup" && (
                   <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
@@ -3846,10 +3899,12 @@ export default function Page() {
                     className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
                     autoComplete="new-password"
                     required
+                    minLength={8}
+                    aria-describedby={authErrors.confirmPassword ? "confirm-password-error" : undefined}
                   />
-                  {authErrors.confirmPassword && (
-                    <p className="text-sm text-red-600 mt-1">{authErrors.confirmPassword}</p>
-                  )}
+                                  {authErrors.confirmPassword && (
+                  <p id="confirm-password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.confirmPassword}</p>
+                )}
                 </div>
               )}
               
