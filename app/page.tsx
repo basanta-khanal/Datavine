@@ -1859,7 +1859,7 @@ const getAnxietyAssessment = (score: number) => {
 export default function Page() {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [showAuthModal, setShowAuthModal] = useState(false)
-  const [authMode, setAuthMode] = useState<"signin" | "signup">("signin")
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | "forgot">("signin")
   const [authForm, setAuthForm] = useState({
     email: "",
     password: "",
@@ -1874,6 +1874,7 @@ export default function Page() {
     general: ""
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [forgotEmailSent, setForgotEmailSent] = useState(false)
   const [appState, setAppState] = useState({
     currentView: "home",
     testType: null,
@@ -2339,15 +2340,71 @@ export default function Page() {
     }
   }
 
-  const handleAuthModeChange = (mode: "signin" | "signup") => {
+  const handleAuthModeChange = (mode: "signin" | "signup" | "forgot") => {
     setAuthMode(mode)
     clearAuthErrors()
+    setForgotEmailSent(false)
     setAuthForm({
       email: "",
       password: "",
       name: "",
       confirmPassword: "",
     })
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    clearAuthErrors()
+
+    const emailError = validateEmail(authForm.email)
+    if (emailError) {
+      setAuthErrors(prev => ({ ...prev, email: emailError }))
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
+      const response = await apiClient.forgotPassword(authForm.email)
+      if (response.success) {
+        setForgotEmailSent(true)
+        toast({
+          title: "Reset Email Sent",
+          description: "Check your email for password reset instructions.",
+        })
+      } else {
+        setAuthErrors(prev => ({ ...prev, general: response.message || "Failed to send reset email" }))
+      }
+    } catch (error) {
+      console.error('Forgot password error:', error)
+      setAuthErrors(prev => ({ ...prev, general: "Failed to send reset email. Please try again." }))
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const handleGoogleLogin = async () => {
+    try {
+      // For now, show a placeholder message
+      // In production, this would redirect to Google OAuth
+      toast({
+        title: "Google Login Coming Soon",
+        description: "Google OAuth integration is being set up. Please use email/password for now.",
+      })
+      
+      // TODO: Implement Google OAuth
+      // 1. Set up Google Cloud Console project
+      // 2. Configure OAuth credentials
+      // 3. Install passport-google-oauth20
+      // 4. Update this handler to redirect to: `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+    } catch (error) {
+      console.error('Google login error:', error)
+      toast({
+        title: "Login Error",
+        description: "Failed to initiate Google login. Please try again.",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleAuth = async (e: any) => {
@@ -4171,7 +4228,7 @@ export default function Page() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white rounded-xl shadow-lg p-8 max-w-md w-full max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold text-slate-900 mb-4 text-center">
-              {authMode === "signin" ? "Sign In" : "Create Account"}
+              {authMode === "signin" ? "Sign In" : authMode === "signup" ? "Create Account" : "Forgot Password"}
             </h2>
             
             {/* General error message */}
@@ -4180,36 +4237,110 @@ export default function Page() {
                 <p className="text-sm text-red-600">{authErrors.general}</p>
               </div>
             )}
+
+            {/* Forgot Password Success Message */}
+            {forgotEmailSent && (
+              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-sm text-green-600">
+                  Password reset email sent! Check your inbox for instructions.
+                </p>
+              </div>
+            )}
             
-            <form onSubmit={handleAuth} className="space-y-4" autoComplete="off">
-              {authMode === "signup" && (
+            {/* Mode Tabs */}
+            <div className="flex space-x-1 bg-slate-100 p-1 rounded-lg mb-6">
+              <button
+                type="button"
+                onClick={() => handleAuthModeChange("signin")}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  authMode === "signin"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => handleAuthModeChange("signup")}
+                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-colors ${
+                  authMode === "signup"
+                    ? "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Sign Up
+              </button>
+            </div>
+
+            {/* Forgot Password Form */}
+            {authMode === "forgot" ? (
+              <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
-                    Name
+                  <label htmlFor="forgot-email" className="block text-sm font-medium text-slate-700 mb-1">
+                    Email Address
                   </label>
                   <Input
-                    type="text"
-                    id="name"
-                    placeholder="Your Name"
-                    value={authForm.name}
-                    onChange={handleNameChange}
-                    className={authErrors.name ? "border-red-300 focus:border-red-500" : ""}
+                    type="email"
+                    id="forgot-email"
+                    placeholder="Enter your email"
+                    value={authForm.email}
+                    onChange={handleEmailChange}
+                    className={authErrors.email ? "border-red-300 focus:border-red-500" : ""}
                     required
-                    minLength={2}
-                    maxLength={50}
-                    aria-describedby={authErrors.name ? "name-error" : undefined}
+                    aria-describedby={authErrors.email ? "email-error" : undefined}
                   />
-                  {authErrors.name && (
-                    <p id="name-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.name}</p>
+                  {authErrors.email && (
+                    <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.email}</p>
                   )}
                 </div>
-              )}
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
-                  Email
-                </label>
-                                  <Input
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Sending Reset Email...
+                    </div>
+                  ) : (
+                    "Send Reset Email"
+                  )}
+                </Button>
+              </form>
+            ) : (
+              /* Regular Sign In/Sign Up Form */
+              <form onSubmit={handleAuth} className="space-y-4" autoComplete="off">
+                {authMode === "signup" && (
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
+                      Name
+                    </label>
+                    <Input
+                      type="text"
+                      id="name"
+                      placeholder="Your Name"
+                      value={authForm.name}
+                      onChange={handleNameChange}
+                      className={authErrors.name ? "border-red-300 focus:border-red-500" : ""}
+                      required
+                      minLength={2}
+                      maxLength={50}
+                      aria-describedby={authErrors.name ? "name-error" : undefined}
+                    />
+                    {authErrors.name && (
+                      <p id="name-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.name}</p>
+                    )}
+                  </div>
+                )}
+                
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-1">
+                    Email
+                  </label>
+                  <Input
                     type="email"
                     id="email"
                     placeholder="you@example.com"
@@ -4219,16 +4350,16 @@ export default function Page() {
                     required
                     aria-describedby={authErrors.email ? "email-error" : undefined}
                   />
-                {authErrors.email && (
-                  <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.email}</p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
-                  Password
-                </label>
-                                  <Input
+                  {authErrors.email && (
+                    <p id="email-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.email}</p>
+                  )}
+                </div>
+                
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
+                    Password
+                  </label>
+                  <Input
                     type="password"
                     id="password"
                     placeholder="Password"
@@ -4240,68 +4371,136 @@ export default function Page() {
                     minLength={8}
                     aria-describedby={authErrors.password ? "password-error" : undefined}
                   />
-                {authErrors.password && (
-                  <p id="password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.password}</p>
-                )}
-                {authMode === "signup" && (
-                  <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
-                    <p className="font-medium mb-1">Password requirements:</p>
-                    <ul className="space-y-1">
-                      <li className={authForm.password.length >= 8 ? "text-green-600" : ""}>
-                        • At least 8 characters
-                      </li>
-                      <li className={/(?=.*[a-z])/.test(authForm.password) ? "text-green-600" : ""}>
-                        • One lowercase letter
-                      </li>
-                      <li className={/(?=.*[A-Z])/.test(authForm.password) ? "text-green-600" : ""}>
-                        • One uppercase letter
-                      </li>
-                      <li className={/(?=.*\d)/.test(authForm.password) ? "text-green-600" : ""}>
-                        • One number
-                      </li>
-                    </ul>
-                  </div>
-                )}
-              </div>
-              
-              {authMode === "signup" && (
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
-                    Confirm Password
-                  </label>
-                  <Input
-                    type="password"
-                    id="confirmPassword"
-                    placeholder="Confirm Password"
-                    value={authForm.confirmPassword}
-                    onChange={handleConfirmPasswordChange}
-                    className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
-                    autoComplete="new-password"
-                    required
-                    minLength={8}
-                    aria-describedby={authErrors.confirmPassword ? "confirm-password-error" : undefined}
-                  />
-                                  {authErrors.confirmPassword && (
-                  <p id="confirm-password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.confirmPassword}</p>
-                )}
+                  {authErrors.password && (
+                    <p id="password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.password}</p>
+                  )}
+                  {authMode === "signup" && (
+                    <div className="mt-2 p-2 bg-slate-50 rounded text-xs text-slate-600">
+                      <p className="font-medium mb-1">Password requirements:</p>
+                      <ul className="space-y-1">
+                        <li className={authForm.password.length >= 8 ? "text-green-600" : ""}>
+                          • At least 8 characters
+                        </li>
+                        <li className={/(?=.*[a-z])/.test(authForm.password) ? "text-green-600" : ""}>
+                          • One lowercase letter
+                        </li>
+                        <li className={/(?=.*[A-Z])/.test(authForm.password) ? "text-green-600" : ""}>
+                          • One uppercase letter
+                        </li>
+                        <li className={/(?=.*\d)/.test(authForm.password) ? "text-green-600" : ""}>
+                          • One number
+                        </li>
+                      </ul>
+                    </div>
+                  )}
                 </div>
-              )}
-              
-              <Button 
-                type="submit" 
-                className="w-full bg-slate-900 hover:bg-slate-800 text-white"
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    {authMode === "signin" ? "Signing In..." : "Creating Account..."}
+                
+                {authMode === "signup" && (
+                  <div>
+                    <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
+                      Confirm Password
+                    </label>
+                    <Input
+                      type="password"
+                      id="confirmPassword"
+                      placeholder="Confirm Password"
+                      value={authForm.confirmPassword}
+                      onChange={handleConfirmPasswordChange}
+                      className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
+                      autoComplete="new-password"
+                      required
+                      minLength={8}
+                      aria-describedby={authErrors.confirmPassword ? "confirm-password-error" : undefined}
+                    />
+                    {authErrors.confirmPassword && (
+                      <p id="confirm-password-error" className="text-sm text-red-600 mt-1" role="alert">{authErrors.confirmPassword}</p>
+                    )}
                   </div>
-                ) : (
-                  authMode === "signin" ? "Sign In" : "Create Account"
                 )}
-              </Button>
-            </form>
+                
+                <Button 
+                  type="submit" 
+                  className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <div className="flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      {authMode === "signin" ? "Signing In..." : "Creating Account..."}
+                    </div>
+                  ) : (
+                    authMode === "signin" ? "Sign In" : "Create Account"
+                  )}
+                </Button>
+              </form>
+            )}
+
+            {/* Google Login Button */}
+            {authMode !== "forgot" && (
+              <div className="mt-4">
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-slate-300" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white px-2 text-slate-500">Or continue with</span>
+                  </div>
+                </div>
+                
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full mt-4 border-slate-300 hover:bg-slate-50"
+                  onClick={handleGoogleLogin}
+                >
+                  <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
+                    <path
+                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                      fill="#4285F4"
+                    />
+                    <path
+                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                      fill="#34A853"
+                    />
+                    <path
+                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                      fill="#FBBC05"
+                    />
+                    <path
+                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                      fill="#EA4335"
+                    />
+                  </svg>
+                  Continue with Google
+                </Button>
+              </div>
+            )}
+
+            {/* Forgot Password Link */}
+            {authMode === "signin" && (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => handleAuthModeChange("forgot")}
+                  className="text-sm text-slate-600 hover:text-slate-900 underline"
+                >
+                  Forgot your password?
+                </button>
+              </div>
+            )}
+
+            {/* Back to Sign In Link */}
+            {authMode === "forgot" && (
+              <div className="mt-4 text-center">
+                <button
+                  type="button"
+                  onClick={() => handleAuthModeChange("signin")}
+                  className="text-sm text-slate-600 hover:text-slate-900 underline"
+                >
+                  Back to Sign In
+                </button>
+              </div>
+            )}
             
             <div className="mt-4 text-center">
               <Button 
@@ -4309,6 +4508,7 @@ export default function Page() {
                 onClick={() => {
                   setShowAuthModal(false)
                   clearAuthErrors()
+                  setForgotEmailSent(false)
                   setAuthForm({
                     email: "",
                     password: "",
