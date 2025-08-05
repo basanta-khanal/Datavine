@@ -32,7 +32,8 @@ const allowedOrigins = [
   'https://datavine-git-main-basanta-khanal.vercel.app',
   'https://datavine-basanta-khanal.vercel.app',
   'https://data-vine-d76w6d66e-basanta-khanals-projects.vercel.app',
-  'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app'
+  'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app',
+  'https://datavine.ai'
 ];
 
 // Add FRONTEND_URL to allowed origins if provided
