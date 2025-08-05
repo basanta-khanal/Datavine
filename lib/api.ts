@@ -1,7 +1,23 @@
 // API Client for DataVine.ai Backend
 // Updated for production deployment - FIXED URL ISSUE
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001') + '/api';
+// Determine the API base URL based on environment
+const getApiBaseUrl = () => {
+  // If environment variable is set, use it
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL + '/api';
+  }
+  
+  // In development (localhost), use local backend
+  if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+    return 'http://localhost:5001/api';
+  }
+  
+  // In production, use Railway backend
+  return 'https://datavine-production.up.railway.app/api';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 
 interface ApiResponse<T = any> {
   success: boolean;
