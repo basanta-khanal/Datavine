@@ -30,7 +30,9 @@ const allowedOrigins = [
   'https://datavine-ai.vercel.app',
   'https://datavine.vercel.app',
   'https://datavine-git-main-basanta-khanal.vercel.app',
-  'https://datavine-basanta-khanal.vercel.app'
+  'https://datavine-basanta-khanal.vercel.app',
+  'https://data-vine-d76w6d66e-basanta-khanals-projects.vercel.app',
+  'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app'
 ];
 
 // Add FRONTEND_URL to allowed origins if provided
@@ -48,9 +50,16 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
+    // Check if origin is in allowed list
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
-    } else {
+    } 
+    // Allow any Vercel domain in production
+    else if (process.env.NODE_ENV === 'production' && origin.includes('vercel.app')) {
+      console.log('Allowing Vercel domain:', origin);
+      callback(null, true);
+    }
+    else {
       console.log('CORS blocked origin:', origin);
       // In production, be more strict
       if (process.env.NODE_ENV === 'production') {
