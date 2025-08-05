@@ -6,7 +6,8 @@ import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X } from
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "@/components/ui/use-toast"
 import { UserProfileDropdown } from "@/components/user-profile-dropdown"
 import { apiClient } from "@/lib/api"
@@ -1872,18 +1873,15 @@ export default function Page() {
     testType: null,
     testResults: null,
     user: {
-      name: "John Doe",
-      email: "john.doe@example.com",
-      phone: "123-456-7890",
+      name: "",
+      email: "",
+      phone: "",
       profilePicture: null,
       usedCoupon: false,
       hasPaid: false,
       subscription: "Free",
       subscriptionExpiry: "N/A",
-      assessmentHistory: [
-        { testType: "IQ Test", testDate: "2024-01-20" },
-        { testType: "ADHD Test", testDate: "2024-01-15" },
-      ],
+      assessmentHistory: [],
     },
   } as any)
 
@@ -2365,6 +2363,11 @@ export default function Page() {
           name: authForm.name || authForm.email.split("@")[0],
           email: authForm.email,
           profilePicture: null,
+          assessmentHistory: [],
+          subscription: "Free",
+          subscriptionExpiry: "N/A",
+          usedCoupon: false,
+          hasPaid: false,
         }
 
         setIsAuthenticated(true)
@@ -2444,10 +2447,10 @@ export default function Page() {
               profilePicture={appState.user?.profilePicture}
               onLogout={handleLogout}
               onNavigate={(view) => {
-                if (view === "dashboard") window.location.href = "/dashboard"
-                else if (view === "profile") window.location.href = "/profile"
-                else if (view === "settings") window.location.href = "/settings"
-                else if (view === "billing") window.location.href = "/billing"
+                if (view === "dashboard") updateState({ currentView: "dashboard" })
+                else if (view === "profile") updateState({ currentView: "profile" })
+                else if (view === "settings") updateState({ currentView: "settings" })
+                else if (view === "billing") updateState({ currentView: "billing" })
               }}
             />
           ) : (
@@ -3447,6 +3450,200 @@ export default function Page() {
     )
   }
 
+  // Dashboard Page Component
+  const DashboardPage = () => (
+    <div className="min-h-screen bg-white">
+      <AuthenticatedHeader />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-6xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-900 mb-8">Dashboard</h1>
+          
+          {/* Welcome Section */}
+          <div className="bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl p-6 mb-8 text-white">
+            <h2 className="text-2xl font-semibold mb-2">Welcome back, {appState.user?.name || 'User'}!</h2>
+            <p className="text-slate-300">Track your cognitive assessment progress and insights.</p>
+          </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Total Assessments</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-3xl font-bold text-slate-900">{appState.user?.assessmentHistory?.length || 0}</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Subscription</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg font-semibold text-slate-900">{appState.user?.subscription || 'Free'}</p>
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Last Assessment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-lg text-slate-600">
+                  {appState.user?.assessmentHistory?.length > 0 
+                    ? appState.user.assessmentHistory[appState.user.assessmentHistory.length - 1]?.testType || 'None'
+                    : 'No assessments yet'
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Activity */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Activity</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {appState.user?.assessmentHistory?.length > 0 ? (
+                <div className="space-y-4">
+                  {appState.user.assessmentHistory.slice(-5).reverse().map((assessment: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                      <div>
+                        <p className="font-medium">{assessment.testType}</p>
+                        <p className="text-sm text-slate-600">{assessment.testDate}</p>
+                      </div>
+                      <Button variant="outline" size="sm">
+                        View Results
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <p className="text-slate-600 mb-4">No assessments completed yet.</p>
+                  <Button onClick={() => updateState({ currentView: "home" })}>
+                    Take Your First Assessment
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+
+  // Profile Page Component
+  const ProfilePage = () => (
+    <div className="min-h-screen bg-white">
+      <AuthenticatedHeader />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-900 mb-8">My Profile</h1>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Profile Picture Section */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Profile Picture</CardTitle>
+              </CardHeader>
+              <CardContent className="text-center">
+                <div className="mb-4">
+                  <Avatar className="h-24 w-24 mx-auto">
+                    <AvatarImage src={appState.user?.profilePicture || "/placeholder-avatar.jpg"} />
+                    <AvatarFallback className="bg-slate-900 text-white text-2xl">
+                      {appState.user?.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </div>
+                <div className="space-y-2">
+                  <Button onClick={triggerFileInput} size="sm" className="w-full">
+                    Upload Picture
+                  </Button>
+                  {appState.user?.profilePicture && (
+                    <Button onClick={handleRemoveProfilePicture} variant="outline" size="sm" className="w-full">
+                      Remove Picture
+                    </Button>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Profile Information */}
+            <div className="lg:col-span-2">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Profile Information</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <label className="text-sm font-medium text-slate-700">Name</label>
+                    <p className="text-lg">{appState.user?.name || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700">Email</label>
+                    <p className="text-lg">{appState.user?.email || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700">Phone</label>
+                    <p className="text-lg">{appState.user?.phone || 'Not set'}</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-slate-700">Subscription</label>
+                    <p className="text-lg">{appState.user?.subscription || 'Free'}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+
+  // Settings Page Component
+  const SettingsPage = () => (
+    <div className="min-h-screen bg-white">
+      <AuthenticatedHeader />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-900 mb-8">Account Settings</h1>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Account Information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600">Settings functionality coming soon...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+
+  // Billing Page Component
+  const BillingPage = () => (
+    <div className="min-h-screen bg-white">
+      <AuthenticatedHeader />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold text-slate-900 mb-8">Payment Plans</h1>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Current Plan</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-slate-600">Billing functionality coming soon...</p>
+            </CardContent>
+          </Card>
+        </div>
+      </main>
+    </div>
+  )
+
   let content
 
   switch (appState.currentView) {
@@ -3470,6 +3667,18 @@ export default function Page() {
       break
     case "detailed-results":
       content = <DetailedResultsPage />
+      break
+    case "dashboard":
+      content = <DashboardPage />
+      break
+    case "profile":
+      content = <ProfilePage />
+      break
+    case "settings":
+      content = <SettingsPage />
+      break
+    case "billing":
+      content = <BillingPage />
       break
     default:
       content = <HomePage />

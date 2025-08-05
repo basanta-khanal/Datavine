@@ -22,8 +22,8 @@ interface UserProfileDropdownProps {
 export const UserProfileDropdown = ({
   onNavigate,
   onLogout,
-  userName = "John Doe",
-  userEmail = "john.doe@example.com",
+  userName = "User",
+  userEmail = "user@example.com",
   profilePicture = null,
 }: UserProfileDropdownProps) => {
   const handleNavigation = (view: string) => {
