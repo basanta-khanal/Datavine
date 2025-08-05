@@ -2371,6 +2371,14 @@ export default function Page() {
         setShowAuthModal(false)
         updateState({ user: userData })
 
+        // Clear sensitive form data immediately
+        setAuthForm({
+          email: "",
+          password: "",
+          name: "",
+          confirmPassword: "",
+        })
+
         // Store authentication state in localStorage
         localStorage.setItem("datavine_auth", "true")
         localStorage.setItem("datavine_user", JSON.stringify(userData))
@@ -2407,6 +2415,12 @@ export default function Page() {
       })
     } finally {
       setIsSubmitting(false)
+      // Clear password fields after any authentication attempt
+      setAuthForm(prev => ({
+        ...prev,
+        password: "",
+        confirmPassword: ""
+      }))
     }
   }
 
@@ -3492,7 +3506,7 @@ export default function Page() {
               </div>
             )}
             
-            <form onSubmit={handleAuth} className="space-y-4">
+            <form onSubmit={handleAuth} className="space-y-4" autoComplete="off">
               {authMode === "signup" && (
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-1">
@@ -3535,15 +3549,16 @@ export default function Page() {
                 <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
                   Password
                 </label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder="Password"
-                  value={authForm.password}
-                  onChange={handlePasswordChange}
-                  className={authErrors.password ? "border-red-300 focus:border-red-500" : ""}
-                  required
-                />
+                                  <Input
+                    type="password"
+                    id="password"
+                    placeholder="Password"
+                    value={authForm.password}
+                    onChange={handlePasswordChange}
+                    className={authErrors.password ? "border-red-300 focus:border-red-500" : ""}
+                    autoComplete="new-password"
+                    required
+                  />
                 {authErrors.password && (
                   <p className="text-sm text-red-600 mt-1">{authErrors.password}</p>
                 )}
@@ -3580,6 +3595,7 @@ export default function Page() {
                     value={authForm.confirmPassword}
                     onChange={handleConfirmPasswordChange}
                     className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
+                    autoComplete="new-password"
                     required
                   />
                   {authErrors.confirmPassword && (

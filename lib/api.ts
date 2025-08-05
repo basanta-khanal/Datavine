@@ -25,10 +25,8 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
     
-    // Debug logging
+    // Security: Don't log sensitive data
     console.log('API Request URL:', url);
-    console.log('API Base URL:', this.baseURL);
-    console.log('Endpoint:', endpoint);
     
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
