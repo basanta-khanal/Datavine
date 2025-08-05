@@ -1,7 +1,7 @@
 // API Client for DataVine.ai Backend
 // Updated for production deployment - FIXED URL ISSUE
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://datavine-production.up.railway.app/api';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://datavine-production.up.railway.app') + '/api';
 
 interface ApiResponse<T = any> {
   success: boolean;
