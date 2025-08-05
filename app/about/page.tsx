@@ -1,17 +1,10 @@
+'use client'
+
 import { Brain, Award, Target, Heart, Lightbulb } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Metadata } from "next"
 import { useEffect, useState } from "react"
 
-export const metadata: Metadata = {
-  title: "About DataVine.ai - FREE Cognitive Assessments | Our Mission & Story",
-  description: "Learn about DataVine.ai's mission to provide FREE professional cognitive assessments. We're one of the few companies offering completely free IQ tests, ADHD screenings, and autism assessments.",
-  keywords: "about DataVine.ai, free cognitive assessments, mission, story, psychological testing, mental health accessibility",
-  openGraph: {
-    title: "About DataVine.ai - FREE Cognitive Assessments",
-    description: "Learn about our mission to provide FREE professional cognitive assessments to everyone.",
-  },
-}
+
 
 export default function AboutPage() {
   const [stats, setStats] = useState({

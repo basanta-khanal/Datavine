@@ -2385,23 +2385,74 @@ export default function Page() {
 
   const handleGoogleLogin = async () => {
     try {
-      // For now, show a placeholder message
-      // In production, this would redirect to Google OAuth
-      toast({
-        title: "Google Login Coming Soon",
-        description: "Google OAuth integration is being set up. Please use email/password for now.",
-      })
-      
-      // TODO: Implement Google OAuth
-      // 1. Set up Google Cloud Console project
-      // 2. Configure OAuth credentials
-      // 3. Install passport-google-oauth20
-      // 4. Update this handler to redirect to: `${process.env.NEXT_PUBLIC_API_URL}/auth/google`
+      // For development, simulate Google login with demo data
+      // In production, this would use real Google OAuth
+      const demoGoogleData = {
+        email: "demo.user@gmail.com",
+        name: "Demo User",
+        googleId: "demo_google_id_" + Date.now()
+      };
+
+      const response = await apiClient.googleLogin(
+        demoGoogleData.email,
+        demoGoogleData.name,
+        demoGoogleData.googleId
+      );
+
+      if (response.success) {
+        // Set the token
+        apiClient.setToken(response.data.token);
+        
+        // Get complete user profile
+        const userResponse = await apiClient.getCurrentUser();
+        if (userResponse.success) {
+          const userData = {
+            ...userResponse.data,
+            assessmentHistory: userResponse.data.assessmentHistory || [],
+            subscription: userResponse.data.subscription?.type || "Free",
+            subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
+            usedCoupon: userResponse.data.usedCoupon || false,
+            hasPaid: userResponse.data.hasPaid || false,
+          };
+          
+          // Update app state
+          updateState({
+            user: userData,
+            isAuthenticated: true,
+            showAuthModal: false
+          });
+          
+          // Store in localStorage
+          localStorage.setItem('datavine_token', response.data.token);
+          localStorage.setItem('datavine_user', JSON.stringify(userData));
+          
+          toast({
+            title: "Welcome!",
+            description: `Successfully signed in with Google as ${userData.name}`,
+          });
+          
+          // Clear form data after successful login
+          setTimeout(() => {
+            setAuthForm({
+              email: "",
+              password: "",
+              name: "",
+              confirmPassword: "",
+            });
+          }, 100);
+        }
+      } else {
+        toast({
+          title: "Google Login Failed",
+          description: response.message || "Failed to sign in with Google",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error('Google login error:', error)
       toast({
         title: "Login Error",
-        description: "Failed to initiate Google login. Please try again.",
+        description: "Failed to sign in with Google. Please try again.",
         variant: "destructive",
       })
     }

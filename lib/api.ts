@@ -1,7 +1,7 @@
 // API Client for DataVine.ai Backend
 // Updated for production deployment - FIXED URL ISSUE
 
-const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'https://datavine-production.up.railway.app') + '/api';
+const API_BASE_URL = (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001') + '/api';
 
 interface ApiResponse<T = any> {
   success: boolean;
@@ -123,6 +123,13 @@ class ApiClient {
     return this.request('/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify({ token, newPassword }),
+    });
+  }
+
+  async googleLogin(email: string, name: string, googleId: string): Promise<ApiResponse> {
+    return this.request('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ email, name, googleId }),
     });
   }
 

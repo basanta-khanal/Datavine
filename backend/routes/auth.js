@@ -23,7 +23,8 @@ router.post('/register', [
     .escape()
     .isLength({ min: 2, max: 50 })
     .withMessage('Name must be between 2 and 50 characters')
-    .matches(/^[a-zA-Z\s]+$/, 'Name can only contain letters and spaces'),
+    .matches(/^[a-zA-Z\s]+$/)
+    .withMessage('Name can only contain letters and spaces'),
   body('email')
     .isEmail()
     .normalizeEmail()
@@ -31,7 +32,8 @@ router.post('/register', [
   body('password')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number')
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -316,7 +318,8 @@ router.post('/reset-password', [
   body('newPassword')
     .isLength({ min: 6 })
     .withMessage('Password must be at least 6 characters long')
-    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Password must contain at least one lowercase letter, one uppercase letter, and one number')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage('Password must contain at least one lowercase letter, one uppercase letter, and one number')
 ], async (req, res) => {
   try {
     // Check for validation errors
@@ -379,22 +382,79 @@ router.post('/reset-password', [
   }
 });
 
-// @route   GET /api/auth/google
-// @desc    Google OAuth login
+// @route   POST /api/auth/google
+// @desc    Google OAuth login (simulated for development)
 // @access  Public
-router.get('/google', async (req, res) => {
+router.post('/google', [
+  body('email')
+    .isEmail()
+    .normalizeEmail()
+    .withMessage('Please provide a valid email'),
+  body('name')
+    .trim()
+    .isLength({ min: 2, max: 50 })
+    .withMessage('Name must be between 2 and 50 characters'),
+  body('googleId')
+    .notEmpty()
+    .withMessage('Google ID is required')
+], async (req, res) => {
   try {
-    // In production, this would redirect to Google OAuth
-    // For now, return a placeholder response
+    // Check for validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation Error',
+        errors: errors.array()
+      });
+    }
+
+    const { email, name, googleId } = req.body;
+    const users = global.inMemoryDB?.users || new Map();
+    
+    let user = users.get(email);
+    
+    if (!user) {
+      // Create new user from Google data
+      const userId = Date.now().toString();
+      user = {
+        id: userId,
+        name,
+        email,
+        googleId,
+        profilePicture: null,
+        isSubscribed: false,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      
+      users.set(email, user);
+    } else {
+      // Update existing user with Google data
+      user.googleId = googleId;
+      user.name = name;
+      user.updatedAt = new Date().toISOString();
+      users.set(email, user);
+    }
+
+    // Generate token
+    const token = generateToken(user.id);
+
+    // Remove sensitive data from response
+    const { password, ...userResponse } = user;
+
     res.json({
-      success: false,
-      message: 'Google OAuth integration not yet implemented'
+      success: true,
+      message: 'Google login successful',
+      token,
+      user: userResponse
     });
+
   } catch (error) {
-    console.error('Google OAuth error:', error);
+    console.error('Google login error:', error);
     res.status(500).json({
       success: false,
-      message: 'Server error during Google OAuth'
+      message: 'Server error during Google login'
     });
   }
 });

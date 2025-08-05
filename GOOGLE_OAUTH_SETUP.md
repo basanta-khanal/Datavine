@@ -1,22 +1,21 @@
-# Google OAuth Setup Guide
+# Google OAuth Setup Guide for DataVine.ai
 
-This guide will help you set up Google OAuth authentication for your DataVine.ai application.
+This guide will help you set up real Google OAuth authentication for production deployment.
 
-## Prerequisites
+## Current Status
 
-- Google Cloud Console account
-- Domain verification (for production)
-- SSL certificate (for production)
+✅ **Development Version**: Currently using a simulated Google login for development purposes
+🔄 **Production Version**: Needs real Google OAuth implementation
 
-## Step 1: Create Google Cloud Project
+## Step 1: Google Cloud Console Setup
 
+### 1.1 Create a Google Cloud Project
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
 2. Create a new project or select an existing one
 3. Enable the Google+ API and Google OAuth2 API
 
-## Step 2: Configure OAuth Consent Screen
-
-1. Navigate to "APIs & Services" > "OAuth consent screen"
+### 1.2 Configure OAuth Consent Screen
+1. Go to "APIs & Services" > "OAuth consent screen"
 2. Choose "External" user type
 3. Fill in the required information:
    - App name: "DataVine.ai"
@@ -26,52 +25,44 @@ This guide will help you set up Google OAuth authentication for your DataVine.ai
    - `openid`
    - `email`
    - `profile`
-5. Add test users (for development)
-6. Save and continue
+5. Add test users (your email addresses)
 
-## Step 3: Create OAuth 2.0 Credentials
-
+### 1.3 Create OAuth 2.0 Client ID
 1. Go to "APIs & Services" > "Credentials"
 2. Click "Create Credentials" > "OAuth 2.0 Client IDs"
 3. Choose "Web application"
 4. Add authorized redirect URIs:
-   - Development: `http://localhost:3000/api/auth/google/callback`
-   - Production: `https://datavine.ai/api/auth/google/callback`
-5. Save the Client ID and Client Secret
+   - `http://localhost:3000/auth/google/callback` (for development)
+   - `https://datavine.ai/auth/google/callback` (for production)
+5. Note down the Client ID and Client Secret
 
-## Step 4: Install Required Packages
+## Step 2: Backend Setup
 
-### Backend (Railway)
+### 2.1 Install Required Packages
 ```bash
 cd backend
 pnpm add passport passport-google-oauth20
 ```
 
-### Frontend (Vercel)
-```bash
-pnpm add next-auth
-```
-
-## Step 5: Environment Variables
-
-### Backend Environment Variables (Railway)
-```
+### 2.2 Environment Variables
+Add to your `.env` file:
+```env
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
-GOOGLE_CALLBACK_URL=https://datavine-production.up.railway.app/api/auth/google/callback
+GOOGLE_CALLBACK_URL=http://localhost:5001/api/auth/google/callback
+FRONTEND_URL=http://localhost:3000
 ```
 
-### Frontend Environment Variables (Vercel)
-```
-NEXTAUTH_URL=https://datavine.ai
-NEXTAUTH_SECRET=your_nextauth_secret_key
+For production (Railway):
+```env
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
+GOOGLE_CALLBACK_URL=https://your-railway-app.up.railway.app/api/auth/google/callback
+FRONTEND_URL=https://datavine.ai
 ```
 
-## Step 6: Backend Implementation
-
-### Update `backend/routes/auth.js`
+### 2.3 Update Backend Routes
+Replace the current Google route in `backend/routes/auth.js`:
 
 ```javascript
 const passport = require('passport');
@@ -81,39 +72,40 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.GOOGLE_CALLBACK_URL,
-    scope: ['profile', 'email']
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
       const users = global.inMemoryDB?.users || new Map();
+      const email = profile.emails[0].value;
+      const name = profile.displayName;
+      const googleId = profile.id;
       
-      // Check if user exists
-      let user = null;
-      for (const [email, userData] of users) {
-        if (userData.googleId === profile.id) {
-          user = userData;
-          break;
-        }
-      }
-
+      let user = users.get(email);
+      
       if (!user) {
         // Create new user
         const userId = Date.now().toString();
         user = {
           id: userId,
-          googleId: profile.id,
-          name: profile.displayName,
-          email: profile.emails[0].value,
-          profilePicture: profile.photos[0]?.value,
+          name,
+          email,
+          googleId,
+          profilePicture: profile.photos[0]?.value || null,
           isSubscribed: false,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
-        
-        users.set(user.email, user);
+        users.set(email, user);
+      } else {
+        // Update existing user
+        user.googleId = googleId;
+        user.name = name;
+        user.profilePicture = profile.photos[0]?.value || user.profilePicture;
+        user.updatedAt = new Date().toISOString();
+        users.set(email, user);
       }
-
+      
       return done(null, user);
     } catch (error) {
       return done(error, null);
@@ -121,29 +113,57 @@ passport.use(new GoogleStrategy({
   }
 ));
 
-// Google OAuth routes
-router.get('/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
+// Serialize user for session
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
 
-router.get('/google/callback',
+// Deserialize user from session
+passport.deserializeUser((id, done) => {
+  const users = global.inMemoryDB?.users || new Map();
+  for (const [email, user] of users) {
+    if (user.id === id) {
+      return done(null, user);
+    }
+  }
+  done(null, null);
+});
+
+// Google OAuth routes
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+router.get('/google/callback', 
   passport.authenticate('google', { failureRedirect: '/login' }),
   (req, res) => {
-    // Successful authentication
+    // Generate JWT token
     const token = generateToken(req.user.id);
+    
+    // Redirect to frontend with token
     res.redirect(`${process.env.FRONTEND_URL}?token=${token}`);
   }
 );
 ```
 
-## Step 7: Frontend Implementation
+## Step 3: Frontend Setup
 
-### Update `app/page.tsx` Google Login Handler
+### 3.1 Environment Variables
+Add to your `.env.local`:
+```env
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+For production (Vercel):
+```env
+NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_client_id
+```
+
+### 3.2 Update Google Login Handler
+Replace the current `handleGoogleLogin` in `app/page.tsx`:
 
 ```typescript
 const handleGoogleLogin = async () => {
   try {
-    // Redirect to Google OAuth
+    // Redirect to backend Google OAuth
     window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/google`;
   } catch (error) {
     console.error('Google login error:', error);
@@ -156,91 +176,118 @@ const handleGoogleLogin = async () => {
 };
 ```
 
-### Handle OAuth Callback
-
-Add to your main page component:
+### 3.3 Handle OAuth Callback
+Add to your main page component to handle the token from OAuth callback:
 
 ```typescript
 useEffect(() => {
-  // Check for OAuth token in URL
+  // Check for OAuth callback token
   const urlParams = new URLSearchParams(window.location.search);
-  const oauthToken = urlParams.get('token');
+  const token = urlParams.get('token');
   
-  if (oauthToken) {
-    // Store token and redirect
-    localStorage.setItem('token', oauthToken);
-    setIsAuthenticated(true);
-    
-    // Clean up URL
+  if (token) {
+    // Clear the token from URL
     window.history.replaceState({}, document.title, window.location.pathname);
     
-    toast({
-      title: "Login Successful",
-      description: "Welcome to DataVine.ai!",
-    });
+    // Set token and get user data
+    apiClient.setToken(token);
+    handleOAuthSuccess(token);
   }
 }, []);
+
+const handleOAuthSuccess = async (token: string) => {
+  try {
+    const userResponse = await apiClient.getCurrentUser();
+    if (userResponse.success) {
+      const userData = {
+        ...userResponse.data,
+        assessmentHistory: userResponse.data.assessmentHistory || [],
+        subscription: userResponse.data.subscription?.type || "Free",
+        subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
+        usedCoupon: userResponse.data.usedCoupon || false,
+        hasPaid: userResponse.data.hasPaid || false,
+      };
+      
+      updateState({
+        user: userData,
+        isAuthenticated: true,
+        showAuthModal: false
+      });
+      
+      localStorage.setItem('datavine_token', token);
+      localStorage.setItem('datavine_user', JSON.stringify(userData));
+      
+      toast({
+        title: "Welcome!",
+        description: `Successfully signed in with Google as ${userData.name}`,
+      });
+    }
+  } catch (error) {
+    console.error('OAuth success error:', error);
+    toast({
+      title: "Login Error",
+      description: "Failed to complete Google login. Please try again.",
+      variant: "destructive",
+    });
+  }
+};
 ```
 
-## Step 8: Production Deployment
+## Step 4: Production Deployment
 
-### Domain Verification
-1. In Google Cloud Console, go to "APIs & Services" > "OAuth consent screen"
-2. Add your production domain to authorized domains
-3. Verify domain ownership if required
+### 4.1 Railway (Backend)
+1. Set environment variables in Railway dashboard
+2. Deploy the updated backend code
+3. Update the callback URL to use your Railway domain
 
-### SSL Certificate
-Ensure your production domain has a valid SSL certificate for secure OAuth redirects.
+### 4.2 Vercel (Frontend)
+1. Set environment variables in Vercel dashboard
+2. Deploy the updated frontend code
+3. Update the callback URL to use your Vercel domain
 
-## Step 9: Testing
+## Step 5: Testing
 
-### Development Testing
-1. Use test users added to OAuth consent screen
-2. Test the complete flow: login → redirect → callback → token storage
+### 5.1 Development Testing
+1. Start backend: `cd backend && pnpm start`
+2. Start frontend: `pnpm dev`
+3. Click "Continue with Google" button
+4. Complete OAuth flow
+5. Verify user is logged in
 
-### Production Testing
-1. Verify domain is properly configured
-2. Test with real Google accounts
-3. Monitor for any OAuth errors
+### 5.2 Production Testing
+1. Deploy to Railway and Vercel
+2. Test OAuth flow on production domain
+3. Verify user creation and login
+4. Test profile picture sync from Google
 
 ## Security Considerations
 
-1. **Client Secret**: Never expose in frontend code
-2. **HTTPS**: Always use HTTPS in production
-3. **Token Storage**: Store tokens securely
-4. **Scope Limitation**: Only request necessary scopes
-5. **Error Handling**: Implement proper error handling
+1. **HTTPS Only**: Ensure all production URLs use HTTPS
+2. **Environment Variables**: Never commit secrets to version control
+3. **Token Security**: Use secure JWT tokens with proper expiration
+4. **CORS**: Configure CORS properly for your domains
+5. **Rate Limiting**: Implement rate limiting on OAuth endpoints
 
 ## Troubleshooting
 
-### Common Issues
+### Common Issues:
+1. **"Invalid redirect URI"**: Check that your redirect URI matches exactly in Google Console
+2. **"OAuth consent screen not configured"**: Complete the OAuth consent screen setup
+3. **"Client ID not found"**: Verify environment variables are set correctly
+4. **CORS errors**: Check CORS configuration in backend
 
-1. **Redirect URI Mismatch**
-   - Ensure exact match between Google Console and your app
-   - Check for trailing slashes
-
-2. **Domain Not Verified**
-   - Verify domain ownership in Google Console
-   - Add domain to authorized domains
-
-3. **Invalid Client ID**
-   - Double-check environment variables
-   - Ensure Client ID is for the correct project
-
-4. **CORS Issues**
-   - Configure CORS properly in backend
-   - Add frontend domain to allowed origins
-
-### Debug Steps
-
+### Debug Steps:
 1. Check browser console for errors
-2. Verify environment variables are set correctly
-3. Test OAuth flow in incognito mode
-4. Check Google Cloud Console logs
+2. Check backend logs for authentication errors
+3. Verify environment variables are loaded
+4. Test OAuth flow step by step
 
-## Support
+## Current Development Version
 
-For additional help:
-- [Google OAuth 2.0 Documentation](https://developers.google.com/identity/protocols/oauth2)
-- [Passport.js Google Strategy](http://www.passportjs.org/packages/passport-google-oauth20/)
-- [NextAuth.js Documentation](https://next-auth.js.org/) 
+The current implementation uses a simulated Google login for development:
+- Creates a demo user with Google-like data
+- Works without real Google OAuth setup
+- Perfect for development and testing
+- Ready to be replaced with real OAuth
+
+To switch to real Google OAuth, follow the steps above and replace the simulated implementation. 
