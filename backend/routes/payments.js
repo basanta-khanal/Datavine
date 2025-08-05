@@ -1,5 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 const router = express.Router();
 
@@ -48,24 +49,61 @@ router.post('/create-payment-intent', async (req, res) => {
       });
     }
 
-    // For development, we'll simulate a payment intent
-    const paymentIntent = {
-      id: `pi_${Date.now()}`,
-      clientSecret: `pi_${Date.now()}_secret_${Math.random().toString(36).substr(2, 9)}`,
+    // Get price ID based on subscription type
+    let priceId;
+    switch (subscriptionType) {
+      case 'basic':
+        priceId = process.env.STRIPE_BASIC_PRICE_ID;
+        break;
+      case 'premium':
+        priceId = process.env.STRIPE_PREMIUM_PRICE_ID;
+        break;
+      case 'enterprise':
+        priceId = process.env.STRIPE_ENTERPRISE_PRICE_ID;
+        break;
+      default:
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid subscription type'
+        });
+    }
+
+    if (!priceId) {
+      return res.status(500).json({
+        success: false,
+        message: 'Price ID not configured for this subscription type'
+      });
+    }
+
+    // Create real Stripe payment intent
+    const paymentIntent = await stripe.paymentIntents.create({
       amount: subscriptionType === 'basic' ? 999 : subscriptionType === 'premium' ? 1999 : 4999,
-      plan: {
-        name: subscriptionType.charAt(0).toUpperCase() + subscriptionType.slice(1),
-        features: subscriptionType === 'basic' 
-          ? ['Basic assessments', 'Standard reports']
-          : subscriptionType === 'premium'
-          ? ['All assessments', 'Detailed reports', 'AI recommendations', 'Progress tracking']
-          : ['All assessments', 'Detailed reports', 'AI recommendations', 'Progress tracking', 'Priority support', 'Custom insights']
-      }
-    };
+      currency: 'usd',
+      metadata: {
+        userId: user.id,
+        subscriptionType: subscriptionType,
+        userEmail: user.email
+      },
+      automatic_payment_methods: {
+        enabled: true,
+      },
+    });
 
     res.json({
       success: true,
-      paymentIntent
+      paymentIntent: {
+        id: paymentIntent.id,
+        clientSecret: paymentIntent.client_secret,
+        amount: paymentIntent.amount,
+        plan: {
+          name: subscriptionType.charAt(0).toUpperCase() + subscriptionType.slice(1),
+          features: subscriptionType === 'basic' 
+            ? ['Basic assessments', 'Standard reports']
+            : subscriptionType === 'premium'
+            ? ['All assessments', 'Detailed reports', 'AI recommendations', 'Progress tracking']
+            : ['All assessments', 'Detailed reports', 'AI recommendations', 'Progress tracking', 'Priority support', 'Custom insights']
+        }
+      }
     });
 
   } catch (error) {
@@ -93,8 +131,36 @@ router.post('/confirm-subscription', async (req, res) => {
 
     const { paymentIntentId, subscriptionType } = req.body;
 
+    // Verify payment intent with Stripe
+    try {
+      const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+      
+      if (paymentIntent.status !== 'succeeded') {
+        return res.status(400).json({
+          success: false,
+          message: 'Payment not completed successfully'
+        });
+      }
+
+      // Verify the payment belongs to this user
+      if (paymentIntent.metadata.userId !== user.id) {
+        return res.status(403).json({
+          success: false,
+          message: 'Payment does not belong to this user'
+        });
+      }
+
+    } catch (error) {
+      console.error('Stripe payment verification error:', error);
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid payment intent'
+      });
+    }
+
     // Update user subscription status
     user.isSubscribed = true;
+    user.hasPaid = true;
     user.subscription = {
       type: subscriptionType,
       status: 'active',

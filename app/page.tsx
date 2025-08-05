@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { toast } from "@/components/ui/use-toast"
 import { UserProfileDropdown } from "@/components/user-profile-dropdown"
+import { PaymentForm } from "@/components/payment-form"
 import { apiClient } from "@/lib/api"
 
 // IQ Test Questions - 30 comprehensive questions with improved visuals
@@ -1989,39 +1990,9 @@ export default function Page() {
   }
 
   const handlePayment = async () => {
-    setPaymentProcessing(true)
-    try {
-      // Create payment intent
-      const response = await apiClient.createPaymentIntent({
-        subscriptionType: "premium",
-        paymentMethod: "card"
-      })
-
-      if (response.success) {
-        // For now, we'll simulate successful payment
-        // In a real implementation, you'd handle the Stripe payment flow here
-        updateState({ currentView: "detailed-results", user: { ...appState.user, hasPaid: true } })
-        toast({
-          title: "Payment Successful!",
-          description: "Your subscription has been activated.",
-        })
-      } else {
-        toast({
-          title: "Payment Failed",
-          description: response.message || "An error occurred during payment.",
-          variant: "destructive",
-        })
-      }
-    } catch (error) {
-      console.error('Payment error:', error)
-      toast({
-        title: "Payment Failed",
-        description: "An error occurred during payment. Please try again.",
-        variant: "destructive",
-      })
-    } finally {
-      setPaymentProcessing(false)
-    }
+    // This function is now handled by the PaymentForm component
+    // The PaymentForm component handles the full Stripe payment flow
+    console.log('Payment handled by PaymentForm component')
   }
 
   const handleAnswer = (answer: string | number) => {
@@ -3306,58 +3277,25 @@ export default function Page() {
     <div className="min-h-screen bg-white">
       {isAuthenticated && <AuthenticatedHeader />}
       <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="max-w-md w-full">
+        <div className="max-w-4xl w-full">
           <div className="text-center mb-8">
             <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-2xl font-bold text-slate-900 mb-2">Unlock Detailed Results</h1>
-            <p className="text-slate-600">Upgrade to Premium for in-depth analysis and personalized insights</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Choose Your Plan</h1>
+            <p className="text-slate-600">Unlock detailed results and advanced features with our premium plans</p>
           </div>
 
-          <div className="bg-slate-50 rounded-xl p-6 mb-8 border border-slate-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="text-xl font-semibold text-slate-900">Premium Access</div>
-              <div className="text-xl font-bold text-slate-900">$9.99</div>
-            </div>
-            <ul className="list-disc list-inside text-slate-600 space-y-2">
-              <li>Unlimited assessments</li>
-              <li>Detailed analysis reports</li>
-              <li>Personalized recommendations</li>
-              <li>Progress tracking & history</li>
-            </ul>
-          </div>
-
-          <div className="space-y-4">
-            <Button
-              onClick={handlePayment}
-              disabled={paymentProcessing}
-              className={`w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white ${
-                paymentProcessing ? "cursor-not-allowed opacity-50" : ""
-              }`}
-            >
-              {paymentProcessing ? (
-                <div className="flex items-center justify-center">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Processing...
-                </div>
-              ) : (
-                "Complete Payment"
-              )}
-            </Button>
-            <Button
-              onClick={() => updateState({ currentView: "free-results" })}
-              variant="outline"
-              className="w-full h-12 bg-transparent"
-              disabled={paymentProcessing}
-            >
-              ← Back to Results
-            </Button>
-          </div>
-
-          <p className="text-sm text-slate-500 mt-6 text-center">
-            Secure payment powered by Stripe. Your information is encrypted and protected.
-          </p>
+          <PaymentForm 
+            onSuccess={() => {
+              updateState({ currentView: "detailed-results" })
+              toast({
+                title: "Payment Successful!",
+                description: "Your subscription has been activated. You now have access to detailed results.",
+              })
+            }}
+            onCancel={() => updateState({ currentView: "free-results" })}
+          />
         </div>
       </div>
     </div>
