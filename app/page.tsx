@@ -2371,13 +2371,15 @@ export default function Page() {
         setShowAuthModal(false)
         updateState({ user: userData })
 
-        // Clear sensitive form data immediately
-        setAuthForm({
-          email: "",
-          password: "",
-          name: "",
-          confirmPassword: "",
-        })
+        // Clear sensitive form data after successful auth (with small delay)
+        setTimeout(() => {
+          setAuthForm({
+            email: "",
+            password: "",
+            name: "",
+            confirmPassword: "",
+          })
+        }, 100)
 
         // Store authentication state in localStorage
         localStorage.setItem("datavine_auth", "true")
@@ -2415,12 +2417,6 @@ export default function Page() {
       })
     } finally {
       setIsSubmitting(false)
-      // Clear password fields after any authentication attempt
-      setAuthForm(prev => ({
-        ...prev,
-        password: "",
-        confirmPassword: ""
-      }))
     }
   }
 
