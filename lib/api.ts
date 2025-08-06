@@ -5,16 +5,16 @@
 const getApiBaseUrl = () => {
   // If environment variable is set, use it
   if (process.env.NEXT_PUBLIC_API_URL) {
-    return process.env.NEXT_PUBLIC_API_URL + '/api';
+    return process.env.NEXT_PUBLIC_API_URL;
   }
   
   // In development (localhost), use local backend
   if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-    return 'http://localhost:5001/api';
+    return 'http://localhost:5001';
   }
   
   // In production, use Railway backend
-  return 'https://datavine-production.up.railway.app/api';
+  return 'https://datavine-production.up.railway.app';
 };
 
 const API_BASE_URL = getApiBaseUrl();

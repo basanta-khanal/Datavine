@@ -290,7 +290,7 @@ router.post('/forgot-password', [
     users.set(email, user);
 
     // Generate reset link
-    const resetLink = `${process.env.FRONTEND_URL || 'https://datavine.ai'}/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL || 'https://datavibe.com'}/reset-password?token=${resetToken}`;
     
     // Try to send email if email service is configured
     let emailSent = false;
@@ -309,15 +309,15 @@ router.post('/forgot-password', [
 
         // Email template
         const mailOptions = {
-          from: process.env.SMTP_FROM || 'DataVine.ai <noreply@datavine.ai>',
-          to: email,
-          subject: 'Password Reset Request - DataVine.ai',
+                  from: process.env.SMTP_FROM || 'Datavibe <noreply@datavibe.com>',
+        to: email,
+        subject: 'Password Reset Request - Datavibe',
           html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #1e3a8a;">Password Reset Request</h2>
-              <p>You requested a password reset for your DataVine.ai account.</p>
+                              <h2 style="color: #374151;">Password Reset Request</h2>
+              <p>You requested a password reset for your Datavibe account.</p>
               <p>Click the button below to reset your password:</p>
-              <a href="${resetLink}" style="display: inline-block; background-color: #1e3a8a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Reset Password</a>
+                              <a href="${resetLink}" style="display: inline-block; background-color: #374151; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Reset Password</a>
               <p>Or copy and paste this link in your browser:</p>
               <p style="word-break: break-all; color: #666;">${resetLink}</p>
               <p style="color: #666; font-size: 14px;">This link will expire in 1 hour.</p>

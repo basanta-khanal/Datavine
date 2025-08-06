@@ -2751,7 +2751,7 @@ export default function Page() {
         >
           <Logo size={40} />
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
+                            <h1 className="text-2xl font-bold text-slate-900">Datavibe</h1>
             <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
           </div>
         </div>
@@ -2802,19 +2802,18 @@ export default function Page() {
 
       <main className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">Get Your FREE Professional Assessment</h1>
-          <p className="text-slate-700 text-lg mb-6">
-            Take <strong>1 FREE assessment</strong> of your choice - IQ, ADHD, ASD, or Anxiety screening. 
-            Professional cognitive testing with instant results, no credit card required.
-          </p>
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">Professional Cognitive Assessments</h1>
+                      <p className="text-slate-700 text-lg mb-6">
+              Take <strong>1 FREE assessment</strong> of your choice - IQ, ADHD, ASD, or Anxiety screening.
+              Professional cognitive testing with instant results, no credit card required.
+            </p>
 
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">FREE IQ Assessment</CardTitle>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">IQ Assessment</CardTitle>
                 </div>
                 <CardDescription>
                   Measure your cognitive abilities and identify your intellectual strengths. 
@@ -2826,16 +2825,15 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "iq" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start FREE Assessment
+                  Start Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">FREE ADHD Assessment</CardTitle>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">ADHD Assessment</CardTitle>
                 </div>
                 <CardDescription>
                   Evaluate symptoms of ADHD and gain insights into your attention and hyperactivity levels.
@@ -2847,16 +2845,15 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "adhd" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start FREE Assessment
+                  Start Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">FREE ASD Assessment</CardTitle>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">ASD Assessment</CardTitle>
                 </div>
                 <CardDescription>
                   Screen for Autism Spectrum Disorder and understand your social communication and interaction patterns.
@@ -2868,16 +2865,15 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "asd" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start FREE Assessment
+                  Start Assessment
                 </Button>
               </CardFooter>
             </Card>
 
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl">FREE Anxiety Assessment</CardTitle>
-                  <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">FREE</span>
+                                <div className="flex items-center justify-between">
+                  <CardTitle className="text-xl">Anxiety Assessment</CardTitle>
                 </div>
                 <CardDescription>
                   Assess your anxiety levels and identify potential triggers and coping mechanisms.
@@ -2889,7 +2885,7 @@ export default function Page() {
                   onClick={() => updateState({ currentView: "gender", testType: "anxiety" })}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white"
                 >
-                  Start FREE Assessment
+                  Start Assessment
                 </Button>
               </CardFooter>
             </Card>
@@ -2986,7 +2982,7 @@ export default function Page() {
               <div>
                 <div className="flex items-center space-x-3 mb-4">
                   <Logo size={32} />
-                  <h4 className="text-lg font-semibold text-slate-900">DataVine.ai</h4>
+                  <h4 className="text-lg font-semibold text-slate-900">Datavibe</h4>
                 </div>
                 <p className="text-slate-600 text-sm">
                   Scientifically validated assessments to help you understand your cognitive abilities and mental
@@ -3073,7 +3069,7 @@ export default function Page() {
             </div>
             <div className="border-t border-slate-100 mt-8 pt-8 text-center">
               <p className="text-slate-500 text-sm">
-                © 2024 DataVine.ai. All rights reserved. | Made for better mental health awareness.
+                © 2024 Datavibe. All rights reserved. | Made for better mental health awareness.
               </p>
             </div>
           </footer>
@@ -3541,7 +3537,7 @@ export default function Page() {
                       onClick={() => updateState({ currentView: "payment" })}
                       className="w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white"
                     >
-                      Start 7-Day Free Trial - Get Detailed Results
+                      Start 7-Day Trial - Get Detailed Results
                     </Button>
                     {!showCouponField && (
                       <Button variant="ghost" onClick={handleSecretClick} className="w-full text-slate-600">
@@ -3582,12 +3578,12 @@ export default function Page() {
             <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Start Your 7-Day Free Trial</h1>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Start Your 7-Day Trial</h1>
             <p className="text-slate-600">Get detailed results, tracking tools, and AI-powered recommendations</p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 inline-block">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                <span className="text-green-800 font-medium">7-day free trial • $19.99/month after trial</span>
+                <span className="text-green-800 font-medium">7-day trial • $19.99/month after trial</span>
               </div>
             </div>
           </div>
@@ -4341,7 +4337,7 @@ export default function Page() {
                   <p className="text-slate-600">
                     {appState.user?.subscription === 'premium' 
                       ? `Premium features until ${appState.user?.subscriptionExpiry || 'N/A'}`
-                      : '1 FREE assessment completed. Upgrade for detailed insights and tracking features.'
+                      : '1 complimentary assessment completed. Upgrade for detailed insights and tracking features.'
                     }
                   </p>
                 </div>
@@ -4368,7 +4364,7 @@ export default function Page() {
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">1 FREE Assessment (IQ, ADHD, ASD, or Anxiety)</span>
+                    <span className="text-sm">1 Complimentary Assessment (IQ, ADHD, ASD, or Anxiety)</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
@@ -4395,7 +4391,7 @@ export default function Page() {
                 <CardTitle className="text-xl">Premium</CardTitle>
                 <CardDescription>Complete cognitive health suite</CardDescription>
                 <div className="text-3xl font-bold">$19.99<span className="text-lg font-normal text-slate-600">/month</span></div>
-                <div className="text-sm text-green-600 font-medium">✓ 7-day free trial</div>
+                <div className="text-sm text-green-600 font-medium">✓ 7-day trial</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
@@ -4434,7 +4430,7 @@ export default function Page() {
                   disabled={appState.user?.subscription === 'premium'}
                   onClick={() => updateState({ currentView: "payment" })}
                 >
-                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Start 7-Day Free Trial'}
+                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Start 7-Day Trial'}
                 </Button>
               </CardContent>
             </Card>
@@ -4448,7 +4444,7 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               {appState.user?.subscription !== 'premium' ? (
-                <p className="text-slate-600">No billing history available. Upgrade to Premium to start your 7-day free trial.</p>
+                <p className="text-slate-600">No billing history available. Upgrade to Premium to start your 7-day trial.</p>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">

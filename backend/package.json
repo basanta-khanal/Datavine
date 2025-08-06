@@ -1,7 +1,7 @@
 {
-  "name": "datavine-backend",
+  "name": "datavibe-backend",
   "version": "1.0.0",
-  "description": "DataVine.ai Backend API",
+  "description": "Datavibe Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -10,7 +10,7 @@
     "healthcheck": "node healthcheck.js"
   },
   "keywords": ["cognitive-assessment", "ai", "psychology", "api"],
-  "author": "DataVine.ai",
+  "author": "Datavibe",
   "license": "MIT",
   "dependencies": {
     "bcryptjs": "^2.4.3",

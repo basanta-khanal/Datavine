@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🚀 DataVine.ai Local Development Setup"
+echo "🚀 Datavibe Local Development Setup"
 echo "======================================"
 
 # Check if Node.js is installed

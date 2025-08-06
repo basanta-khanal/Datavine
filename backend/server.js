@@ -33,7 +33,7 @@ const allowedOrigins = [
   'https://datavine-basanta-khanal.vercel.app',
   'https://data-vine-d76w6d66e-basanta-khanals-projects.vercel.app',
   'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app',
-  'https://datavine.ai'
+  'https://datavibe.com'
 ];
 
 // Add FRONTEND_URL to allowed origins if provided
@@ -69,8 +69,8 @@ app.use(cors({
       callback(null, true);
     }
     // Allow datavine.ai domain
-    else if (origin === 'https://datavine.ai') {
-      console.log('Allowing datavine.ai domain:', origin);
+    else if (origin === 'https://datavibe.com') {
+      console.log('Allowing datavibe.com domain:', origin);
       callback(null, true);
     }
     else {
@@ -106,7 +106,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'DataVine.ai Backend is running',
+    message: 'Datavibe Backend is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -116,7 +116,7 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'DataVine.ai Backend is running',
+    message: 'Datavibe Backend is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -213,7 +213,7 @@ app.use('*', (req, res) => {
 
 // Start Server
 const server = app.listen(PORT, () => {
-  console.log(`🚀 DataVine.ai Backend running on port ${PORT}`);
+  console.log(`🚀 Datavibe Backend running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   

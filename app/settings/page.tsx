@@ -165,7 +165,7 @@ export default function SettingsPage() {
                   <Palette className="h-5 w-5 text-slate-600" />
                   <CardTitle>Appearance</CardTitle>
                 </div>
-                <CardDescription>Customize how DataVine.ai looks and feels</CardDescription>
+                                  <CardDescription>Customize how Datavibe looks and feels</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>

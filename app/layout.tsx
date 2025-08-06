@@ -7,15 +7,15 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai - No Cost Cognitive Testing",
+  title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe - No Cost Cognitive Testing",
   description:
     "Take FREE professional IQ tests, ADHD screenings, and autism assessments online. One of the few companies offering completely free cognitive assessments with instant results. No hidden fees, no credit card required.",
   keywords: "free IQ test, free ADHD test, free autism test, free cognitive assessment, free psychological testing, online IQ test, ADHD screening, autism screening, free mental health assessment, cognitive testing, brain assessment, free psychology test",
-  authors: [{ name: "DataVine.ai Team" }],
-  creator: "DataVine.ai",
-  publisher: "DataVine.ai",
+  authors: [{ name: "Datavibe Team" }],
+  creator: "Datavibe",
+  publisher: "Datavibe",
   robots: "index, follow",
-  metadataBase: new URL("https://datavine.ai"),
+  metadataBase: new URL("https://datavibe.com"),
   icons: {
     icon: [
       { url: "/logo.svg", type: "image/svg+xml" },
@@ -26,24 +26,24 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://datavine.ai",
-    title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
+    url: "https://datavibe.com",
+    title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe",
     description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
-    siteName: "DataVine.ai",
+    siteName: "Datavibe",
     images: [
       {
         url: "/logo.svg",
         width: 120,
         height: 120,
-        alt: "DataVine.ai - Brain Logo with Neural Pathways",
+        alt: "Datavibe - Brain Logo with Neural Pathways",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
+    title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe",
     description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
-    creator: "@datavineai",
+    creator: "@datavibe",
     images: ["/logo.svg"],
   },
   generator: 'v0.dev'
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#1e293b',
+  themeColor: '#374151',
 }
 
 export default function RootLayout({
@@ -66,7 +66,7 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="msapplication-TileColor" content="#1e293b" />
+        <meta name="msapplication-TileColor" content="#374151" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
         {/* Structured Data */}
@@ -76,9 +76,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "DataVine.ai - Free Cognitive Assessments",
+              name: "Datavibe - Free Cognitive Assessments",
               description: "FREE professional IQ tests, ADHD screenings, and autism assessments online. No cost, no credit card required.",
-              url: "https://datavine.ai",
+              url: "https://datavibe.com",
               applicationCategory: "HealthApplication",
               operatingSystem: "Web",
               offers: {
@@ -90,7 +90,7 @@ export default function RootLayout({
               },
               author: {
                 "@type": "Organization",
-                name: "DataVine.ai",
+                name: "Datavibe",
                 description: "One of the few companies offering completely free cognitive assessments",
               },
               aggregateRating: {
