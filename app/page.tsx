@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X, User } from "lucide-react"
+import Logo from "@/components/logo"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -2638,9 +2639,7 @@ export default function Page() {
           className="flex items-center space-x-3 cursor-pointer"
           onClick={() => updateState({ currentView: "home" })}
         >
-          <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-            <Brain className="h-7 w-7 text-white" />
-          </div>
+          <Logo size={40} />
           <div>
             <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
             <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
@@ -2698,16 +2697,7 @@ export default function Page() {
             Take <strong>1 FREE assessment</strong> of your choice - IQ, ADHD, ASD, or Anxiety screening. 
             Professional cognitive testing with instant results, no credit card required.
           </p>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
-            <div className="flex items-center">
-              <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-green-800 font-medium">✓ 1 FREE Assessment</span>
-              <span className="text-green-600 mx-2">•</span>
-              <span className="text-green-800 font-medium">✓ No credit card required</span>
-              <span className="text-green-600 mx-2">•</span>
-              <span className="text-green-800 font-medium">✓ Instant results</span>
-            </div>
-          </div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <Card className="border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -2795,58 +2785,9 @@ export default function Page() {
             </Card>
           </div>
 
-          {/* Premium Features Preview */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-8 mt-16 mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-slate-900 mb-4">Unlock Premium Features</h2>
-              <p className="text-slate-700 text-lg">
-                Get detailed insights, tracking tools, and AI-powered recommendations to improve your cognitive health.
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
-                <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Brain className="h-8 w-8 text-purple-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">Detailed Recommendations</h3>
-                <p className="text-slate-600 text-sm">
-                  Get personalized improvement strategies and actionable insights based on your assessment results.
-                </p>
-              </div>
-              
-              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
-                <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <CheckCircle className="h-8 w-8 text-blue-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">Symptom & Nutrition Tracking</h3>
-                <p className="text-slate-600 text-sm">
-                  Monitor your symptoms, nutrition, and lifestyle factors to better understand your cognitive patterns.
-                </p>
-              </div>
-              
-              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
-                <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                  <Brain className="h-8 w-8 text-green-600" />
-                </div>
-                <h3 className="text-xl font-semibold text-slate-900 mb-3">AI-Powered Search</h3>
-                <p className="text-slate-600 text-sm">
-                  Access AI search on medical and regular data to find relevant information and resources.
-                </p>
-              </div>
-            </div>
-            
-            <div className="text-center mt-8">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4 inline-block">
-                <div className="flex items-center justify-center">
-                  <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                  <span className="text-green-800 font-medium">7-day free trial • $19.99/month after trial</span>
-                </div>
-              </div>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 mb-16">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-16 mb-16">
             <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
               <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
                 <Brain className="h-8 w-8 text-blue-600" />
@@ -2858,15 +2799,7 @@ export default function Page() {
               </p>
             </div>
 
-            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Brain className="h-8 w-8 text-purple-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Premium Features</h3>
-              <p className="text-slate-600 text-sm">
-                Unlock detailed insights, symptom tracking, nutrition monitoring, and AI-powered recommendations.
-              </p>
-            </div>
+
 
             <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
               <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
@@ -2879,15 +2812,7 @@ export default function Page() {
               </p>
             </div>
 
-            <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <CreditCard className="h-8 w-8 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Symptom & Nutrition Tracking</h3>
-              <p className="text-slate-600 text-sm">
-                Track your symptoms, nutrition, and lifestyle factors to better understand your cognitive health patterns.
-              </p>
-            </div>
+
           </div>
 
           {/* Trust & Security Section */}
@@ -2950,9 +2875,7 @@ export default function Page() {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               <div>
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="bg-slate-900 p-2 rounded-lg">
-                    <Brain className="h-5 w-5 text-white" />
-                  </div>
+                  <Logo size={32} />
                   <h4 className="text-lg font-semibold text-slate-900">DataVine.ai</h4>
                 </div>
                 <p className="text-slate-600 text-sm">
@@ -3569,6 +3492,185 @@ export default function Page() {
             }}
             onCancel={() => updateState({ currentView: "free-results" })}
           />
+
+          {/* Trust Signals Section */}
+          <div className="mt-12">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">Secure & Trusted</h2>
+              <p className="text-slate-600">Your security and privacy are our top priorities</p>
+            </div>
+
+            {/* Security Badges */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">SSL Encrypted</h3>
+                <p className="text-slate-600 text-sm">256-bit encryption protects your data</p>
+              </div>
+
+              <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">PCI Compliant</h3>
+                <p className="text-slate-600 text-sm">Payment card industry standards</p>
+              </div>
+
+              <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">HIPAA Compliant</h3>
+                <p className="text-slate-600 text-sm">Healthcare privacy standards</p>
+              </div>
+
+              <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="bg-orange-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-slate-900 mb-2">Stripe Powered</h3>
+                <p className="text-slate-600 text-sm">Industry-leading payment processor</p>
+              </div>
+            </div>
+
+            {/* Privacy & Security Guarantees */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                <div className="flex items-start space-x-3">
+                  <div className="bg-blue-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-blue-900 mb-2">Your Data is Secure</h4>
+                    <ul className="text-blue-800 text-sm space-y-1">
+                      <li>• Bank-level 256-bit SSL encryption</li>
+                      <li>• Credit card data never stored on our servers</li>
+                      <li>• PCI DSS Level 1 compliance</li>
+                      <li>• Regular security audits and penetration testing</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+                <div className="flex items-start space-x-3">
+                  <div className="bg-green-100 p-2 rounded-full">
+                    <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 className="text-lg font-semibold text-green-900 mb-2">Privacy Guaranteed</h4>
+                    <ul className="text-green-800 text-sm space-y-1">
+                      <li>• HIPAA-compliant data handling</li>
+                      <li>• Never share your personal information</li>
+                      <li>• Cancel anytime, no questions asked</li>
+                      <li>• 30-day money-back guarantee</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Customer Testimonials */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-8">
+              <h3 className="text-xl font-bold text-slate-900 mb-6 text-center">What Our Users Say</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="bg-white p-6 rounded-lg border border-slate-200">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                        </svg>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-slate-700 text-sm mb-4">
+                    "The assessment was incredibly accurate and the detailed results helped me understand my cognitive patterns better."
+                  </p>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-slate-300 rounded-full mr-3"></div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Sarah M.</p>
+                      <p className="text-xs text-slate-600">Verified User</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg border border-slate-200">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                        </svg>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-slate-700 text-sm mb-4">
+                    "The symptom tracking feature is amazing. It's helped me identify patterns I never noticed before."
+                  </p>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-slate-300 rounded-full mr-3"></div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Michael R.</p>
+                      <p className="text-xs text-slate-600">Premium Member</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-white p-6 rounded-lg border border-slate-200">
+                  <div className="flex items-center mb-4">
+                    <div className="flex text-yellow-400">
+                      {[...Array(5)].map((_, i) => (
+                        <svg key={i} className="w-4 h-4 fill-current" viewBox="0 0 20 20">
+                          <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
+                        </svg>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="text-slate-700 text-sm mb-4">
+                    "Professional, secure, and the AI recommendations are spot-on. Highly recommend!"
+                  </p>
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-slate-300 rounded-full mr-3"></div>
+                    <div>
+                      <p className="text-sm font-medium text-slate-900">Jennifer L.</p>
+                      <p className="text-xs text-slate-600">Verified User</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Money-back Guarantee */}
+            <div className="text-center mt-8">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-6 inline-block">
+                <div className="flex items-center justify-center mb-2">
+                  <svg className="w-6 h-6 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-green-800 font-bold text-lg">30-Day Money-Back Guarantee</span>
+                </div>
+                <p className="text-green-700 text-sm">
+                  Not satisfied? Get a full refund within 30 days, no questions asked.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -16,6 +16,13 @@ export const metadata: Metadata = {
   publisher: "DataVine.ai",
   robots: "index, follow",
   metadataBase: new URL("https://datavine.ai"),
+  icons: {
+    icon: [
+      { url: "/logo.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" }
+    ],
+    apple: "/apple-touch-icon.png",
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -25,10 +32,10 @@ export const metadata: Metadata = {
     siteName: "DataVine.ai",
     images: [
       {
-        url: "/og-image.jpg",
-        width: 1200,
-        height: 630,
-        alt: "FREE Cognitive Assessments - DataVine.ai",
+        url: "/logo.svg",
+        width: 120,
+        height: 120,
+        alt: "DataVine.ai - Brain Logo with Neural Pathways",
       },
     ],
   },
@@ -37,7 +44,7 @@ export const metadata: Metadata = {
     title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
     description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
     creator: "@datavineai",
-    images: ["/og-image.jpg"],
+    images: ["/logo.svg"],
   },
   generator: 'v0.dev'
 }

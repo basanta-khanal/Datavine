@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import Logo from "@/components/logo"
 
 export default function ContactPage() {
   return (
@@ -10,9 +11,7 @@ export default function ContactPage() {
       <header className="container mx-auto px-4 py-6 border-b border-slate-100">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="bg-slate-900 p-2.5 rounded-xl shadow-sm">
-              <Brain className="h-7 w-7 text-white" />
-            </div>
+            <Logo size={40} />
             <div>
               <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
               <p className="text-xs text-slate-600">Contact Us</p>
