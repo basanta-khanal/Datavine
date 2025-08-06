@@ -2497,21 +2497,29 @@ export default function Page() {
     setIsSubmitting(true)
 
     try {
+      console.log('🔍 Starting authentication...')
+      console.log('🔍 Auth mode:', authMode)
+      console.log('🔍 Email:', authForm.email)
+      
       let response;
       
       if (authMode === "signup") {
         // Register new user
+        console.log('🔍 Attempting user registration...')
         response = await apiClient.register({
           name: authForm.name || authForm.email.split("@")[0],
           email: authForm.email,
           password: authForm.password
         })
+        console.log('🔍 Registration response:', response)
       } else {
         // Sign in existing user
+        console.log('🔍 Attempting user login...')
         response = await apiClient.login({
           email: authForm.email,
           password: authForm.password
         })
+        console.log('🔍 Login response:', response)
       }
 
       if (response.success) {
@@ -2616,14 +2624,30 @@ export default function Page() {
         })
       }
     } catch (error) {
-      console.error('Authentication error:', error)
+      console.error('🔍 Authentication error:', error)
+      
+      // More specific error handling
+      let errorMessage = "Network error. Please check your connection and try again."
+      
+      if (error instanceof Error) {
+        if (error.message.includes('fetch')) {
+          errorMessage = "Unable to connect to server. Please check your internet connection."
+        } else if (error.message.includes('timeout')) {
+          errorMessage = "Request timed out. Please try again."
+        } else if (error.message.includes('CORS')) {
+          errorMessage = "Cross-origin request blocked. Please try refreshing the page."
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
       setAuthErrors(prev => ({
         ...prev,
-        general: "Network error. Please check your connection and try again."
+        general: errorMessage
       }))
       toast({
         title: "Authentication Failed",
-        description: "An error occurred during authentication. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
