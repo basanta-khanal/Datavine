@@ -289,14 +289,23 @@ router.post('/forgot-password', [
     user.resetTokenExpiry = resetTokenExpiry;
     users.set(email, user);
 
+    // Generate reset link
+    const resetLink = `${process.env.FRONTEND_URL || 'https://datavine.ai'}/reset-password?token=${resetToken}`;
+    
     // In production, you would send an email here
-    // For now, we'll just log the token
+    // For now, we'll just log the token and provide it in response for development
     console.log(`Password reset token for ${email}: ${resetToken}`);
-    console.log(`Reset link: ${process.env.FRONTEND_URL || 'http://localhost:3000'}/reset-password?token=${resetToken}`);
+    console.log(`Reset link: ${resetLink}`);
 
+    // For development, include the reset link in the response
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    
     res.json({
       success: true,
-      message: 'If an account with that email exists, a password reset link has been sent.'
+      message: isDevelopment 
+        ? `Password reset link generated. Check server console for: ${resetLink}`
+        : 'If an account with that email exists, a password reset link has been sent.',
+      resetLink: isDevelopment ? resetLink : undefined
     });
 
   } catch (error) {

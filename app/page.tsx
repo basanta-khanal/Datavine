@@ -2366,19 +2366,37 @@ export default function Page() {
     }
 
     try {
+      console.log('🔍 Sending forgot password request for:', authForm.email)
+      
       const response = await apiClient.forgotPassword(authForm.email)
+      console.log('🔍 Forgot password response:', response)
+      
       if (response.success) {
         setForgotEmailSent(true)
         toast({
-          title: "Reset Email Sent",
-          description: "Check your email for password reset instructions.",
+          title: "Reset Link Generated",
+          description: "For development, check the server console for the reset link. In production, this would be sent via email.",
         })
+        
+        // Show the reset link in console for development
+        console.log('🔍 Password reset link generated successfully')
+        console.log('🔍 In production, this would be sent via email to:', authForm.email)
       } else {
         setAuthErrors(prev => ({ ...prev, general: response.message || "Failed to send reset email" }))
+        toast({
+          title: "Failed to Send Reset Email",
+          description: response.message || "Please try again later.",
+          variant: "destructive",
+        })
       }
     } catch (error) {
-      console.error('Forgot password error:', error)
+      console.error('🔍 Forgot password error:', error)
       setAuthErrors(prev => ({ ...prev, general: "Failed to send reset email. Please try again." }))
+      toast({
+        title: "Network Error",
+        description: "Unable to send reset email. Please check your connection and try again.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -2386,6 +2404,8 @@ export default function Page() {
 
   const handleGoogleLogin = async () => {
     try {
+      console.log('🔍 Starting Google login...')
+      
       // For development, simulate Google login with demo data
       // In production, this would use real Google OAuth
       const demoGoogleData = {
@@ -2394,15 +2414,21 @@ export default function Page() {
         googleId: "demo_google_id_" + Date.now()
       };
 
+      console.log('🔍 Using demo Google data:', demoGoogleData)
+
       const response = await apiClient.googleLogin(
         demoGoogleData.email,
         demoGoogleData.name,
         demoGoogleData.googleId
       );
 
+      console.log('🔍 Google login response:', response)
+
       if (response.success) {
+        console.log('🔍 Google login successful!')
+        
         // Set the token
-        apiClient.setToken(response.data.token);
+        apiClient.setToken(response.token);
         
         // Get complete user profile
         const userResponse = await apiClient.getCurrentUser();
@@ -2424,7 +2450,7 @@ export default function Page() {
           });
           
           // Store in localStorage
-          localStorage.setItem('datavine_token', response.data.token);
+          localStorage.setItem('datavine_token', response.token);
           localStorage.setItem('datavine_user', JSON.stringify(userData));
           
           toast({
@@ -2441,8 +2467,36 @@ export default function Page() {
               confirmPassword: "",
             });
           }, 100);
+        } else {
+          console.log('🔍 Failed to get user profile after Google login')
+          // Fallback to basic user data
+          const userData = {
+            name: response.user?.name || "Demo User",
+            email: response.user?.email || demoGoogleData.email,
+            profilePicture: response.user?.profilePicture || null,
+            assessmentHistory: response.user?.assessmentHistory || [],
+            subscription: response.user?.subscription?.type || "Free",
+            subscriptionExpiry: response.user?.subscription?.endDate || "N/A",
+            usedCoupon: response.user?.usedCoupon || false,
+            hasPaid: response.user?.hasPaid || false,
+          };
+          
+          updateState({
+            user: userData,
+            isAuthenticated: true,
+            showAuthModal: false
+          });
+          
+          localStorage.setItem('datavine_token', response.token);
+          localStorage.setItem('datavine_user', JSON.stringify(userData));
+          
+          toast({
+            title: "Welcome!",
+            description: `Successfully signed in with Google as ${userData.name}`,
+          });
         }
       } else {
+        console.log('🔍 Google login failed:', response.message)
         toast({
           title: "Google Login Failed",
           description: response.message || "Failed to sign in with Google",
@@ -2450,7 +2504,7 @@ export default function Page() {
         });
       }
     } catch (error) {
-      console.error('Google login error:', error)
+      console.error('🔍 Google login error:', error)
       toast({
         title: "Login Error",
         description: "Failed to sign in with Google. Please try again.",
@@ -4472,9 +4526,23 @@ export default function Page() {
             {/* Forgot Password Success Message */}
             {forgotEmailSent && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
-                <p className="text-sm text-green-600">
-                  Password reset email sent! Check your inbox for instructions.
+                <p className="text-sm text-green-600 mb-2">
+                  ✅ Password reset link generated successfully!
                 </p>
+                <p className="text-xs text-green-600">
+                  For development: Check the server console for the reset link. In production, this would be sent via email.
+                </p>
+                <div className="mt-3 flex space-x-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleAuthModeChange("signin")}
+                    className="text-xs"
+                  >
+                    Back to Sign In
+                  </Button>
+                </div>
               </div>
             )}
             
