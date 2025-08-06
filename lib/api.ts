@@ -39,7 +39,7 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}${endpoint}`;
+    const url = `${this.baseURL}/api${endpoint}`;
     
     // Security: Don't log sensitive data
     console.log('API Request URL:', url);

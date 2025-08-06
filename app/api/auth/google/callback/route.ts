@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call backend to create/authenticate user
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/google`, {
+    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
