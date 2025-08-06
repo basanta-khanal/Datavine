@@ -2708,7 +2708,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Measure your cognitive abilities and identify your intellectual strengths. 
-                  <strong>FREE assessment with instant results.</strong>
+                  Assessment with instant results.
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2729,7 +2729,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Evaluate symptoms of ADHD and gain insights into your attention and hyperactivity levels.
-                  <strong>FREE professional screening.</strong>
+                  Professional screening.
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2750,7 +2750,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Screen for Autism Spectrum Disorder and understand your social communication and interaction patterns.
-                  <strong>FREE professional screening.</strong>
+                  Professional screening.
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2771,7 +2771,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Assess your anxiety levels and identify potential triggers and coping mechanisms.
-                  <strong>FREE mental health screening.</strong>
+                  Mental health screening.
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2834,18 +2834,18 @@ export default function Page() {
               </div>
             </div>
 
-            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+            <div className="bg-purple-50 border border-purple-200 rounded-xl p-6">
               <div className="flex items-start space-x-3">
-                <div className="bg-green-100 p-2 rounded-full">
-                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <div className="bg-purple-100 p-2 rounded-full">
+                  <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
                 <div>
-                  <h4 className="text-lg font-semibold text-green-900 mb-2">Science-Backed</h4>
-                  <p className="text-green-800 text-sm leading-relaxed">
-                    Our assessments are based on validated psychological instruments and research-backed methodologies. 
-                    Developed by cognitive health experts and continuously updated.
+                  <h4 className="text-lg font-semibold text-purple-900 mb-2">Lightning Fast</h4>
+                  <p className="text-purple-800 text-sm leading-relaxed">
+                    Complete your assessment in just 10-15 minutes. Our optimized platform delivers 
+                    instant results with detailed insights and personalized recommendations.
                   </p>
                 </div>
               </div>
