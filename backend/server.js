@@ -34,7 +34,8 @@ const allowedOrigins = [
   'https://data-vine-d76w6d66e-basanta-khanals-projects.vercel.app',
   'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app',
   'https://datavibe.com',
-  'https://datavine-production.up.railway.app'
+  'https://datavine-production.up.railway.app',
+  'https://datavine.ai'
 ];
 
 // Add FRONTEND_URL to allowed origins if provided
@@ -72,6 +73,11 @@ app.use(cors({
     // Allow datavine.ai domain
     else if (origin === 'https://datavibe.com') {
       console.log('Allowing datavibe.com domain:', origin);
+      callback(null, true);
+    }
+    // Allow datavine.ai domain
+    else if (origin === 'https://datavine.ai') {
+      console.log('Allowing datavine.ai domain:', origin);
       callback(null, true);
     }
     else {

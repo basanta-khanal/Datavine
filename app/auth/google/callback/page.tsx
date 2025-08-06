@@ -29,23 +29,37 @@ export default function GoogleCallbackPage() {
           return
         }
 
-        // TODO: Exchange code for user info and authenticate
-        // For now, we'll show a success message and redirect
-        setStatus('success')
-        setMessage('Google authentication successful! Redirecting...')
-        
-        // Send message to parent window (popup)
-        if (window.opener) {
-          window.opener.postMessage({
-            type: 'GOOGLE_AUTH_SUCCESS',
-            code: code
-          }, window.location.origin)
-          window.close()
+        // Exchange code for user info and authenticate
+        const response = await fetch('/api/auth/google/callback', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ code }),
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          setStatus('success')
+          setMessage('Google authentication successful! Redirecting...')
+          
+          // Send message to parent window (popup)
+          if (window.opener) {
+            window.opener.postMessage({
+              type: 'GOOGLE_AUTH_SUCCESS',
+              user: data.user,
+              token: data.token
+            }, window.location.origin)
+            window.close()
+          } else {
+            // Fallback: redirect to home
+            setTimeout(() => {
+              router.push('/')
+            }, 2000)
+          }
         } else {
-          // Fallback: redirect to home
-          setTimeout(() => {
-            router.push('/')
-          }, 2000)
+          throw new Error(data.message || 'Authentication failed')
         }
 
       } catch (error) {

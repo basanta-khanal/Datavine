@@ -2430,7 +2430,46 @@ export default function Page() {
           throw new Error('Popup blocked. Please allow popups for this site.');
         }
 
-        // TODO: Listen for popup callback and handle response
+        // Listen for popup callback and handle response
+        const handleMessage = async (event: MessageEvent) => {
+          if (event.origin !== window.location.origin) return;
+          
+          if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
+            window.removeEventListener('message', handleMessage);
+            
+            const { user, token } = event.data;
+            
+            if (token) {
+              apiClient.setToken(token);
+              
+              const userData = {
+                ...user,
+                assessmentHistory: user.assessmentHistory || [],
+                subscription: user.subscription?.type || "Free",
+                subscriptionExpiry: user.subscription?.endDate || "N/A",
+                usedCoupon: user.usedCoupon || false,
+                hasPaid: user.hasPaid || false,
+              };
+              
+              updateState({
+                user: userData,
+                isAuthenticated: true,
+                showAuthModal: false
+              });
+              
+              localStorage.setItem('datavine_token', token);
+              localStorage.setItem('datavine_user', JSON.stringify(userData));
+              
+              toast({
+                title: "Welcome!",
+                description: `Successfully signed in with Google as ${userData.name}`,
+              });
+            }
+          }
+        };
+        
+        window.addEventListener('message', handleMessage);
+        
         toast({
           title: "Google OAuth",
           description: "Google OAuth popup opened. Complete authentication in the popup window.",
