@@ -2406,15 +2406,47 @@ export default function Page() {
     try {
       console.log('🔍 Starting Google login...')
       
-      // For development, simulate Google login with demo data
-      // In production, this would use real Google OAuth
+      // Check if Google OAuth is configured
+      const isGoogleConfigured = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID && 
+                                process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID !== 'demo_client_id';
+
+      if (isGoogleConfigured) {
+        // Real Google OAuth flow
+        const googleAuthUrl = `https://accounts.google.com/oauth/authorize?` + 
+          `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&` +
+          `redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&` +
+          `response_type=code&` +
+          `scope=email profile&` +
+          `access_type=offline`;
+
+        // Open popup window
+        const popup = window.open(
+          googleAuthUrl,
+          'googleSignIn',
+          'width=500,height=600,scrollbars=yes,resizable=yes'
+        );
+
+        if (!popup) {
+          throw new Error('Popup blocked. Please allow popups for this site.');
+        }
+
+        // TODO: Listen for popup callback and handle response
+        toast({
+          title: "Google OAuth",
+          description: "Google OAuth popup opened. Complete authentication in the popup window.",
+        });
+        
+        return;
+      }
+
+      // Development fallback - use demo data
+      console.log('🔍 Google OAuth not configured, using demo data for development')
+      
       const demoGoogleData = {
         email: "demo.user@gmail.com",
         name: "Demo User",
         googleId: "demo_google_id_" + Date.now()
       };
-
-      console.log('🔍 Using demo Google data:', demoGoogleData)
 
       const response = await apiClient.googleLogin(
         demoGoogleData.email,

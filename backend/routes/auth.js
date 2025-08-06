@@ -292,20 +292,68 @@ router.post('/forgot-password', [
     // Generate reset link
     const resetLink = `${process.env.FRONTEND_URL || 'https://datavine.ai'}/reset-password?token=${resetToken}`;
     
-    // In production, you would send an email here
-    // For now, we'll just log the token and provide it in response for development
+    // Try to send email if email service is configured
+    let emailSent = false;
+    try {
+      if (process.env.EMAIL_SERVICE_ENABLED === 'true' && process.env.SMTP_HOST && process.env.SMTP_USER) {
+        // Configure nodemailer with SMTP settings
+        const transporter = nodemailer.createTransporter({
+          host: process.env.SMTP_HOST,
+          port: process.env.SMTP_PORT || 587,
+          secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+          auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+          }
+        });
+
+        // Email template
+        const mailOptions = {
+          from: process.env.SMTP_FROM || 'DataVine.ai <noreply@datavine.ai>',
+          to: email,
+          subject: 'Password Reset Request - DataVine.ai',
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+              <h2 style="color: #1e3a8a;">Password Reset Request</h2>
+              <p>You requested a password reset for your DataVine.ai account.</p>
+              <p>Click the button below to reset your password:</p>
+              <a href="${resetLink}" style="display: inline-block; background-color: #1e3a8a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Reset Password</a>
+              <p>Or copy and paste this link in your browser:</p>
+              <p style="word-break: break-all; color: #666;">${resetLink}</p>
+              <p style="color: #666; font-size: 14px;">This link will expire in 1 hour.</p>
+              <p style="color: #666; font-size: 14px;">If you didn't request this password reset, you can safely ignore this email.</p>
+            </div>
+          `
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        emailSent = true;
+        console.log(`Password reset email sent to: ${email}`);
+      }
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+      // Continue without failing the request
+    }
+
+    // Log the reset link for development or if email failed
     console.log(`Password reset token for ${email}: ${resetToken}`);
     console.log(`Reset link: ${resetLink}`);
 
-    // For development, include the reset link in the response
-    const isDevelopment = process.env.NODE_ENV === 'development';
+    // Determine response message
+    let message;
+    if (emailSent) {
+      message = 'A password reset link has been sent to your email address.';
+    } else if (process.env.NODE_ENV === 'development') {
+      message = `Password reset link generated. Check server console for: ${resetLink}`;
+    } else {
+      message = 'If an account with that email exists, a password reset link has been sent. Check server console for the link (email service not configured).';
+    }
     
     res.json({
       success: true,
-      message: isDevelopment 
-        ? `Password reset link generated. Check server console for: ${resetLink}`
-        : 'If an account with that email exists, a password reset link has been sent.',
-      resetLink: isDevelopment ? resetLink : undefined
+      message,
+      resetLink: (!emailSent && process.env.NODE_ENV === 'development') ? resetLink : undefined
     });
 
   } catch (error) {
