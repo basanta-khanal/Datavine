@@ -2693,17 +2693,17 @@ export default function Page() {
 
       <main className="container mx-auto px-4 py-20">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-4xl font-bold text-slate-900 mb-8">FREE Professional Cognitive Assessments</h1>
+          <h1 className="text-4xl font-bold text-slate-900 mb-8">Get Your FREE Professional Assessment</h1>
           <p className="text-slate-700 text-lg mb-6">
-            Take <strong>completely FREE</strong> IQ tests, ADHD screenings, and autism assessments online. 
-            One of the few companies offering professional cognitive testing at no cost.
+            Take <strong>1 FREE assessment</strong> of your choice - IQ, ADHD, ASD, or Anxiety screening. 
+            Professional cognitive testing with instant results, no credit card required.
           </p>
           <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
             <div className="flex items-center">
               <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-              <span className="text-green-800 font-medium">✓ No credit card required</span>
+              <span className="text-green-800 font-medium">✓ 1 FREE Assessment</span>
               <span className="text-green-600 mx-2">•</span>
-              <span className="text-green-800 font-medium">✓ No hidden fees</span>
+              <span className="text-green-800 font-medium">✓ No credit card required</span>
               <span className="text-green-600 mx-2">•</span>
               <span className="text-green-800 font-medium">✓ Instant results</span>
             </div>
@@ -2718,7 +2718,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Measure your cognitive abilities and identify your intellectual strengths. 
-                  <strong>Completely free with instant results.</strong>
+                  <strong>FREE assessment with instant results.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2739,7 +2739,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Evaluate symptoms of ADHD and gain insights into your attention and hyperactivity levels.
-                  <strong>Professional screening at no cost.</strong>
+                  <strong>FREE professional screening.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2760,7 +2760,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Screen for Autism Spectrum Disorder and understand your social communication and interaction patterns.
-                  <strong>Free professional screening tool.</strong>
+                  <strong>FREE professional screening.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2781,7 +2781,7 @@ export default function Page() {
                 </div>
                 <CardDescription>
                   Assess your anxiety levels and identify potential triggers and coping mechanisms.
-                  <strong>Free mental health screening.</strong>
+                  <strong>FREE mental health screening.</strong>
                 </CardDescription>
               </CardHeader>
               <CardFooter>
@@ -2793,6 +2793,57 @@ export default function Page() {
                 </Button>
               </CardFooter>
             </Card>
+          </div>
+
+          {/* Premium Features Preview */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-xl p-8 mt-16 mb-16">
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-slate-900 mb-4">Unlock Premium Features</h2>
+              <p className="text-slate-700 text-lg">
+                Get detailed insights, tracking tools, and AI-powered recommendations to improve your cognitive health.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
+                <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Brain className="h-8 w-8 text-purple-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">Detailed Recommendations</h3>
+                <p className="text-slate-600 text-sm">
+                  Get personalized improvement strategies and actionable insights based on your assessment results.
+                </p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
+                <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <CheckCircle className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">Symptom & Nutrition Tracking</h3>
+                <p className="text-slate-600 text-sm">
+                  Monitor your symptoms, nutrition, and lifestyle factors to better understand your cognitive patterns.
+                </p>
+              </div>
+              
+              <div className="text-center p-6 bg-white rounded-lg border border-purple-200 shadow-sm">
+                <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                  <Brain className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-xl font-semibold text-slate-900 mb-3">AI-Powered Search</h3>
+                <p className="text-slate-600 text-sm">
+                  Access AI search on medical and regular data to find relevant information and resources.
+                </p>
+              </div>
+            </div>
+            
+            <div className="text-center mt-8">
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4 inline-block">
+                <div className="flex items-center justify-center">
+                  <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                  <span className="text-green-800 font-medium">7-day free trial • $19.99/month after trial</span>
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 mb-16">
@@ -2808,12 +2859,12 @@ export default function Page() {
             </div>
 
             <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="bg-green-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <CheckCircle className="h-8 w-8 text-green-600" />
+              <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <Brain className="h-8 w-8 text-purple-600" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">100% FREE</h3>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Premium Features</h3>
               <p className="text-slate-600 text-sm">
-                One of the few companies offering completely free cognitive assessments. No credit card required, no hidden fees.
+                Unlock detailed insights, symptom tracking, nutrition monitoring, and AI-powered recommendations.
               </p>
             </div>
 
@@ -2829,13 +2880,50 @@ export default function Page() {
             </div>
 
             <div className="text-center p-6 bg-slate-50 rounded-xl border border-slate-200">
-              <div className="bg-purple-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <CreditCard className="h-8 w-8 text-purple-600" />
+              <div className="bg-blue-100 p-3 rounded-full w-16 h-16 mx-auto mb-4 flex items-center justify-center">
+                <CreditCard className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold text-slate-900 mb-3">Progress Tracking</h3>
+              <h3 className="text-xl font-semibold text-slate-900 mb-3">Symptom & Nutrition Tracking</h3>
               <p className="text-slate-600 text-sm">
-                Monitor your mental health journey over time with detailed analytics and historical data comparison.
+                Track your symptoms, nutrition, and lifestyle factors to better understand your cognitive health patterns.
               </p>
+            </div>
+          </div>
+
+          {/* Trust & Security Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+              <div className="flex items-start space-x-3">
+                <div className="bg-blue-100 p-2 rounded-full">
+                  <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-blue-900 mb-2">Secure & Private</h4>
+                  <p className="text-blue-800 text-sm leading-relaxed">
+                    Your data is encrypted and secure. We never share your personal information with third parties. 
+                    All assessments are confidential and HIPAA-compliant.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-green-50 border border-green-200 rounded-xl p-6">
+              <div className="flex items-start space-x-3">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <h4 className="text-lg font-semibold text-green-900 mb-2">Science-Backed</h4>
+                  <p className="text-green-800 text-sm leading-relaxed">
+                    Our assessments are based on validated psychological instruments and research-backed methodologies. 
+                    Developed by cognitive health experts and continuously updated.
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -3420,7 +3508,7 @@ export default function Page() {
                       onClick={() => updateState({ currentView: "payment" })}
                       className="w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white"
                     >
-                      Unlock Detailed Results for $9.99
+                      Start 7-Day Free Trial - Get Detailed Results
                     </Button>
                     {!showCouponField && (
                       <Button variant="ghost" onClick={handleSecretClick} className="w-full text-slate-600">
@@ -3461,8 +3549,14 @@ export default function Page() {
             <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Choose Your Plan</h1>
-            <p className="text-slate-600">Unlock detailed results and advanced features with our premium plans</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Start Your 7-Day Free Trial</h1>
+            <p className="text-slate-600">Get detailed results, tracking tools, and AI-powered recommendations</p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 inline-block">
+              <div className="flex items-center">
+                <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
+                <span className="text-green-800 font-medium">7-day free trial • $19.99/month after trial</span>
+              </div>
+            </div>
           </div>
 
           <PaymentForm 
@@ -4020,28 +4114,28 @@ export default function Page() {
       <AuthenticatedHeader />
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl font-bold text-slate-900 mb-8">Payment Plans</h1>
+          <h1 className="text-3xl font-bold text-slate-900 mb-8">Premium Features</h1>
           
           {/* Current Plan Status */}
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Current Plan</CardTitle>
+              <CardTitle>Your Plan</CardTitle>
               <CardDescription>Your current subscription status</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-lg font-semibold">{appState.user?.subscription || 'Free'} Plan</p>
+                  <p className="text-lg font-semibold">{appState.user?.subscription === 'premium' ? 'Premium' : 'Free'} Plan</p>
                   <p className="text-slate-600">
-                    {appState.user?.subscription === 'Free' 
-                      ? 'Access to basic assessments and results'
-                      : `Premium features until ${appState.user?.subscriptionExpiry || 'N/A'}`
+                    {appState.user?.subscription === 'premium' 
+                      ? `Premium features until ${appState.user?.subscriptionExpiry || 'N/A'}`
+                      : '1 FREE assessment completed. Upgrade for detailed insights and tracking features.'
                     }
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="text-2xl font-bold text-slate-900">
-                    {appState.user?.subscription === 'Free' ? '$0' : '$19.99'}
+                    {appState.user?.subscription === 'premium' ? '$19.99' : '$0'}
                   </p>
                   <p className="text-sm text-slate-600">per month</p>
                 </div>
@@ -4049,12 +4143,12 @@ export default function Page() {
             </CardContent>
           </Card>
 
-          {/* Available Plans */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Plan Comparison */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Free Plan */}
-            <Card className={`border-2 ${appState.user?.subscription === 'Free' ? 'border-slate-900' : 'border-slate-200'}`}>
+            <Card className={`border-2 ${appState.user?.subscription !== 'premium' ? 'border-slate-900' : 'border-slate-200'}`}>
               <CardHeader>
-                <CardTitle className="text-xl">Free</CardTitle>
+                <CardTitle className="text-xl">Free Assessment</CardTitle>
                 <CardDescription>Perfect for getting started</CardDescription>
                 <div className="text-3xl font-bold">$0<span className="text-lg font-normal text-slate-600">/month</span></div>
               </CardHeader>
@@ -4062,72 +4156,23 @@ export default function Page() {
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Basic IQ Assessment</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">ADHD Screening</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">ASD Assessment</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Anxiety Assessment</span>
+                    <span className="text-sm">1 FREE Assessment (IQ, ADHD, ASD, or Anxiety)</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
                     <span className="text-sm">Basic Results</span>
                   </div>
-                </div>
-                <Button 
-                  className="w-full" 
-                  variant={appState.user?.subscription === 'Free' ? 'outline' : 'default'}
-                  disabled={appState.user?.subscription === 'Free'}
-                >
-                  {appState.user?.subscription === 'Free' ? 'Current Plan' : 'Get Started'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Basic Plan */}
-            <Card className={`border-2 ${appState.user?.subscription === 'basic' ? 'border-slate-900' : 'border-slate-200'}`}>
-              <CardHeader>
-                <CardTitle className="text-xl">Basic</CardTitle>
-                <CardDescription>Enhanced features and insights</CardDescription>
-                <div className="text-3xl font-bold">$9.99<span className="text-lg font-normal text-slate-600">/month</span></div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="space-y-2">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Everything in Free</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Detailed Results</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Progress Tracking</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Assessment History</span>
-                  </div>
-                  <div className="flex items-center">
-                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Email Support</span>
+                    <span className="text-sm">Instant Feedback</span>
                   </div>
                 </div>
                 <Button 
                   className="w-full" 
-                  variant={appState.user?.subscription === 'basic' ? 'outline' : 'default'}
-                  disabled={appState.user?.subscription === 'basic'}
-                  onClick={() => updateState({ currentView: "payment" })}
+                  variant={appState.user?.subscription !== 'premium' ? 'outline' : 'default'}
+                  disabled={appState.user?.subscription !== 'premium'}
                 >
-                  {appState.user?.subscription === 'basic' ? 'Current Plan' : 'Upgrade to Basic'}
+                  {appState.user?.subscription !== 'premium' ? 'Current Plan' : 'Get Started'}
                 </Button>
               </CardContent>
             </Card>
@@ -4138,24 +4183,33 @@ export default function Page() {
                 <CardTitle className="text-xl">Premium</CardTitle>
                 <CardDescription>Complete cognitive health suite</CardDescription>
                 <div className="text-3xl font-bold">$19.99<span className="text-lg font-normal text-slate-600">/month</span></div>
+                <div className="text-sm text-green-600 font-medium">✓ 7-day free trial</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Everything in Basic</span>
+                    <span className="text-sm">Everything in Free</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">AI-Powered Insights</span>
+                    <span className="text-sm">Detailed Improvement Recommendations</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Personalized Recommendations</span>
+                    <span className="text-sm">Symptom Tracking</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
-                    <span className="text-sm">Advanced Analytics</span>
+                    <span className="text-sm">Nutrition Monitoring</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">AI Search on Medical & Regular Data</span>
+                  </div>
+                  <div className="flex items-center">
+                    <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
+                    <span className="text-sm">1 Additional Assessment per Month</span>
                   </div>
                   <div className="flex items-center">
                     <CheckCircle className="h-4 w-4 text-green-600 mr-2" />
@@ -4168,7 +4222,7 @@ export default function Page() {
                   disabled={appState.user?.subscription === 'premium'}
                   onClick={() => updateState({ currentView: "payment" })}
                 >
-                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Upgrade to Premium'}
+                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Start 7-Day Free Trial'}
                 </Button>
               </CardContent>
             </Card>
@@ -4181,13 +4235,13 @@ export default function Page() {
               <CardDescription>Your recent payments and invoices</CardDescription>
             </CardHeader>
             <CardContent>
-              {appState.user?.subscription === 'Free' ? (
-                <p className="text-slate-600">No billing history available for free accounts.</p>
+              {appState.user?.subscription !== 'premium' ? (
+                <p className="text-slate-600">No billing history available. Upgrade to Premium to start your 7-day free trial.</p>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
                     <div>
-                      <p className="font-medium">{appState.user?.subscription} Plan</p>
+                      <p className="font-medium">Premium Plan</p>
                       <p className="text-sm text-slate-600">Monthly subscription</p>
                     </div>
                     <div className="text-right">
