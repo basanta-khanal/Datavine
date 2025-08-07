@@ -8,7 +8,8 @@ const getDatabaseUrl = () => {
   if (dbUrl && dbUrl.includes('${{')) {
     console.log('⚠️  Railway variable reference detected but not resolved');
     console.log('   Make sure the variable reference is set up correctly in Railway');
-    return null;
+    // Don't return null - let Sequelize try to connect anyway
+    // Railway should resolve the variable at runtime
   }
   
   return dbUrl || 'postgresql://localhost:5432/datavine';
@@ -28,6 +29,10 @@ const sequelize = new Sequelize(getDatabaseUrl(), {
       require: true,
       rejectUnauthorized: false
     } : false
+  },
+  retry: {
+    max: 3,
+    timeout: 10000
   }
 });
 
@@ -39,14 +44,13 @@ const connectDB = async () => {
     const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
     if (dbUrl) {
       if (dbUrl.includes('${{')) {
-        console.log('⚠️  Railway variable reference detected: ${{ Postgres.DATABASE_URL }}');
-        console.log('   This should be automatically resolved by Railway');
+        console.log(' Railway variable reference detected: ${{ Postgres.DATABASE_URL }}');
       } else {
         const maskedUrl = dbUrl.replace(/:\/\/[^:]+:[^@]+@/, '://***:***@');
         console.log('Database URL (masked):', maskedUrl);
       }
     } else {
-      console.log('⚠️  No DATABASE_URL found, using fallback');
+      console.log('No DATABASE_URL found, using fallback');
     }
     
     await sequelize.authenticate();

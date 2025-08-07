@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "healthcheck": "node healthcheck.js",
     "setup-db": "node setup-postgres.js",
-    "debug-db": "node debug-connection.js"
+    "debug-db": "node debug-connection.js",
+    "test-railway": "node test-railway-deployment.js"
   },
   "keywords": [
     "cognitive-assessment",
