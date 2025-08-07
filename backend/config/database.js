@@ -22,6 +22,15 @@ const connectDB = async () => {
   try {
     console.log('Attempting to connect to PostgreSQL...');
     
+    // Log connection attempt details
+    const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+    if (dbUrl) {
+      const maskedUrl = dbUrl.replace(/:\/\/[^:]+:[^@]+@/, '://***:***@');
+      console.log('Database URL (masked):', maskedUrl);
+    } else {
+      console.log('⚠️  No DATABASE_URL found, using fallback');
+    }
+    
     await sequelize.authenticate();
     console.log('📦 PostgreSQL Connected successfully');
     
