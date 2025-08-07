@@ -276,7 +276,7 @@ router.post('/forgot-password', [
     });
 
     // Generate reset link
-    const resetLink = `${process.env.FRONTEND_URL || 'https://datavibe.com'}/reset-password?token=${resetToken}`;
+    const resetLink = `${process.env.FRONTEND_URL || 'https://datavine.com'}/reset-password?token=${resetToken}`;
     
     // Try to send email
     let emailSent = false;
