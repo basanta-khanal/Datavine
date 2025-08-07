@@ -34,24 +34,41 @@ const connectDB = async () => {
       console.log('New database connection established');
     });
 
+    // Handle connection errors
+    sequelize.addHook('afterDisconnect', (connection) => {
+      console.log('Database connection disconnected');
+    });
+
     // Graceful shutdown
     process.on('SIGINT', async () => {
-      await sequelize.close();
-      console.log('PostgreSQL connection closed through app termination');
+      try {
+        await sequelize.close();
+        console.log('PostgreSQL connection closed through app termination');
+      } catch (error) {
+        console.log('Error closing database connection:', error.message);
+      }
       process.exit(0);
     });
     
+    return true;
+    
   } catch (error) {
     console.error('❌ PostgreSQL connection failed:', error.message);
-    console.log('⚠️  Falling back to in-memory database for development');
     
-    // Fallback to in-memory database for development
-    const inMemoryDB = {
-      users: new Map(),
-      assessments: new Map(),
-      sessions: new Map()
-    };
-    global.inMemoryDB = inMemoryDB;
+    // Only fallback to in-memory in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log('⚠️  Falling back to in-memory database for development');
+      const inMemoryDB = {
+        users: new Map(),
+        assessments: new Map(),
+        sessions: new Map()
+      };
+      global.inMemoryDB = inMemoryDB;
+      return false;
+    } else {
+      // In production, throw the error
+      throw error;
+    }
   }
 };
 

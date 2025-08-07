@@ -79,6 +79,15 @@ router.post('/register', [
 
   } catch (error) {
     console.error('Registration error:', error);
+    
+    // Handle specific database connection errors
+    if (error.name === 'SequelizeConnectionError' || error.message.includes('connection manager was closed')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Please try again.'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Server error during registration'
@@ -144,6 +153,15 @@ router.post('/login', [
 
   } catch (error) {
     console.error('Login error:', error);
+    
+    // Handle specific database connection errors
+    if (error.name === 'SequelizeConnectionError' || error.message.includes('connection manager was closed')) {
+      return res.status(503).json({
+        success: false,
+        message: 'Database connection error. Please try again.'
+      });
+    }
+    
     res.status(500).json({
       success: false,
       message: 'Server error during login'
@@ -189,17 +207,8 @@ router.get('/me', async (req, res) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret_key');
     
-    // Use in-memory database
-    const users = global.inMemoryDB?.users || new Map();
-    
     // Find user by ID
-    let user = null;
-    for (const [email, userData] of users) {
-      if (userData.id === decoded.id) {
-        user = userData;
-        break;
-      }
-    }
+    const user = await User.findByPk(decoded.id);
 
     if (!user) {
       return res.status(401).json({
@@ -208,12 +217,9 @@ router.get('/me', async (req, res) => {
       });
     }
 
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
-
     res.json({
       success: true,
-      user: userResponse
+      user: user.toPublicJSON()
     });
 
   } catch (error) {

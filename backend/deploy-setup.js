@@ -32,7 +32,10 @@ async function deploySetup() {
     console.log('\n💡 This might be normal if database is already set up');
     console.log('   Continuing with deployment...');
   } finally {
-    await sequelize.close();
+    // Don't close the connection in production - let the app use it
+    if (process.env.NODE_ENV !== 'production') {
+      await sequelize.close();
+    }
   }
 }
 

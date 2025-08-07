@@ -18,9 +18,18 @@ const app = express();
 const PORT = process.env.PORT || 5001;
 
 // Connect to Database and setup for deployment
-connectDB().then(() => {
+connectDB().then((connected) => {
+  if (connected && process.env.NODE_ENV === 'production') {
+    // Run deployment setup without closing the connection
+    deploySetup().catch(error => {
+      console.log('Deployment setup completed with warnings:', error.message);
+    });
+  }
+}).catch(error => {
+  console.error('Failed to connect to database:', error.message);
   if (process.env.NODE_ENV === 'production') {
-    deploySetup();
+    console.error('Cannot start production server without database connection');
+    process.exit(1);
   }
 });
 
