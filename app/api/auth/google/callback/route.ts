@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Helper function to create HTML response with proper headers
+const createHtmlResponse = (html: string) => {
+  return new Response(html, {
+    headers: { 
+      'Content-Type': 'text/html',
+      'Cross-Origin-Opener-Policy': 'same-origin-allow-popups'
+    },
+  });
+};
+
 // Handle the initial OAuth callback with code
 export async function GET(request: NextRequest) {
   try {
@@ -8,8 +18,7 @@ export async function GET(request: NextRequest) {
     const error = searchParams.get('error');
 
     if (error) {
-      return new Response(
-        `
+      return createHtmlResponse(`
         <html>
           <body>
             <script>
@@ -18,16 +27,11 @@ export async function GET(request: NextRequest) {
             </script>
           </body>
         </html>
-        `,
-        {
-          headers: { 'Content-Type': 'text/html' },
-        }
-      );
+      `);
     }
 
     if (!code) {
-      return new Response(
-        `
+      return createHtmlResponse(`
         <html>
           <body>
             <script>
@@ -36,11 +40,7 @@ export async function GET(request: NextRequest) {
             </script>
           </body>
         </html>
-        `,
-        {
-          headers: { 'Content-Type': 'text/html' },
-        }
-      );
+      `);
     }
 
     // Exchange code for access token
@@ -61,8 +61,7 @@ export async function GET(request: NextRequest) {
     const tokenData = await tokenResponse.json();
 
     if (!tokenResponse.ok) {
-      return new Response(
-        `
+      return createHtmlResponse(`
         <html>
           <body>
             <script>
@@ -71,11 +70,7 @@ export async function GET(request: NextRequest) {
             </script>
           </body>
         </html>
-        `,
-        {
-          headers: { 'Content-Type': 'text/html' },
-        }
-      );
+      `);
     }
 
     // Get user info from Google
@@ -88,8 +83,7 @@ export async function GET(request: NextRequest) {
     const userData = await userResponse.json();
 
     if (!userResponse.ok) {
-      return new Response(
-        `
+      return createHtmlResponse(`
         <html>
           <body>
             <script>
@@ -98,11 +92,7 @@ export async function GET(request: NextRequest) {
             </script>
           </body>
         </html>
-        `,
-        {
-          headers: { 'Content-Type': 'text/html' },
-        }
-      );
+      `);
     }
 
     // Call backend to create/authenticate user
@@ -122,26 +112,20 @@ export async function GET(request: NextRequest) {
     const backendData = await backendResponse.json();
 
     if (!backendResponse.ok) {
-      return new Response(
-        `
+      return createHtmlResponse(`
         <html>
           <body>
-            <script>
-              window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: 'Failed to authenticate with backend' }, window.location.origin);
-              window.close();
-            </script>
-          </body>
+          <script>
+            window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: 'Failed to authenticate with backend' }, window.location.origin);
+            window.close();
+          </script>
+        </body>
         </html>
-        `,
-        {
-          headers: { 'Content-Type': 'text/html' },
-        }
-      );
+      `);
     }
 
     // Return success response that closes the popup and sends data to parent
-    return new Response(
-      `
+    return createHtmlResponse(`
       <html>
         <body>
           <script>
@@ -154,15 +138,10 @@ export async function GET(request: NextRequest) {
           </script>
         </body>
       </html>
-      `,
-      {
-        headers: { 'Content-Type': 'text/html' },
-      }
-    );
+    `);
 
   } catch (error) {
-    return new Response(
-      `
+    return createHtmlResponse(`
       <html>
         <body>
           <script>
@@ -171,11 +150,7 @@ export async function GET(request: NextRequest) {
           </script>
         </body>
       </html>
-      `,
-      {
-        headers: { 'Content-Type': 'text/html' },
-      }
-    );
+    `);
   }
 }
 

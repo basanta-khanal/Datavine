@@ -2439,6 +2439,8 @@ export default function Page() {
           
           if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
             window.removeEventListener('message', handleMessage);
+            clearInterval(checkPopup);
+            clearTimeout(authTimeout);
             
             const { user, token } = event.data;
             
@@ -2471,6 +2473,8 @@ export default function Page() {
             }
           } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
             window.removeEventListener('message', handleMessage);
+            clearInterval(checkPopup);
+            clearTimeout(authTimeout);
             
             toast({
               title: "Google Sign-In Failed",
@@ -2482,20 +2486,43 @@ export default function Page() {
         
         window.addEventListener('message', handleMessage);
         
-        // Check if popup is closed every second
+        // Add timeout for authentication
+        const authTimeout = setTimeout(() => {
+          clearInterval(checkPopup);
+          window.removeEventListener('message', handleMessage);
+          
+          if (!apiClient.getToken()) {
+            toast({
+              title: "Authentication Timeout",
+              description: "Google sign-in timed out. Please try again.",
+              variant: "destructive"
+            });
+          }
+        }, 60000); // 60 second timeout
+        
+        // Check if popup is closed every second (with COOP handling)
         const checkPopup = setInterval(() => {
-          if (!popup || popup.closed) {
-            clearInterval(checkPopup);
-            window.removeEventListener('message', handleMessage);
-            
-            // Only show error if no success message was received
-            if (!apiClient.getToken()) {
-              toast({
-                title: "Authentication Cancelled",
-                description: "Google sign-in was cancelled or failed. Please try again.",
-                variant: "destructive"
-              });
+          try {
+            if (!popup || popup.closed) {
+              clearInterval(checkPopup);
+              clearTimeout(authTimeout);
+              window.removeEventListener('message', handleMessage);
+              
+              // Only show error if no success message was received
+              if (!apiClient.getToken()) {
+                toast({
+                  title: "Authentication Cancelled",
+                  description: "Google sign-in was cancelled or failed. Please try again.",
+                  variant: "destructive"
+                });
+              }
             }
+          } catch (error) {
+            // COOP policy blocked access to popup
+            console.log('COOP policy blocked popup access, removing interval');
+            clearInterval(checkPopup);
+            clearTimeout(authTimeout);
+            window.removeEventListener('message', handleMessage);
           }
         }, 1000);
         
