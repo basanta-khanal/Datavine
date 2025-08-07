@@ -49,7 +49,7 @@ export const UserProfileDropdown = ({
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="h-10 w-10 p-0 rounded-full">
           <Avatar className="h-10 w-10">
-            <AvatarImage src={profilePicture || "/placeholder-avatar.jpg"} alt={userName} />
+            <AvatarImage src={profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=007bff&color=ffffff&size=150`} alt={userName} />
             <AvatarFallback className="bg-slate-900 text-white">
               {userName
                 .split(" ")

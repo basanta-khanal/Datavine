@@ -1,52 +1,58 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
 
-// In-memory storage for development
-const inMemoryDB = {
-  users: new Map(),
-  assessments: new Map(),
-  sessions: new Map()
-};
+// PostgreSQL Configuration
+const sequelize = new Sequelize(process.env.DATABASE_URL || process.env.POSTGRES_URL || 'postgresql://localhost:5432/datavine', {
+  dialect: 'postgres',
+  logging: process.env.NODE_ENV === 'development' ? console.log : false,
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000
+  },
+  dialectOptions: {
+    ssl: process.env.NODE_ENV === 'production' ? {
+      require: true,
+      rejectUnauthorized: false
+    } : false
+  }
+});
 
 const connectDB = async () => {
-  // Always initialize in-memory database for development
-  global.inMemoryDB = inMemoryDB;
-  
   try {
-    // Check if MongoDB URI is provided
-    const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/datavine';
+    console.log('Attempting to connect to PostgreSQL...');
     
-    console.log('Attempting to connect to MongoDB...');
+    await sequelize.authenticate();
+    console.log('📦 PostgreSQL Connected successfully');
     
-    // Try to connect to MongoDB
-    try {
-      const conn = await mongoose.connect(mongoUri);
-      console.log(`📦 MongoDB Connected: ${conn.connection.host}`);
-      
-      // Handle connection events
-      mongoose.connection.on('error', (err) => {
-        console.error('MongoDB connection error:', err);
-      });
+    // Sync all models
+    await sequelize.sync({ alter: true });
+    console.log('📋 Database models synchronized');
+    
+    // Handle connection events
+    sequelize.addHook('afterConnect', (connection) => {
+      console.log('New database connection established');
+    });
 
-      mongoose.connection.on('disconnected', () => {
-        console.log('MongoDB disconnected');
-      });
-
-      // Graceful shutdown
-      process.on('SIGINT', async () => {
-        await mongoose.connection.close();
-        console.log('MongoDB connection closed through app termination');
-        process.exit(0);
-      });
-      
-    } catch (mongoError) {
-      console.log('⚠️  MongoDB not available, using in-memory database for development');
-      console.log('💡 For production, please set up MongoDB or use MongoDB Atlas');
-    }
-
+    // Graceful shutdown
+    process.on('SIGINT', async () => {
+      await sequelize.close();
+      console.log('PostgreSQL connection closed through app termination');
+      process.exit(0);
+    });
+    
   } catch (error) {
-    console.error('Database connection failed:', error.message);
-    console.log('⚠️  Using in-memory database for development');
+    console.error('❌ PostgreSQL connection failed:', error.message);
+    console.log('⚠️  Falling back to in-memory database for development');
+    
+    // Fallback to in-memory database for development
+    const inMemoryDB = {
+      users: new Map(),
+      assessments: new Map(),
+      sessions: new Map()
+    };
+    global.inMemoryDB = inMemoryDB;
   }
 };
 
-module.exports = connectDB; 
+module.exports = { connectDB, sequelize }; 

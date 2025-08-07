@@ -4,6 +4,7 @@ const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
+const User = require('../models/User');
 
 const router = express.Router();
 
@@ -48,50 +49,32 @@ router.post('/register', [
 
     const { name, email, password, phone, gender } = req.body;
 
-    // Use in-memory database
-    const users = global.inMemoryDB?.users || new Map();
-    
     // Check if user already exists
-    if (users.has(email)) {
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
       return res.status(400).json({
         success: false,
         message: 'User with this email already exists'
       });
     }
 
-    // Hash password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    // Create user
-    const userId = Date.now().toString();
-    const user = {
-      id: userId,
+    // Create user (password will be hashed automatically by the model hook)
+    const user = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password,
       phone,
-      gender,
-      profilePicture: null,
-      isSubscribed: false,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    // Store user
-    users.set(email, user);
+      gender
+    });
 
     // Generate token
-    const token = generateToken(userId);
-
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
+    const token = generateToken(user.id);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       token,
-      user: userResponse
+      user: user.toPublicJSON()
     });
 
   } catch (error) {
@@ -128,11 +111,8 @@ router.post('/login', [
 
     const { email, password } = req.body;
 
-    // Use in-memory database
-    const users = global.inMemoryDB?.users || new Map();
-    
     // Find user
-    const user = users.get(email);
+    const user = await User.findOne({ where: { email } });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -141,7 +121,7 @@ router.post('/login', [
     }
 
     // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -149,17 +129,17 @@ router.post('/login', [
       });
     }
 
+    // Update last login
+    await user.update({ lastLoginAt: new Date() });
+
     // Generate token
     const token = generateToken(user.id);
-
-    // Remove password from response
-    const { password: _, ...userResponse } = user;
 
     res.json({
       success: true,
       message: 'Login successful',
       token,
-      user: userResponse
+      user: user.toPublicJSON()
     });
 
   } catch (error) {
@@ -466,45 +446,36 @@ router.post('/google', [
       });
     }
 
-    const { email, name, googleId } = req.body;
-    const users = global.inMemoryDB?.users || new Map();
+    const { email, name, googleId, profilePicture } = req.body;
     
-    let user = users.get(email);
+    let user = await User.findOne({ where: { email } });
     
     if (!user) {
       // Create new user from Google data
-      const userId = Date.now().toString();
-      user = {
-        id: userId,
+      user = await User.create({
         name,
         email,
         googleId,
-        profilePicture: null,
-        isSubscribed: false,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      
-      users.set(email, user);
+        profilePicture
+      });
     } else {
       // Update existing user with Google data
-      user.googleId = googleId;
-      user.name = name;
-      user.updatedAt = new Date().toISOString();
-      users.set(email, user);
+      await user.update({
+        googleId,
+        name,
+        profilePicture,
+        lastLoginAt: new Date()
+      });
     }
 
     // Generate token
     const token = generateToken(user.id);
 
-    // Remove sensitive data from response
-    const { password, ...userResponse } = user;
-
     res.json({
       success: true,
       message: 'Google login successful',
       token,
-      user: userResponse
+      user: user.toPublicJSON()
     });
 
   } catch (error) {

@@ -4196,7 +4196,7 @@ export default function Page() {
               <CardContent className="text-center">
                 <div className="mb-4">
                   <Avatar className="h-24 w-24 mx-auto">
-                    <AvatarImage src={appState.user?.profilePicture || "/placeholder-avatar.jpg"} />
+                    <AvatarImage src={appState.user?.profilePicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(appState.user?.name || 'User')}&background=007bff&color=ffffff&size=150`} />
                     <AvatarFallback className="bg-slate-900 text-white text-2xl">
                       {appState.user?.name?.split(" ").map((n: string) => n[0]).join("").toUpperCase() || "U"}
                     </AvatarFallback>

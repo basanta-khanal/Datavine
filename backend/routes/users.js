@@ -137,7 +137,7 @@ router.post('/upload-profile-picture', async (req, res) => {
 
     // For now, we'll simulate a profile picture upload
     // In production, you'd upload to Cloudinary or similar service
-    const profilePictureUrl = `https://via.placeholder.com/150/007bff/ffffff?text=${user.name.charAt(0).toUpperCase()}`;
+    const profilePictureUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=007bff&color=ffffff&size=150`;
     
     user.profilePicture = profilePictureUrl;
     user.updatedAt = new Date().toISOString();

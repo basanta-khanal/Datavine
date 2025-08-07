@@ -93,7 +93,7 @@ export const ProfilePictureUpload = ({
       <div className="relative">
         <Avatar className="h-24 w-24 border-4 border-slate-200 shadow-lg">
           <AvatarImage 
-            src={currentPicture || "/placeholder-avatar.jpg"} 
+            src={currentPicture || `https://ui-avatars.com/api/?name=${encodeURIComponent(userName)}&background=007bff&color=ffffff&size=150`} 
             alt={userName} 
           />
           <AvatarFallback className="bg-slate-900 text-white text-xl">
