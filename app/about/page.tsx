@@ -74,7 +74,7 @@ export default function AboutPage() {
           <div className="flex items-center space-x-3">
             <Logo size={40} />
             <div>
-              <h1 className="text-2xl font-bold text-slate-900">Datavibe</h1>
+              <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
               <p className="text-xs text-slate-600">About Us</p>
             </div>
           </div>
@@ -90,7 +90,7 @@ export default function AboutPage() {
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl font-bold text-slate-900 mb-4">About Datavibe</h1>
+            <h1 className="text-4xl font-bold text-slate-900 mb-4">About DataVine.ai</h1>
             <p className="text-xl text-slate-600 max-w-3xl mx-auto">
               We're on a mission to make professional-grade psychological assessments <strong>completely FREE</strong> for everyone. 
               As one of the few companies offering free cognitive assessments, we help individuals understand their cognitive 
@@ -151,7 +151,7 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold text-slate-900 mb-6 text-center">Our Story</h2>
             <div className="max-w-4xl mx-auto">
               <p className="text-slate-700 mb-4 text-lg">
-                Datavibe was founded in 2023 by a team of clinical psychologists, data scientists, and technology
+                DataVine.ai was founded in 2023 by a team of clinical psychologists, data scientists, and technology
                 experts who recognized a critical gap in mental health accessibility. Traditional psychological
                 assessments were often expensive, time-consuming, and difficult to access for many people who could
                 benefit from them.
@@ -163,7 +163,7 @@ export default function AboutPage() {
                 an internet connection.
               </p>
               <p className="text-slate-700 text-lg">
-                Today, Datavibe serves thousands of users worldwide, providing scientifically validated assessments
+                Today, DataVine.ai serves thousands of users worldwide, providing scientifically validated assessments
                 that help people understand their cognitive abilities, identify potential mental health concerns, and
                 make informed decisions about their well-being.
               </p>

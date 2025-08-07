@@ -47,7 +47,7 @@ const allowedOrigins = [
   'https://datavine-basanta-khanal.vercel.app',
   'https://data-vine-d76w6d66e-basanta-khanals-projects.vercel.app',
   'https://data-vine-gef94j8pk-basanta-khanals-projects.vercel.app',
-  'https://datavibe.com',
+  'https://datavine.ai',
   'https://datavine-production.up.railway.app',
   'https://datavine.ai'
 ];
@@ -82,11 +82,6 @@ app.use(cors({
     // Allow any Vercel domain in production
     else if (process.env.NODE_ENV === 'production' && origin.includes('vercel.app')) {
       console.log('Allowing Vercel domain:', origin);
-      callback(null, true);
-    }
-    // Allow datavine.ai domain
-    else if (origin === 'https://datavibe.com') {
-      console.log('Allowing datavibe.com domain:', origin);
       callback(null, true);
     }
     // Allow datavine.ai domain
@@ -127,7 +122,7 @@ if (process.env.NODE_ENV === 'development') {
 app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'Datavibe Backend is running',
+    message: 'DataVine.ai Backend is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -137,7 +132,7 @@ app.get('/api/health', (req, res) => {
 app.get('/', (req, res) => {
   res.json({ 
     status: 'OK', 
-    message: 'Datavibe Backend is running',
+    message: 'DataVine.ai Backend is running',
     timestamp: new Date().toISOString(),
     version: '1.0.0'
   });
@@ -234,7 +229,7 @@ app.use('*', (req, res) => {
 
 // Start Server
 const server = app.listen(PORT, () => {
-  console.log(`🚀 Datavibe Backend running on port ${PORT}`);
+  console.log(`🚀 DataVine.ai Backend running on port ${PORT}`);
   console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/api/health`);
   

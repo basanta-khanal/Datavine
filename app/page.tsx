@@ -2417,7 +2417,7 @@ export default function Page() {
         // Real Google OAuth flow
         const googleAuthUrl = `https://accounts.google.com/oauth/authorize?` + 
           `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&` +
-          `redirect_uri=${encodeURIComponent(window.location.origin + '/auth/google/callback')}&` +
+          `redirect_uri=${encodeURIComponent(window.location.origin + '/api/auth/google/callback')}&` +
           `response_type=code&` +
           `scope=email profile&` +
           `access_type=offline`;
@@ -2793,7 +2793,7 @@ export default function Page() {
         >
           <Logo size={40} />
           <div>
-                            <h1 className="text-2xl font-bold text-slate-900">Datavibe</h1>
+                            <h1 className="text-2xl font-bold text-slate-900">DataVine.ai</h1>
             <p className="text-xs text-slate-600">Scientifically Validated Assessments</p>
           </div>
         </div>
@@ -3024,7 +3024,7 @@ export default function Page() {
               <div>
                 <div className="flex items-center space-x-3 mb-4">
                   <Logo size={32} />
-                  <h4 className="text-lg font-semibold text-slate-900">Datavibe</h4>
+                  <h4 className="text-lg font-semibold text-slate-900">DataVine.ai</h4>
                 </div>
                 <p className="text-slate-600 text-sm">
                   Scientifically validated assessments to help you understand your cognitive abilities and mental
@@ -3111,7 +3111,7 @@ export default function Page() {
             </div>
             <div className="border-t border-slate-100 mt-8 pt-8 text-center">
               <p className="text-slate-500 text-sm">
-                © 2024 Datavibe. All rights reserved. | Made for better mental health awareness.
+                © 2024 DataVine.ai. All rights reserved. | Made for better mental health awareness.
               </p>
             </div>
           </footer>

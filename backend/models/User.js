@@ -79,6 +79,14 @@ const User = sequelize.define('User', {
   isActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: true
+  },
+  resetToken: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  resetTokenExpiry: {
+    type: DataTypes.DATE,
+    allowNull: true
   }
 }, {
   timestamps: true,
@@ -104,10 +112,13 @@ User.prototype.comparePassword = async function(candidatePassword) {
   return await bcrypt.compare(candidatePassword, this.password);
 };
 
-// Instance method to get public profile (without password)
+// Instance method to get public profile (without sensitive data)
 User.prototype.toPublicJSON = function() {
   const user = this.toJSON();
+  // Remove sensitive fields
   delete user.password;
+  delete user.resetToken;
+  delete user.resetTokenExpiry;
   return user;
 };
 

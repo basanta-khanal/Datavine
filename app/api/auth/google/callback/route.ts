@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
         code,
         client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
         client_secret: process.env.GOOGLE_CLIENT_SECRET!,
-        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL || 'https://datavine.ai'}/auth/google/callback`,
+        redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL || 'https://datavine.ai'}/api/auth/google/callback`,
         grant_type: 'authorization_code',
       }),
     })

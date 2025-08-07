@@ -7,15 +7,15 @@ import { Toaster } from "@/components/ui/toaster"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe - No Cost Cognitive Testing",
+  title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai - No Cost Cognitive Testing",
   description:
     "Take FREE professional IQ tests, ADHD screenings, and autism assessments online. One of the few companies offering completely free cognitive assessments with instant results. No hidden fees, no credit card required.",
   keywords: "free IQ test, free ADHD test, free autism test, free cognitive assessment, free psychological testing, online IQ test, ADHD screening, autism screening, free mental health assessment, cognitive testing, brain assessment, free psychology test",
-  authors: [{ name: "Datavibe Team" }],
-  creator: "Datavibe",
-  publisher: "Datavibe",
+  authors: [{ name: "DataVine.ai Team" }],
+  creator: "DataVine.ai",
+  publisher: "DataVine.ai",
   robots: "index, follow",
-  metadataBase: new URL("https://datavibe.com"),
+  metadataBase: new URL("https://datavine.ai"),
   icons: {
     icon: [
       { url: "/logo.svg", type: "image/svg+xml" },
@@ -26,24 +26,24 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://datavibe.com",
-    title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe",
+    url: "https://datavine.ai",
+    title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
     description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
-    siteName: "Datavibe",
+    siteName: "DataVine.ai",
     images: [
       {
         url: "/logo.svg",
         width: 120,
         height: 120,
-        alt: "Datavibe - Brain Logo with Neural Pathways",
+        alt: "DataVine.ai - Brain Logo with Neural Pathways",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "FREE IQ Test, ADHD & Autism Assessment | Datavibe",
+    title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
     description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
-    creator: "@datavibe",
+    creator: "@datavine_ai",
     images: ["/logo.svg"],
   },
   generator: 'v0.dev'
@@ -76,9 +76,9 @@ export default function RootLayout({
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebApplication",
-              name: "Datavibe - Free Cognitive Assessments",
+              name: "DataVine.ai - Free Cognitive Assessments",
               description: "FREE professional IQ tests, ADHD screenings, and autism assessments online. No cost, no credit card required.",
-              url: "https://datavibe.com",
+              url: "https://datavine.ai",
               applicationCategory: "HealthApplication",
               operatingSystem: "Web",
               offers: {
@@ -90,7 +90,7 @@ export default function RootLayout({
               },
               author: {
                 "@type": "Organization",
-                name: "Datavibe",
+                name: "DataVine.ai",
                 description: "One of the few companies offering completely free cognitive assessments",
               },
               aggregateRating: {

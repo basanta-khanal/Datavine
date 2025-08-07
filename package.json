@@ -1,5 +1,5 @@
 {
-  "name": "datavibe",
+  "name": "datavine",
   "version": "1.0.0",
   "description": "Scientifically validated cognitive assessments with AI-powered insights",
   "private": true,
@@ -82,11 +82,11 @@
     "react",
     "typescript"
   ],
-  "author": "Datavibe Team",
+  "author": "DataVine.ai Team",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-username/datavibe.git"
+    "url": "https://github.com/your-username/datavine.git"
   },
-  "homepage": "https://datavibe.com"
+  "homepage": "https://datavine.ai"
 }

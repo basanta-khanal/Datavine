@@ -3,8 +3,9 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
-const nodemailer = require('nodemailer');
+const { Sequelize } = require('sequelize');
 const User = require('../models/User');
+const emailService = require('../services/email');
 
 const router = express.Router();
 
@@ -253,12 +254,11 @@ router.post('/forgot-password', [
 
     const { email } = req.body;
 
-    // Use in-memory database
-    const users = global.inMemoryDB?.users || new Map();
+    // Find user by email
+    const user = await User.findOne({ where: { email } });
     
-    // Check if user exists
-    if (!users.has(email)) {
-      // Don't reveal if user exists or not for security
+    // Don't reveal if user exists or not for security
+    if (!user) {
       return res.json({
         success: true,
         message: 'If an account with that email exists, a password reset link has been sent.'
@@ -270,76 +270,35 @@ router.post('/forgot-password', [
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour
 
     // Store reset token in user data
-    const user = users.get(email);
-    user.resetToken = resetToken;
-    user.resetTokenExpiry = resetTokenExpiry;
-    users.set(email, user);
+    await user.update({
+      resetToken,
+      resetTokenExpiry
+    });
 
     // Generate reset link
     const resetLink = `${process.env.FRONTEND_URL || 'https://datavibe.com'}/reset-password?token=${resetToken}`;
     
-    // Try to send email if email service is configured
+    // Try to send email
     let emailSent = false;
     try {
-      if (process.env.EMAIL_SERVICE_ENABLED === 'true' && process.env.SMTP_HOST && process.env.SMTP_USER) {
-        // Configure nodemailer with SMTP settings
-        const transporter = nodemailer.createTransporter({
-          host: process.env.SMTP_HOST,
-          port: process.env.SMTP_PORT || 587,
-          secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
-          auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-          }
-        });
-
-        // Email template
-        const mailOptions = {
-                  from: process.env.SMTP_FROM || 'Datavibe <noreply@datavibe.com>',
-        to: email,
-        subject: 'Password Reset Request - Datavibe',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-                              <h2 style="color: #374151;">Password Reset Request</h2>
-              <p>You requested a password reset for your Datavibe account.</p>
-              <p>Click the button below to reset your password:</p>
-                              <a href="${resetLink}" style="display: inline-block; background-color: #374151; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; margin: 20px 0;">Reset Password</a>
-              <p>Or copy and paste this link in your browser:</p>
-              <p style="word-break: break-all; color: #666;">${resetLink}</p>
-              <p style="color: #666; font-size: 14px;">This link will expire in 1 hour.</p>
-              <p style="color: #666; font-size: 14px;">If you didn't request this password reset, you can safely ignore this email.</p>
-            </div>
-          `
-        };
-
-        // Send email
-        await transporter.sendMail(mailOptions);
-        emailSent = true;
-        console.log(`Password reset email sent to: ${email}`);
-      }
+      await emailService.sendPasswordResetEmail(email, resetLink);
+      emailSent = true;
     } catch (emailError) {
       console.error('Failed to send password reset email:', emailError);
       // Continue without failing the request
     }
 
-    // Log the reset link for development or if email failed
-    console.log(`Password reset token for ${email}: ${resetToken}`);
-    console.log(`Reset link: ${resetLink}`);
-
-    // Determine response message
-    let message;
-    if (emailSent) {
-      message = 'A password reset link has been sent to your email address.';
-    } else if (process.env.NODE_ENV === 'development') {
-      message = `Password reset link generated. Check server console for: ${resetLink}`;
-    } else {
-      message = 'If an account with that email exists, a password reset link has been sent. Check server console for the link (email service not configured).';
+    // Only log reset link in development
+    if (process.env.NODE_ENV === 'development') {
+      console.log(`Password reset token for ${email}: ${resetToken}`);
+      console.log(`Reset link: ${resetLink}`);
     }
-    
+
+    // Send response
     res.json({
       success: true,
-      message,
-      resetLink: (!emailSent && process.env.NODE_ENV === 'development') ? resetLink : undefined
+      message: 'If an account with that email exists, a password reset link has been sent.',
+      ...(process.env.NODE_ENV === 'development' && !emailSent && { resetLink })
     });
 
   } catch (error) {
@@ -377,20 +336,15 @@ router.post('/reset-password', [
 
     const { token, newPassword } = req.body;
 
-    // Use in-memory database
-    const users = global.inMemoryDB?.users || new Map();
-    
     // Find user with this reset token
-    let user = null;
-    let userEmail = null;
-    
-    for (const [email, userData] of users) {
-      if (userData.resetToken === token && userData.resetTokenExpiry > new Date()) {
-        user = userData;
-        userEmail = email;
-        break;
+    const user = await User.findOne({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          [Sequelize.Op.gt]: new Date() // Token not expired
+        }
       }
-    }
+    });
 
     if (!user) {
       return res.status(400).json({
@@ -399,17 +353,12 @@ router.post('/reset-password', [
       });
     }
 
-    // Hash new password
-    const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-
     // Update user password and clear reset token
-    user.password = hashedPassword;
-    user.resetToken = undefined;
-    user.resetTokenExpiry = undefined;
-    user.updatedAt = new Date().toISOString();
-    
-    users.set(userEmail, user);
+    await user.update({
+      password: newPassword, // Will be hashed by model hook
+      resetToken: null,
+      resetTokenExpiry: null
+    });
 
     res.json({
       success: true,

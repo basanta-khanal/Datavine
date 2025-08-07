@@ -145,7 +145,7 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
             payment_method: {
               card: cardElement,
               billing_details: {
-                name: "Datavibe Subscription",
+                name: "DataVine.ai Subscription",
               },
             },
             return_url: `${window.location.origin}/payment-success`,
@@ -161,7 +161,7 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
           payment_method: {
             card: cardElement,
             billing_details: {
-              name: "Datavibe Subscription",
+              name: "DataVine.ai Subscription",
             },
           },
         })

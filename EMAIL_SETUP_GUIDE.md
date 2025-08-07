@@ -24,7 +24,7 @@ JWT_SECRET=b5379a2af2077f23fda03a54d5b8da57f2665c2f3eb280c2ac545bc432edfa61fa8e6
 3. **Click "App passwords"**
 4. **Select "Mail"** as the app
 5. **Select "Other (Custom name)"** as device
-6. **Enter "Datavibe"** as the name
+6. **Enter "Datavine"** as the name
 7. **Click "Generate"**
 8. **Copy the 16-character password** (it will look like: `abcd efgh ijkl mnop`)
 
@@ -70,7 +70,7 @@ NODE_ENV=production
 
 ### **1. Gmail Account Setup**
 - [ ] Enable 2-Factor Authentication
-- [ ] Generate App Password for "Datavibe"
+- [ ] Generate App Password for "Datavine"
 - [ ] Copy the 16-character app password
 
 ### **2. Railway Environment Variables**
