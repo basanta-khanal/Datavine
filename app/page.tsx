@@ -2654,7 +2654,7 @@ export default function Page() {
         if (authMode === "signin") {
           try {
             // Set the token first
-            apiClient.setToken(response.data.token);
+            apiClient.setToken(response.token);
             
             // Get complete user profile from backend
             const userResponse = await apiClient.getCurrentUser();
@@ -2671,14 +2671,14 @@ export default function Page() {
               // Fallback to basic user data if getCurrentUser fails
               userData = {
                 ...appState.user,
-                name: response.data.user?.name || authForm.email.split("@")[0],
+                name: response.user?.name || authForm.email.split("@")[0],
                 email: authForm.email,
-                profilePicture: response.data.user?.profilePicture || null,
-                assessmentHistory: response.data.user?.assessmentHistory || [],
-                subscription: response.data.user?.subscription?.type || "Free",
-                subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
-                usedCoupon: response.data.user?.usedCoupon || false,
-                hasPaid: response.data.user?.hasPaid || false,
+                profilePicture: response.user?.profilePicture || null,
+                assessmentHistory: response.user?.assessmentHistory || [],
+                subscription: response.user?.subscription?.type || "Free",
+                subscriptionExpiry: response.user?.subscription?.endDate || "N/A",
+                usedCoupon: response.user?.usedCoupon || false,
+                hasPaid: response.user?.hasPaid || false,
               };
             }
           } catch (error) {
@@ -2686,14 +2686,14 @@ export default function Page() {
             // Fallback to response data
             userData = {
               ...appState.user,
-              name: response.data.user?.name || authForm.email.split("@")[0],
+              name: response.user?.name || authForm.email.split("@")[0],
               email: authForm.email,
-              profilePicture: response.data.user?.profilePicture || null,
-              assessmentHistory: response.data.user?.assessmentHistory || [],
-              subscription: response.data.user?.subscription?.type || "Free",
-              subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
-              usedCoupon: response.data.user?.usedCoupon || false,
-              hasPaid: response.data.user?.hasPaid || false,
+              profilePicture: response.user?.profilePicture || null,
+              assessmentHistory: response.user?.assessmentHistory || [],
+              subscription: response.user?.subscription?.type || "Free",
+              subscriptionExpiry: response.user?.subscription?.endDate || "N/A",
+              usedCoupon: response.user?.usedCoupon || false,
+              hasPaid: response.user?.hasPaid || false,
             };
           }
         } else {
@@ -2702,12 +2702,12 @@ export default function Page() {
             ...appState.user,
             name: authForm.name || authForm.email.split("@")[0],
             email: authForm.email,
-            profilePicture: response.data.user?.profilePicture || null,
-            assessmentHistory: response.data.user?.assessmentHistory || [],
-            subscription: response.data.user?.subscription?.type || "Free",
-            subscriptionExpiry: response.data.user?.subscription?.endDate || "N/A",
-            usedCoupon: response.data.user?.usedCoupon || false,
-            hasPaid: response.data.user?.hasPaid || false,
+            profilePicture: response.user?.profilePicture || null,
+            assessmentHistory: response.user?.assessmentHistory || [],
+            subscription: response.user?.subscription?.type || "Free",
+            subscriptionExpiry: response.user?.subscription?.endDate || "N/A",
+            usedCoupon: response.user?.usedCoupon || false,
+            hasPaid: response.user?.hasPaid || false,
           };
         }
 
