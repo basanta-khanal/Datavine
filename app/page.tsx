@@ -2457,7 +2457,8 @@ export default function Page() {
               updateState({
                 user: userData,
                 isAuthenticated: true,
-                showAuthModal: false
+                showAuthModal: false,
+                currentView: "dashboard"  // Redirect to dashboard after successful login
               });
               
               localStorage.setItem('datavine_token', token);
@@ -2468,10 +2469,35 @@ export default function Page() {
                 description: `Successfully signed in with Google as ${userData.name}`,
               });
             }
+          } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
+            window.removeEventListener('message', handleMessage);
+            
+            toast({
+              title: "Google Sign-In Failed",
+              description: event.data.error || "Failed to sign in with Google. Please try again.",
+              variant: "destructive"
+            });
           }
         };
         
         window.addEventListener('message', handleMessage);
+        
+        // Check if popup is closed every second
+        const checkPopup = setInterval(() => {
+          if (!popup || popup.closed) {
+            clearInterval(checkPopup);
+            window.removeEventListener('message', handleMessage);
+            
+            // Only show error if no success message was received
+            if (!apiClient.getToken()) {
+              toast({
+                title: "Authentication Cancelled",
+                description: "Google sign-in was cancelled or failed. Please try again.",
+                variant: "destructive"
+              });
+            }
+          }
+        }, 1000);
         
         toast({
           title: "Google OAuth",
