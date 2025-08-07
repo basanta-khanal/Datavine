@@ -170,7 +170,7 @@ class ApiClient {
     const formData = new FormData();
     formData.append('image', file);
 
-    const response = await fetch(`${this.baseURL}/users/upload-profile-picture`, {
+    const response = await fetch(`${this.baseURL}/api/users/upload-profile-picture`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.token}`,
