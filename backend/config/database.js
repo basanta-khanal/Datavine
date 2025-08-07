@@ -1,7 +1,20 @@
 const { Sequelize } = require('sequelize');
 
 // PostgreSQL Configuration
-const sequelize = new Sequelize(process.env.DATABASE_URL || process.env.POSTGRES_URL || 'postgresql://localhost:5432/datavine', {
+const getDatabaseUrl = () => {
+  // Check for Railway's variable reference format
+  const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  
+  if (dbUrl && dbUrl.includes('${{')) {
+    console.log('⚠️  Railway variable reference detected but not resolved');
+    console.log('   Make sure the variable reference is set up correctly in Railway');
+    return null;
+  }
+  
+  return dbUrl || 'postgresql://localhost:5432/datavine';
+};
+
+const sequelize = new Sequelize(getDatabaseUrl(), {
   dialect: 'postgres',
   logging: process.env.NODE_ENV === 'development' ? console.log : false,
   pool: {
@@ -25,8 +38,13 @@ const connectDB = async () => {
     // Log connection attempt details
     const dbUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL;
     if (dbUrl) {
-      const maskedUrl = dbUrl.replace(/:\/\/[^:]+:[^@]+@/, '://***:***@');
-      console.log('Database URL (masked):', maskedUrl);
+      if (dbUrl.includes('${{')) {
+        console.log('⚠️  Railway variable reference detected: ${{ Postgres.DATABASE_URL }}');
+        console.log('   This should be automatically resolved by Railway');
+      } else {
+        const maskedUrl = dbUrl.replace(/:\/\/[^:]+:[^@]+@/, '://***:***@');
+        console.log('Database URL (masked):', maskedUrl);
+      }
     } else {
       console.log('⚠️  No DATABASE_URL found, using fallback');
     }
