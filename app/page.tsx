@@ -2163,6 +2163,9 @@ export default function Page() {
       title: "Logged out",
       description: "You have been successfully logged out.",
     })
+
+    // Redirect to home page after logout
+    updateState({ currentView: "home" })
   }
 
   // Profile picture upload functionality
