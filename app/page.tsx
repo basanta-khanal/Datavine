@@ -1934,17 +1934,29 @@ export default function Page() {
             // Refresh user data from backend to ensure we have the latest profile picture
             try {
               const userResponse = await apiClient.getCurrentUser()
-              if (userResponse.success) {
+              if (userResponse.success && userResponse.data) {
                 const refreshedUserData = {
                   ...userResponse.data,
-                  assessmentHistory: userResponse.data.assessmentHistory || [],
-                  subscription: userResponse.data.subscription?.type || "Free",
-                  subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
-                  usedCoupon: userResponse.data.usedCoupon || false,
-                  hasPaid: userResponse.data.hasPaid || false,
+                  assessmentHistory: userResponse.data?.assessmentHistory || [],
+                  subscription: {
+                    type: userResponse.data?.subscription?.type || "free",
+                    status: userResponse.data?.subscription?.status || "active",
+                    startDate: userResponse.data?.subscription?.startDate || new Date().toISOString(),
+                    endDate: userResponse.data?.subscription?.endDate || null
+                  },
+                  subscriptionExpiry: userResponse.data?.subscription?.endDate || "N/A",
+                  usedCoupon: userResponse.data?.usedCoupon || false,
+                  hasPaid: userResponse.data?.hasPaid || false,
+                  totalAssessments: userResponse.data?.totalAssessments || 0,
+                  averageScore: userResponse.data?.averageScore || 0,
+                  isSubscribed: userResponse.data?.isSubscribed || false,
+                  createdAt: userResponse.data?.createdAt || new Date().toISOString(),
                 }
                 updateState({ user: refreshedUserData })
                 localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
+              } else {
+                console.error('Invalid user response:', userResponse)
+                // Keep the stored data if refresh fails
               }
             } catch (error) {
               console.error('Error refreshing user data:', error)
@@ -2195,6 +2207,16 @@ export default function Page() {
       }
 
       try {
+        // Check if user is authenticated
+        if (!apiClient.isAuthenticated()) {
+          toast({
+            title: "Authentication Required",
+            description: "Please log in to upload a profile picture.",
+            variant: "destructive",
+          })
+          return
+        }
+
         // Upload to backend
         const response = await apiClient.uploadProfilePicture(file)
         
@@ -2208,6 +2230,7 @@ export default function Page() {
             description: "Your profile picture has been successfully updated.",
           })
         } else {
+          console.error('Profile picture upload failed:', response)
           toast({
             title: "Upload Failed",
             description: response.message || "Failed to upload profile picture.",
@@ -2216,11 +2239,31 @@ export default function Page() {
         }
       } catch (error) {
         console.error('Profile picture upload error:', error)
-        toast({
-          title: "Upload Failed",
-          description: "An error occurred while uploading your profile picture.",
-          variant: "destructive",
-        })
+        
+        // Check if it's an authentication error
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        if (errorMessage.includes('401') || errorMessage.includes('Unauthorized')) {
+          toast({
+            title: "Authentication Error",
+            description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          })
+          // Clear stored auth data and redirect to login
+          localStorage.removeItem("datavine_auth")
+          localStorage.removeItem("datavine_user")
+          localStorage.removeItem("datavine_token")
+          updateState({ 
+            isAuthenticated: false, 
+            user: null, 
+            currentView: "home" 
+          })
+        } else {
+          toast({
+            title: "Upload Failed",
+            description: "An error occurred while uploading your profile picture.",
+            variant: "destructive",
+          })
+        }
       }
     }
   }
@@ -2547,14 +2590,23 @@ export default function Page() {
         // Get complete user profile
         const userResponse = await apiClient.getCurrentUser();
         if (userResponse.success) {
-          const userData = {
-            ...userResponse.data,
-            assessmentHistory: userResponse.data.assessmentHistory || [],
-            subscription: userResponse.data.subscription?.type || "Free",
-            subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
-            usedCoupon: userResponse.data.usedCoupon || false,
-            hasPaid: userResponse.data.hasPaid || false,
-          };
+                      const userData = {
+              ...userResponse.data,
+              assessmentHistory: userResponse.data?.assessmentHistory || [],
+              subscription: {
+                type: userResponse.data?.subscription?.type || "free",
+                status: userResponse.data?.subscription?.status || "active",
+                startDate: userResponse.data?.subscription?.startDate || new Date().toISOString(),
+                endDate: userResponse.data?.subscription?.endDate || null
+              },
+              subscriptionExpiry: userResponse.data?.subscription?.endDate || "N/A",
+              usedCoupon: userResponse.data?.usedCoupon || false,
+              hasPaid: userResponse.data?.hasPaid || false,
+              totalAssessments: userResponse.data?.totalAssessments || 0,
+              averageScore: userResponse.data?.averageScore || 0,
+              isSubscribed: userResponse.data?.isSubscribed || false,
+              createdAt: userResponse.data?.createdAt || new Date().toISOString(),
+            };
           
           // Update app state
           updateState({
