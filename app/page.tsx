@@ -2439,7 +2439,6 @@ export default function Page() {
           
           if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
             window.removeEventListener('message', handleMessage);
-            clearInterval(checkPopup);
             clearTimeout(authTimeout);
             
             const { user, token } = event.data;
@@ -2449,11 +2448,20 @@ export default function Page() {
               
               const userData = {
                 ...user,
-                assessmentHistory: user.assessmentHistory || [],
-                subscription: user.subscription?.type || "Free",
-                subscriptionExpiry: user.subscription?.endDate || "N/A",
-                usedCoupon: user.usedCoupon || false,
-                hasPaid: user.hasPaid || false,
+                assessmentHistory: user?.assessmentHistory || [],
+                subscription: {
+                  type: user?.subscription?.type || "free",
+                  status: user?.subscription?.status || "active",
+                  startDate: user?.subscription?.startDate || new Date().toISOString(),
+                  endDate: user?.subscription?.endDate || null
+                },
+                subscriptionExpiry: user?.subscription?.endDate || "N/A",
+                usedCoupon: user?.usedCoupon || false,
+                hasPaid: user?.hasPaid || false,
+                totalAssessments: user?.totalAssessments || 0,
+                averageScore: user?.averageScore || 0,
+                isSubscribed: user?.isSubscribed || false,
+                createdAt: user?.createdAt || new Date().toISOString(),
               };
               
               updateState({
@@ -2473,7 +2481,6 @@ export default function Page() {
             }
           } else if (event.data.type === 'GOOGLE_AUTH_ERROR') {
             window.removeEventListener('message', handleMessage);
-            clearInterval(checkPopup);
             clearTimeout(authTimeout);
             
             toast({
@@ -2488,7 +2495,6 @@ export default function Page() {
         
         // Add timeout for authentication
         const authTimeout = setTimeout(() => {
-          clearInterval(checkPopup);
           window.removeEventListener('message', handleMessage);
           
           if (!apiClient.getToken()) {
@@ -2500,31 +2506,8 @@ export default function Page() {
           }
         }, 60000); // 60 second timeout
         
-        // Check if popup is closed every second (with COOP handling)
-        const checkPopup = setInterval(() => {
-          try {
-            if (!popup || popup.closed) {
-              clearInterval(checkPopup);
-              clearTimeout(authTimeout);
-              window.removeEventListener('message', handleMessage);
-              
-              // Only show error if no success message was received
-              if (!apiClient.getToken()) {
-                toast({
-                  title: "Authentication Cancelled",
-                  description: "Google sign-in was cancelled or failed. Please try again.",
-                  variant: "destructive"
-                });
-              }
-            }
-          } catch (error) {
-            // COOP policy blocked access to popup
-            console.log('COOP policy blocked popup access, removing interval');
-            clearInterval(checkPopup);
-            clearTimeout(authTimeout);
-            window.removeEventListener('message', handleMessage);
-          }
-        }, 1000);
+        // Remove popup checking entirely to avoid COOP issues
+        // The timeout and message events will handle all scenarios
         
         toast({
           title: "Google OAuth",
