@@ -2415,9 +2415,13 @@ export default function Page() {
 
       if (isGoogleConfigured) {
         // Real Google OAuth flow
+        const redirectUri = process.env.NEXT_PUBLIC_APP_URL 
+          ? `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/google/callback`
+          : `${window.location.origin}/api/auth/google/callback`;
+          
         const googleAuthUrl = `https://accounts.google.com/oauth/authorize?` + 
           `client_id=${process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID}&` +
-          `redirect_uri=${encodeURIComponent(window.location.origin + '/api/auth/google/callback')}&` +
+          `redirect_uri=${encodeURIComponent(redirectUri)}&` +
           `response_type=code&` +
           `scope=email profile&` +
           `access_type=offline`;
