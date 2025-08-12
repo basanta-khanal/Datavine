@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { PasswordInput } from '@/components/ui/password-input'
 import { useToast } from '@/hooks/use-toast'
 import { apiClient } from '@/lib/api'
 
@@ -143,13 +144,12 @@ export default function ResetPasswordPage() {
             <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
               New Password
             </label>
-            <Input
-              type="password"
+            <PasswordInput
               id="password"
               placeholder="Enter new password"
               value={password}
               onChange={handlePasswordChange}
-              className={errors.password ? "border-red-300 focus:border-red-500" : ""}
+              error={!!errors.password}
               required
               minLength={8}
               autoComplete="new-password"
@@ -164,13 +164,12 @@ export default function ResetPasswordPage() {
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
               Confirm New Password
             </label>
-            <Input
-              type="password"
+            <PasswordInput
               id="confirmPassword"
               placeholder="Confirm new password"
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}
-              className={errors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
+              error={!!errors.confirmPassword}
               required
               minLength={8}
               autoComplete="new-password"

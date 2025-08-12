@@ -39,7 +39,7 @@ class ApiClient {
     endpoint: string,
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
-    const url = `${this.baseURL}/api${endpoint}`;
+    const url = `${this.baseURL}${endpoint}`;
     
     // Security: Don't log sensitive data
     console.log('API Request URL:', url);
@@ -94,7 +94,7 @@ class ApiClient {
     phone?: string;
     gender?: string;
   }): Promise<ApiResponse> {
-    const response = await this.request('/auth/register', {
+    const response = await this.request('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
@@ -107,7 +107,7 @@ class ApiClient {
   }
 
   async login(credentials: { email: string; password: string }): Promise<ApiResponse> {
-    const response = await this.request('/auth/login', {
+    const response = await this.request('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -120,7 +120,7 @@ class ApiClient {
   }
 
   async logout(): Promise<ApiResponse> {
-    const response = await this.request('/auth/logout', {
+    const response = await this.request('/api/auth/logout', {
       method: 'POST',
     });
 
@@ -129,28 +129,28 @@ class ApiClient {
   }
 
   async forgotPassword(email: string): Promise<ApiResponse> {
-    return this.request('/auth/forgot-password', {
+    return this.request('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify({ email }),
     });
   }
 
   async resetPassword(token: string, newPassword: string): Promise<ApiResponse> {
-    return this.request('/auth/reset-password', {
+    return this.request('/api/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify({ token, newPassword }),
     });
   }
 
   async googleLogin(email: string, name: string, googleId: string): Promise<ApiResponse> {
-    return this.request('/auth/google', {
+    return this.request('/api/auth/google', {
       method: 'POST',
       body: JSON.stringify({ email, name, googleId }),
     });
   }
 
   async getCurrentUser(): Promise<ApiResponse> {
-    return this.request('/auth/me');
+    return this.request('/api/auth/me');
   }
 
   // User Management
@@ -160,7 +160,7 @@ class ApiClient {
     gender?: string;
     dateOfBirth?: string;
   }): Promise<ApiResponse> {
-    return this.request('/users/profile', {
+    return this.request('/api/users/profile', {
       method: 'PUT',
       body: JSON.stringify(profileData),
     });
@@ -182,13 +182,13 @@ class ApiClient {
   }
 
   async removeProfilePicture(): Promise<ApiResponse> {
-    return this.request('/users/remove-profile-picture', {
+    return this.request('/api/users/remove-profile-picture', {
       method: 'DELETE',
     });
   }
 
   async getDashboard(): Promise<ApiResponse> {
-    return this.request('/users/dashboard');
+    return this.request('/api/users/dashboard');
   }
 
   // Assessments
@@ -204,7 +204,7 @@ class ApiClient {
     }>;
     detailedResults?: any;
   }): Promise<ApiResponse> {
-    return this.request('/assessments/save-result', {
+    return this.request('/api/assessments/save-result', {
       method: 'POST',
       body: JSON.stringify(assessmentData),
     });
@@ -216,11 +216,11 @@ class ApiClient {
     page?: number;
   }): Promise<ApiResponse> {
     const queryString = params ? `?${new URLSearchParams(params as any)}` : '';
-    return this.request(`/assessments/history${queryString}`);
+    return this.request(`/api/assessments/history${queryString}`);
   }
 
   async getAssessmentStats(): Promise<ApiResponse> {
-    return this.request('/assessments/stats/overview');
+    return this.request('/api/assessments/stats/overview');
   }
 
   async getPerformanceTrend(params?: {
@@ -228,7 +228,7 @@ class ApiClient {
     days?: number;
   }): Promise<ApiResponse> {
     const queryString = params ? `?${new URLSearchParams(params as any)}` : '';
-    return this.request(`/assessments/stats/performance-trend${queryString}`);
+    return this.request(`/api/assessments/stats/performance-trend${queryString}`);
   }
 
   // AI Recommendations
@@ -239,18 +239,18 @@ class ApiClient {
     answers: any[];
     detailedResults?: any;
   }): Promise<ApiResponse> {
-    return this.request('/ai/generate-recommendations', {
+    return this.request('/api/ai/generate-recommendations', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async getRecommendations(assessmentId: string): Promise<ApiResponse> {
-    return this.request(`/ai/recommendations/${assessmentId}`);
+    return this.request(`/api/ai/recommendations/${assessmentId}`);
   }
 
   async analyzePatterns(): Promise<ApiResponse> {
-    return this.request('/ai/analyze-patterns', {
+    return this.request('/api/ai/analyze-patterns', {
       method: 'POST',
     });
   }
@@ -260,7 +260,7 @@ class ApiClient {
     subscriptionType: 'basic' | 'premium' | 'enterprise';
     paymentMethod: 'card' | 'apple_pay';
   }): Promise<ApiResponse> {
-    return this.request('/payments/create-payment-intent', {
+    return this.request('/api/payments/create-payment-intent', {
       method: 'POST',
       body: JSON.stringify(data),
     });
@@ -270,18 +270,18 @@ class ApiClient {
     paymentIntentId: string;
     subscriptionType: string;
   }): Promise<ApiResponse> {
-    return this.request('/payments/confirm-subscription', {
+    return this.request('/api/payments/confirm-subscription', {
       method: 'POST',
       body: JSON.stringify(data),
     });
   }
 
   async getSubscriptionStatus(): Promise<ApiResponse> {
-    return this.request('/payments/subscription-status');
+    return this.request('/api/payments/subscription-status');
   }
 
   async cancelSubscription(): Promise<ApiResponse> {
-    return this.request('/payments/cancel-subscription', {
+    return this.request('/api/payments/cancel-subscription', {
       method: 'POST',
     });
   }

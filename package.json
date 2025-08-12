@@ -4,14 +4,16 @@
   "description": "Scientifically validated cognitive assessments with AI-powered insights",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "next dev",
+    "dev:backend": "cd backend && npm run dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "deploy": "npm run build && npm run start",
     "backend:dev": "cd backend && npm run dev",
     "backend:start": "cd backend && npm start",
-    "full:dev": "concurrently \"npm run dev\" \"npm run backend:dev\"",
+    "full:dev": "concurrently \"npm run dev:frontend\" \"npm run dev:backend\"",
     "full:start": "concurrently \"npm run start\" \"npm run backend:start\""
   },
   "dependencies": {

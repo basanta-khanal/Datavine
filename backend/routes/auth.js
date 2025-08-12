@@ -50,38 +50,87 @@ router.post('/register', [
 
     const { name, email, password, phone, gender } = req.body;
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ where: { email } });
-    if (existingUser) {
-      return res.status(400).json({
-        success: false,
-        message: 'User with this email already exists'
+    // Check if using in-memory database
+    if (global.inMemoryDB) {
+      // Check if user already exists in memory
+      const existingUser = Array.from(global.inMemoryDB.users.values()).find(u => u.email === email);
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'User with this email already exists'
+        });
+      }
+
+      // Hash password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      // Create user in memory
+      const userId = Date.now().toString();
+      const user = {
+        id: userId,
+        name,
+        email,
+        password: hashedPassword,
+        phone,
+        gender,
+        isSubscribed: false,
+        subscriptionType: 'free',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      };
+
+      global.inMemoryDB.users.set(userId, user);
+
+      // Generate token
+      const token = generateToken(userId);
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          gender: user.gender,
+          isSubscribed: user.isSubscribed,
+          subscriptionType: user.subscriptionType,
+          createdAt: user.createdAt
+        }
+      });
+    } else {
+      // Use Sequelize database
+      const existingUser = await User.findOne({ where: { email } });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: 'User with this email already exists'
+        });
+      }
+
+      const user = await User.create({
+        name,
+        email,
+        password,
+        phone,
+        gender
+      });
+
+      const token = generateToken(user.id);
+
+      res.status(201).json({
+        success: true,
+        message: 'User registered successfully',
+        token,
+        user: user.toPublicJSON()
       });
     }
-
-    // Create user (password will be hashed automatically by the model hook)
-    const user = await User.create({
-      name,
-      email,
-      password,
-      phone,
-      gender
-    });
-
-    // Generate token
-    const token = generateToken(user.id);
-
-    res.status(201).json({
-      success: true,
-      message: 'User registered successfully',
-      token,
-      user: user.toPublicJSON()
-    });
 
   } catch (error) {
     console.error('Registration error:', error);
     
-    // Handle specific database connection errors
     if (error.name === 'SequelizeConnectionError' || error.message.includes('connection manager was closed')) {
       return res.status(503).json({
         success: false,
@@ -121,41 +170,84 @@ router.post('/login', [
 
     const { email, password } = req.body;
 
-    // Find user
-    const user = await User.findOne({ where: { email } });
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
+    // Check if using in-memory database
+    if (global.inMemoryDB) {
+      // Find user in memory
+      const user = Array.from(global.inMemoryDB.users.values()).find(u => u.email === email);
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Check password
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Update last login
+      user.lastLoginAt = new Date();
+      global.inMemoryDB.users.set(user.id, user);
+
+      // Generate token
+      const token = generateToken(user.id);
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          gender: user.gender,
+          isSubscribed: user.isSubscribed,
+          subscriptionType: user.subscriptionType,
+          createdAt: user.createdAt
+        }
+      });
+    } else {
+      // Use Sequelize database
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Check password
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        return res.status(401).json({
+          success: false,
+          message: 'Invalid credentials'
+        });
+      }
+
+      // Update last login
+      await user.update({ lastLoginAt: new Date() });
+
+      // Generate token
+      const token = generateToken(user.id);
+
+      res.json({
+        success: true,
+        message: 'Login successful',
+        token,
+        user: user.toPublicJSON()
       });
     }
-
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid credentials'
-      });
-    }
-
-    // Update last login
-    await user.update({ lastLoginAt: new Date() });
-
-    // Generate token
-    const token = generateToken(user.id);
-
-    res.json({
-      success: true,
-      message: 'Login successful',
-      token,
-      user: user.toPublicJSON()
-    });
 
   } catch (error) {
     console.error('Login error:', error);
     
-    // Handle specific database connection errors
     if (error.name === 'SequelizeConnectionError' || error.message.includes('connection manager was closed')) {
       return res.status(503).json({
         success: false,
@@ -208,20 +300,47 @@ router.get('/me', async (req, res) => {
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret_key');
     
-    // Find user by ID
-    const user = await User.findByPk(decoded.id);
+    // Check if using in-memory database
+    if (global.inMemoryDB) {
+      // Find user in memory
+      const user = global.inMemoryDB.users.get(decoded.id);
+      
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: 'User not found'
+      res.json({
+        success: true,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          gender: user.gender,
+          isSubscribed: user.isSubscribed,
+          subscriptionType: user.subscriptionType,
+          createdAt: user.createdAt
+        }
+      });
+    } else {
+      // Use Sequelize database
+      const user = await User.findByPk(decoded.id);
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: 'User not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        user: user.toPublicJSON()
       });
     }
-
-    res.json({
-      success: true,
-      user: user.toPublicJSON()
-    });
 
   } catch (error) {
     console.error('Get user error:', error);

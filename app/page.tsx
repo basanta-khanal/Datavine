@@ -6,6 +6,7 @@ import Logo from "@/components/logo"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PasswordInput } from "@/components/ui/password-input"
 import { Progress } from "@/components/ui/progress"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -1898,12 +1899,15 @@ export default function Page() {
   const [paymentProcessing, setPaymentProcessing] = useState(false)
   const [showCouponField, setShowCouponField] = useState(false)
   const [couponCode, setCouponCode] = useState("")
+  const [isCancellingSubscription, setIsCancellingSubscription] = useState(false)
 
   const [isInitializing, setIsInitializing] = useState(true)
 
   useEffect(() => {
     const initializeApp = async () => {
       try {
+        console.log('Starting app initialization...')
+        
         // Check for test parameter in URL
         const urlParams = new URLSearchParams(window.location.search)
         const testParam = urlParams.get("test")
@@ -1931,7 +1935,9 @@ export default function Page() {
               apiClient.setToken(userData.token)
             }
             
-            // Refresh user data from backend to ensure we have the latest profile picture
+            // Temporarily disable API call during initialization to fix loading issue
+            // TODO: Re-enable this once the API is working properly
+            /*
             try {
               const userResponse = await apiClient.getCurrentUser()
               if (userResponse.success && userResponse.data) {
@@ -1962,20 +1968,33 @@ export default function Page() {
               console.error('Error refreshing user data:', error)
               // Keep the stored data if refresh fails
             }
+            */
           } catch (error) {
+            console.error('Error parsing stored user data:', error)
             // Clear invalid stored data
             localStorage.removeItem("datavine_auth")
             localStorage.removeItem("datavine_user")
           }
         }
+        
+        console.log('App initialization completed successfully')
       } catch (error) {
         console.error('App initialization error:', error)
       } finally {
+        console.log('Setting isInitializing to false')
         setIsInitializing(false)
       }
     }
 
-    initializeApp()
+    // Add a timeout to ensure initialization completes
+    const timeoutId = setTimeout(() => {
+      console.log('Initialization timeout reached, forcing completion')
+      setIsInitializing(false)
+    }, 5000) // 5 second timeout
+
+    initializeApp().then(() => {
+      clearTimeout(timeoutId)
+    })
   }, [])
 
   const updateState = (newState: any) => {
@@ -2178,6 +2197,57 @@ export default function Page() {
 
     // Redirect to home page after logout
     updateState({ currentView: "home" })
+  }
+
+  const handleCancelSubscription = async () => {
+    if (!confirm("Are you sure you want to cancel your Premium subscription? You'll lose access to premium features at the end of your current billing period.")) {
+      return
+    }
+
+    setIsCancellingSubscription(true)
+    try {
+      const response = await apiClient.cancelSubscription()
+      
+      if (response.success) {
+        // Update local user state
+        const updatedUser = {
+          ...appState.user,
+          isSubscribed: false,
+          subscription: {
+            ...appState.user.subscription,
+            status: 'cancelled',
+            endDate: new Date().toISOString()
+          }
+        }
+        
+        updateState({ user: updatedUser })
+        
+        // Update localStorage
+        const storedUser = localStorage.getItem("datavine_user")
+        if (storedUser) {
+          const userData = JSON.parse(storedUser)
+          userData.isSubscribed = false
+          userData.subscription = updatedUser.subscription
+          localStorage.setItem("datavine_user", JSON.stringify(userData))
+        }
+        
+        toast({
+          title: "Subscription Cancelled",
+          description: "Your Premium subscription has been cancelled successfully. You'll continue to have access until the end of your current billing period.",
+        })
+      } else {
+        throw new Error(response.message || 'Failed to cancel subscription')
+      }
+    } catch (error) {
+      console.error('Cancel subscription error:', error)
+      toast({
+        title: "Cancellation Error",
+        description: "There was an error cancelling your subscription. Please try again or contact support.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsCancellingSubscription(false)
+    }
   }
 
   // Profile picture upload functionality
@@ -4426,6 +4496,54 @@ export default function Page() {
               </CardContent>
             </Card>
 
+            {/* Subscription Management */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Subscription Management</CardTitle>
+                <CardDescription>Manage your Premium subscription</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Current Plan</label>
+                  <p className="text-lg">{appState.user?.subscription === 'premium' ? 'Premium' : 'Free'}</p>
+                </div>
+                {appState.user?.subscription === 'premium' && (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => updateState({ currentView: "billing" })}
+                    >
+                      Manage Billing
+                    </Button>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full"
+                      onClick={handleCancelSubscription}
+                      disabled={isCancellingSubscription}
+                    >
+                      {isCancellingSubscription ? (
+                        <div className="flex items-center justify-center">
+                          <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                          Cancelling...
+                        </div>
+                      ) : (
+                        "Cancel Subscription"
+                      )}
+                    </Button>
+                  </>
+                )}
+                {appState.user?.subscription !== 'premium' && (
+                  <Button 
+                    className="w-full"
+                    onClick={() => updateState({ currentView: "billing" })}
+                  >
+                    Upgrade to Premium
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+
             {/* Data Management */}
             <Card>
               <CardHeader>
@@ -4595,6 +4713,44 @@ export default function Page() {
               )}
             </CardContent>
           </Card>
+
+          {/* Cancel Subscription */}
+          {appState.user?.subscription === 'premium' && (
+            <Card className="mt-8 border-red-200">
+              <CardHeader>
+                <CardTitle className="text-red-700">Cancel Subscription</CardTitle>
+                <CardDescription>Cancel your Premium subscription</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <h4 className="font-medium text-red-800 mb-2">Before you cancel:</h4>
+                    <ul className="text-sm text-red-700 space-y-1">
+                      <li>• You'll lose access to premium features at the end of your current billing period</li>
+                      <li>• Your assessment history will be preserved</li>
+                      <li>• You can reactivate your subscription anytime</li>
+                      <li>• No refunds for partial billing periods</li>
+                    </ul>
+                  </div>
+                  <Button 
+                    variant="destructive" 
+                    className="w-full"
+                    onClick={handleCancelSubscription}
+                    disabled={isCancellingSubscription}
+                  >
+                    {isCancellingSubscription ? (
+                      <div className="flex items-center justify-center">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Cancelling...
+                      </div>
+                    ) : (
+                      "Cancel Premium Subscription"
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
@@ -4820,13 +4976,12 @@ export default function Page() {
                   <label htmlFor="password" className="block text-sm font-medium text-slate-700 mb-1">
                     Password
                   </label>
-                  <Input
-                    type="password"
+                  <PasswordInput
                     id="password"
                     placeholder="Password"
                     value={authForm.password}
                     onChange={handlePasswordChange}
-                    className={authErrors.password ? "border-red-300 focus:border-red-500" : ""}
+                    error={!!authErrors.password}
                     autoComplete="new-password"
                     required
                     minLength={8}
@@ -4861,13 +5016,12 @@ export default function Page() {
                     <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-700 mb-1">
                       Confirm Password
                     </label>
-                    <Input
-                      type="password"
+                    <PasswordInput
                       id="confirmPassword"
                       placeholder="Confirm Password"
                       value={authForm.confirmPassword}
                       onChange={handleConfirmPasswordChange}
-                      className={authErrors.confirmPassword ? "border-red-300 focus:border-red-500" : ""}
+                      error={!!authErrors.confirmPassword}
                       autoComplete="new-password"
                       required
                       minLength={8}
