@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
       },
       body: new URLSearchParams({
         code,
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
         redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL || 'https://datavine.ai'}/api/auth/google/callback`,
         grant_type: 'authorization_code',
       }),
@@ -61,6 +61,7 @@ export async function GET(request: NextRequest) {
     const tokenData = await tokenResponse.json();
 
     if (!tokenResponse.ok) {
+      console.error('Google token exchange error:', tokenData);
       return createHtmlResponse(`
         <html>
           <body>
@@ -83,6 +84,7 @@ export async function GET(request: NextRequest) {
     const userData = await userResponse.json();
 
     if (!userResponse.ok) {
+      console.error('Google user info error:', userData);
       return createHtmlResponse(`
         <html>
           <body>
@@ -96,7 +98,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Call backend to create/authenticate user
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`, {
+    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -112,6 +114,7 @@ export async function GET(request: NextRequest) {
     const backendData = await backendResponse.json();
 
     if (!backendResponse.ok) {
+      console.error('Backend Google auth error:', backendData);
       return createHtmlResponse(`
         <html>
           <body>
@@ -141,6 +144,7 @@ export async function GET(request: NextRequest) {
     `);
 
   } catch (error) {
+    console.error('Google callback error:', error);
     return createHtmlResponse(`
       <html>
         <body>
@@ -174,8 +178,8 @@ export async function POST(request: NextRequest) {
       },
       body: new URLSearchParams({
         code,
-        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,
-        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        client_id: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '',
+        client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
         redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL || 'https://datavine.ai'}/api/auth/google/callback`,
         grant_type: 'authorization_code',
       }),
@@ -209,7 +213,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Call backend to create/authenticate user
-    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/google`, {
+    const backendResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001'}/api/auth/google`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
