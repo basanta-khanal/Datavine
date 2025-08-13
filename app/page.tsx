@@ -1886,8 +1886,9 @@ export default function Page() {
       email: "",
       phone: "",
       profilePicture: null,
-      usedCoupon: false,
       hasPaid: false,
+      isSubscribed: false,
+      isTrialActive: false,
       subscription: "Free",
       subscriptionExpiry: "N/A",
       assessmentHistory: [],
@@ -1897,8 +1898,6 @@ export default function Page() {
   const [answers, setAnswers] = useState<(string | number)[]>([])
   const [questionIndex, setQuestionIndex] = useState(0)
   const [paymentProcessing, setPaymentProcessing] = useState(false)
-  const [showCouponField, setShowCouponField] = useState(false)
-  const [couponCode, setCouponCode] = useState("")
   const [isCancellingSubscription, setIsCancellingSubscription] = useState(false)
 
   const [isInitializing, setIsInitializing] = useState(true)
@@ -3593,25 +3592,7 @@ export default function Page() {
     const { testType, testResults } = appState
     const isIQTest = testType === "iq"
 
-    const handleSecretClick = () => {
-      setShowCouponField(true)
-    }
 
-    const handleCouponApply = () => {
-      if (couponCode === "DATAVINE20") {
-        updateState({ user: { ...appState.user, usedCoupon: true } })
-        toast({
-          title: "Coupon Applied!",
-          description: "You have successfully applied the coupon.",
-        })
-      } else {
-        toast({
-          variant: "destructive",
-          title: "Invalid Coupon",
-          description: "Please enter a valid coupon code.",
-        })
-      }
-    }
 
     if (!testResults) {
       return (
@@ -3728,7 +3709,7 @@ export default function Page() {
               )}
 
               <div className="space-y-4">
-                {appState.user?.usedCoupon || appState.user?.hasPaid ? (
+                {appState.user?.isSubscribed || appState.user?.hasPaid ? (
                   <Button
                     onClick={() => updateState({ currentView: "detailed-results" })}
                     className="w-full h-14 text-lg bg-green-600 hover:bg-green-700 text-white"
@@ -3736,31 +3717,12 @@ export default function Page() {
                     View Detailed Results
                   </Button>
                 ) : (
-                  <>
-                    <Button
-                      onClick={() => updateState({ currentView: "payment" })}
-                      className="w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white"
-                    >
-                      Start 7-Day Trial - Get Detailed Results
-                    </Button>
-                    {!showCouponField && (
-                      <Button variant="ghost" onClick={handleSecretClick} className="w-full text-slate-600">
-                        I have a coupon code
-                      </Button>
-                    )}
-                    {showCouponField && (
-                      <div className="flex items-center space-x-3">
-                        <Input
-                          type="text"
-                          placeholder="Enter coupon code"
-                          value={couponCode}
-                          onChange={(e) => setCouponCode(e.target.value)}
-                          className="h-12"
-                        />
-                        <Button onClick={handleCouponApply}>Apply</Button>
-                      </div>
-                    )}
-                  </>
+                  <Button
+                    onClick={() => updateState({ currentView: "payment" })}
+                    className="w-full h-14 text-lg bg-slate-900 hover:bg-slate-800 text-white"
+                  >
+                    Start 7-Day Trial - Get Detailed Results
+                  </Button>
                 )}
                 <Button onClick={resetTest} variant="outline" className="w-full h-12 bg-transparent">
                   Take Another Assessment
@@ -3782,12 +3744,12 @@ export default function Page() {
             <div className="bg-slate-900 p-3 rounded-xl w-16 h-16 mx-auto mb-4 flex items-center justify-center">
               <CreditCard className="h-8 w-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Start Your 7-Day Trial</h1>
-            <p className="text-slate-600">Get detailed results, tracking tools, and AI-powered recommendations</p>
+            <h1 className="text-3xl font-bold text-slate-900 mb-2">Start Your 7-Day Free Trial</h1>
+            <p className="text-slate-600">Get full access to detailed results, AI recommendations, and advanced analytics</p>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 inline-block">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                <span className="text-green-800 font-medium">7-day trial • $19.99/month after trial</span>
+                <span className="text-green-800 font-medium">7-day free trial • No credit card required</span>
               </div>
             </div>
           </div>
@@ -4643,7 +4605,7 @@ export default function Page() {
                 <CardTitle className="text-xl">Premium</CardTitle>
                 <CardDescription>Complete cognitive health suite</CardDescription>
                 <div className="text-3xl font-bold">$19.99<span className="text-lg font-normal text-slate-600">/month</span></div>
-                <div className="text-sm text-green-600 font-medium">✓ 7-day trial</div>
+                <div className="text-sm text-green-600 font-medium">✓ 7-day free trial</div>
               </CardHeader>
               <CardContent className="space-y-3">
                 <div className="space-y-2">
@@ -4682,7 +4644,7 @@ export default function Page() {
                   disabled={appState.user?.subscription === 'premium'}
                   onClick={() => updateState({ currentView: "payment" })}
                 >
-                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Start 7-Day Trial'}
+                  {appState.user?.subscription === 'premium' ? 'Current Plan' : 'Start 7-Day Free Trial'}
                 </Button>
               </CardContent>
             </Card>
@@ -4696,7 +4658,7 @@ export default function Page() {
             </CardHeader>
             <CardContent>
               {appState.user?.subscription !== 'premium' ? (
-                <p className="text-slate-600">No billing history available. Upgrade to Premium to start your 7-day trial.</p>
+                <p className="text-slate-600">No billing history available. Start your 7-day free trial to access detailed results.</p>
               ) : (
                 <div className="space-y-4">
                   <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">

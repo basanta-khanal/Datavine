@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Check, CreditCard, Apple, Zap, Crown, Building } from "lucide-react"
+import { Check, CreditCard, Apple, Gift, Crown } from "lucide-react"
 import { toast } from "@/components/ui/use-toast"
 import { apiClient, formatCurrency } from "@/lib/api"
 
@@ -24,51 +24,39 @@ interface SubscriptionPlan {
 
 const subscriptionPlans: SubscriptionPlan[] = [
   {
-    id: "basic",
-    name: "Basic Plan",
-    price: 999, // $9.99
+    id: "trial",
+    name: "7-Day Free Trial",
+    price: 0,
     features: [
+      "Full Access to All Features",
       "Detailed Assessment Results",
       "AI-Powered Recommendations",
       "Progress Tracking",
-      "Basic Analytics",
-      "Email Support"
+      "Advanced Analytics",
+      "Priority Support",
+      "Cancel Anytime"
     ],
-    icon: <Zap className="h-5 w-5" />
+    icon: <Gift className="h-5 w-5" />,
+    popular: true
   },
   {
     id: "premium",
     name: "Premium Plan",
     price: 1999, // $19.99
     features: [
-      "All Basic Features",
+      "All Trial Features",
       "Advanced Pattern Analysis",
-      "Priority Support",
       "Detailed Reports",
       "Performance Insights",
-      "Custom Recommendations"
+      "Custom Recommendations",
+      "Ongoing Support"
     ],
-    icon: <Crown className="h-5 w-5" />,
-    popular: true
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise Plan",
-    price: 4999, // $49.99
-    features: [
-      "All Premium Features",
-      "Team Management",
-      "Custom Assessments",
-      "API Access",
-      "Dedicated Support",
-      "Advanced Analytics"
-    ],
-    icon: <Building className="h-5 w-5" />
+    icon: <Crown className="h-5 w-5" />
   }
 ]
 
 export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
-  const [selectedPlan, setSelectedPlan] = useState<string>("premium")
+  const [selectedPlan, setSelectedPlan] = useState<string>("trial")
   const [paymentMethod, setPaymentMethod] = useState<"card" | "apple_pay">("card")
   const [isLoading, setIsLoading] = useState(false)
   const [stripe, setStripe] = useState<any>(null)
@@ -113,18 +101,36 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
   }
 
   const handlePayment = async () => {
-    if (!stripe) {
-      toast({
-        title: "Payment Error",
-        description: "Stripe is not loaded. Please refresh the page.",
-        variant: "destructive",
-      })
-      return
-    }
-
     setIsLoading(true)
 
     try {
+      if (selectedPlan === "trial") {
+        // Handle trial subscription
+        const response = await apiClient.startTrial()
+
+        if (!response.success) {
+          throw new Error(response.message || "Failed to start trial")
+        }
+
+        toast({
+          title: "Trial Started!",
+          description: "Your 7-day free trial has been activated. Enjoy full access to all features!",
+        })
+
+        onSuccess?.()
+        return
+      }
+
+      // Handle paid subscription
+      if (!stripe) {
+        toast({
+          title: "Payment Error",
+          description: "Stripe is not loaded. Please refresh the page.",
+          variant: "destructive",
+        })
+        return
+      }
+
       // Create payment intent
       const response = await apiClient.createPaymentIntent({
         subscriptionType: selectedPlan as any,

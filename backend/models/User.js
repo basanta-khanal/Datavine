@@ -64,7 +64,15 @@ const User = sequelize.define('User', {
     type: DataTypes.DATE,
     allowNull: true
   },
-  usedCoupon: {
+  trialStartDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  trialEndDate: {
+    type: DataTypes.DATE,
+    allowNull: true
+  },
+  isTrialActive: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },

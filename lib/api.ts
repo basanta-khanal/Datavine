@@ -280,6 +280,12 @@ class ApiClient {
     return this.request('/api/payments/subscription-status');
   }
 
+  async startTrial(): Promise<ApiResponse> {
+    return this.request('/api/payments/start-trial', {
+      method: 'POST',
+    });
+  }
+
   async cancelSubscription(): Promise<ApiResponse> {
     return this.request('/api/payments/cancel-subscription', {
       method: 'POST',

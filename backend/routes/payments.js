@@ -24,6 +24,64 @@ const getUserFromToken = (req) => {
   }
 };
 
+// @route   POST /api/payments/start-trial
+// @desc    Start 7-day free trial
+// @access  Private
+router.post('/start-trial', async (req, res) => {
+  try {
+    const user = getUserFromToken(req);
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    // Check if user already has an active trial or subscription
+    if (user.isTrialActive || user.isSubscribed) {
+      return res.status(400).json({
+        success: false,
+        message: 'Trial already active or subscription exists'
+      });
+    }
+
+    // Set trial dates (7 days from now)
+    const trialStartDate = new Date();
+    const trialEndDate = new Date();
+    trialEndDate.setDate(trialEndDate.getDate() + 7);
+
+    // Update user trial status
+    user.isTrialActive = true;
+    user.trialStartDate = trialStartDate;
+    user.trialEndDate = trialEndDate;
+    user.isSubscribed = true; // Temporarily set as subscribed for trial period
+    user.subscriptionType = 'trial';
+    user.updatedAt = new Date();
+
+    // Update user in storage
+    const users = global.inMemoryDB?.users || new Map();
+    users.set(user.email, user);
+
+    res.json({
+      success: true,
+      message: '7-day trial started successfully',
+      trial: {
+        startDate: trialStartDate,
+        endDate: trialEndDate,
+        isActive: true
+      }
+    });
+
+  } catch (error) {
+    console.error('Start trial error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during trial activation'
+    });
+  }
+});
+
 // @route   POST /api/payments/create-payment-intent
 // @desc    Create payment intent
 // @access  Private
