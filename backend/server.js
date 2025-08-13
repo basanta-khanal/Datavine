@@ -17,6 +17,11 @@ const aiRoutes = require('./routes/ai');
 const app = express();
 const PORT = process.env.PORT || 5001;
 
+// Trust proxy for Railway deployment
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // Connect to Database and setup for deployment
 connectDB().then((connected) => {
   if (connected && process.env.NODE_ENV === 'production') {
@@ -148,6 +153,8 @@ const limiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy for Railway deployment
+  trustProxy: process.env.NODE_ENV === 'production',
 });
 
 // Stricter rate limiting for auth routes
@@ -160,6 +167,8 @@ const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy for Railway deployment
+  trustProxy: process.env.NODE_ENV === 'production',
 });
 
 // Less restrictive rate limiting for forgot password
@@ -172,6 +181,8 @@ const forgotPasswordLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  // Trust proxy for Railway deployment
+  trustProxy: process.env.NODE_ENV === 'production',
 });
 
 app.use('/api/', limiter);
