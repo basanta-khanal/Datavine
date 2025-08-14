@@ -24,10 +24,11 @@ interface SubscriptionPlan {
 
 const subscriptionPlans: SubscriptionPlan[] = [
   {
-    id: "trial",
-    name: "7-Day Free Trial",
-    price: 0,
+    id: "premium",
+    name: "Premium Plan",
+    price: 1999, // $19.99/month after trial
     features: [
+      "7-Day Free Trial",
       "Full Access to All Features",
       "Detailed Assessment Results",
       "AI-Powered Recommendations",
@@ -36,27 +37,13 @@ const subscriptionPlans: SubscriptionPlan[] = [
       "Priority Support",
       "Cancel Anytime"
     ],
-    icon: <Gift className="h-5 w-5" />,
+    icon: <Crown className="h-5 w-5" />,
     popular: true
-  },
-  {
-    id: "premium",
-    name: "Premium Plan",
-    price: 1999, // $19.99
-    features: [
-      "All Trial Features",
-      "Advanced Pattern Analysis",
-      "Detailed Reports",
-      "Performance Insights",
-      "Custom Recommendations",
-      "Ongoing Support"
-    ],
-    icon: <Crown className="h-5 w-5" />
   }
 ]
 
 export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
-  const [selectedPlan, setSelectedPlan] = useState<string>("trial")
+  const [selectedPlan, setSelectedPlan] = useState<string>("premium")
   const [paymentMethod, setPaymentMethod] = useState<"card" | "apple_pay">("card")
   const [isLoading, setIsLoading] = useState(false)
   const [stripe, setStripe] = useState<any>(null)
@@ -107,8 +94,8 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
     setIsLoading(true)
 
     try {
-      if (selectedPlan === "trial") {
-        // Handle trial subscription
+      if (selectedPlan === "premium") {
+        // Handle premium plan with 7-day free trial
         const response = await apiClient.startTrial()
 
         if (!response.success) {
@@ -116,8 +103,8 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
         }
 
         toast({
-          title: "Trial Started!",
-          description: "Your 7-day free trial has been activated. Enjoy full access to all features!",
+          title: "Premium Trial Started!",
+          description: "Your 7-day free trial has been activated. After the trial, you'll be charged $19.99/month until canceled.",
         })
 
         onSuccess?.()

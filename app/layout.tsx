@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata: Metadata = {
   title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai - No Cost Cognitive Testing",
   description:
-    "Take FREE professional IQ tests, ADHD screenings, and autism assessments online. One of the few companies offering completely free cognitive assessments with instant results. No hidden fees, no credit card required.",
+    "Take FREE professional IQ tests, ADHD screenings, and autism assessments online. One of the few companies offering completely free cognitive assessments with instant results. No hidden fees.",
   keywords: "free IQ test, free ADHD test, free autism test, free cognitive assessment, free psychological testing, online IQ test, ADHD screening, autism screening, free mental health assessment, cognitive testing, brain assessment, free psychology test",
   authors: [{ name: "DataVine.ai Team" }],
   creator: "DataVine.ai",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://datavine.ai",
     title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
-    description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
+    description: "Take FREE professional cognitive assessments online. No cost. Instant results for IQ, ADHD, and autism screening.",
     siteName: "DataVine.ai",
     images: [
       {
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "FREE IQ Test, ADHD & Autism Assessment | DataVine.ai",
-    description: "Take FREE professional cognitive assessments online. No cost, no credit card required. Instant results for IQ, ADHD, and autism screening.",
+    description: "Take FREE professional cognitive assessments online. No cost. Instant results for IQ, ADHD, and autism screening.",
     creator: "@datavine_ai",
     images: ["/logo.svg"],
   },
@@ -77,7 +77,7 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebApplication",
               name: "DataVine.ai - Free Cognitive Assessments",
-              description: "FREE professional IQ tests, ADHD screenings, and autism assessments online. No cost, no credit card required.",
+              description: "FREE professional IQ tests, ADHD screenings, and autism assessments online. No cost.",
               url: "https://datavine.ai",
               applicationCategory: "HealthApplication",
               operatingSystem: "Web",

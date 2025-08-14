@@ -2574,6 +2574,12 @@ export default function Page() {
 
         // Open popup window
         console.log('Opening Google OAuth popup with URL:', googleAuthUrl);
+        
+        // Try direct navigation first to test if Google OAuth works
+        console.log('Testing direct navigation to Google OAuth...');
+        window.location.href = googleAuthUrl;
+        return; // Exit early for testing
+        
         const popup = window.open(
           googleAuthUrl,
           'googleSignIn',
@@ -3055,7 +3061,7 @@ export default function Page() {
           <h1 className="text-4xl font-bold text-slate-900 mb-8">Professional Cognitive Assessments</h1>
                       <p className="text-slate-700 text-lg mb-6">
               Take <strong>1 FREE assessment</strong> of your choice - IQ, ADHD, ASD, or Anxiety screening.
-              Professional cognitive testing with instant results, no credit card required.
+              Professional cognitive testing with instant results.
             </p>
 
 
@@ -3842,7 +3848,7 @@ export default function Page() {
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 inline-block">
               <div className="flex items-center">
                 <CheckCircle className="h-5 w-5 text-green-600 mr-2" />
-                <span className="text-green-800 font-medium">7-day free trial • No credit card required</span>
+                <span className="text-green-800 font-medium">7-day free trial</span>
               </div>
             </div>
           </div>
