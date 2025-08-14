@@ -2573,6 +2573,7 @@ export default function Page() {
           `access_type=offline`;
 
         // Open popup window
+        console.log('Opening Google OAuth popup with URL:', googleAuthUrl);
         const popup = window.open(
           googleAuthUrl,
           'googleSignIn',
@@ -2583,9 +2584,15 @@ export default function Page() {
           throw new Error('Popup blocked. Please allow popups for this site.');
         }
 
+        console.log('Popup opened successfully');
+
         // Listen for popup callback and handle response
         const handleMessage = async (event: MessageEvent) => {
-          if (event.origin !== window.location.origin) return;
+          console.log('Received message from popup:', event.data);
+          if (event.origin !== window.location.origin) {
+            console.log('Message origin mismatch:', event.origin, 'expected:', window.location.origin);
+            return;
+          }
           
           if (event.data.type === 'GOOGLE_AUTH_SUCCESS') {
             window.removeEventListener('message', handleMessage);
