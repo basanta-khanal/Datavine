@@ -64,20 +64,23 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
   const [cardElement, setCardElement] = useState<any>(null)
 
   useEffect(() => {
-    // Load Stripe
-    const loadStripe = async () => {
-      const { loadStripe } = await import('@stripe/stripe-js')
-      const stripeInstance = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!)
-      setStripe(stripeInstance)
-    }
-
-    if (typeof window !== 'undefined') {
+    // Only load Stripe if not selecting trial plan
+    if (selectedPlan !== "trial" && typeof window !== 'undefined') {
+      const loadStripe = async () => {
+        try {
+          const { loadStripe } = await import('@stripe/stripe-js')
+          const stripeInstance = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '')
+          setStripe(stripeInstance)
+        } catch (error) {
+          console.error('Failed to load Stripe:', error)
+        }
+      }
       loadStripe()
     }
-  }, [])
+  }, [selectedPlan])
 
   useEffect(() => {
-    if (stripe && paymentMethod === "card") {
+    if (stripe && paymentMethod === "card" && selectedPlan !== "trial") {
       const { Elements } = require('@stripe/react-stripe-js')
       const elementsInstance = Elements({
         clientSecret: "",
@@ -90,7 +93,7 @@ export const PaymentForm = ({ onSuccess, onCancel }: PaymentFormProps) => {
       })
       setElements(elementsInstance)
     }
-  }, [stripe, paymentMethod])
+  }, [stripe, paymentMethod, selectedPlan])
 
   const handlePlanSelect = (planId: string) => {
     setSelectedPlan(planId)

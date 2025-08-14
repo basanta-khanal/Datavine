@@ -2822,14 +2822,14 @@ export default function Page() {
             
             // Get complete user profile from backend
             const userResponse = await apiClient.getCurrentUser();
-            if (userResponse.success) {
+            if (userResponse.success && userResponse.data) {
               userData = {
                 ...userResponse.data,
-                assessmentHistory: userResponse.data.assessmentHistory || [],
-                subscription: userResponse.data.subscription?.type || "Free",
-                subscriptionExpiry: userResponse.data.subscription?.endDate || "N/A",
-                usedCoupon: userResponse.data.usedCoupon || false,
-                hasPaid: userResponse.data.hasPaid || false,
+                assessmentHistory: userResponse.data?.assessmentHistory || [],
+                subscription: userResponse.data?.subscription?.type || "Free",
+                subscriptionExpiry: userResponse.data?.subscription?.endDate || "N/A",
+                usedCoupon: userResponse.data?.usedCoupon || false,
+                hasPaid: userResponse.data?.hasPaid || false,
               };
             } else {
               // Fallback to basic user data if getCurrentUser fails

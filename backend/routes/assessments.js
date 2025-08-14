@@ -23,10 +23,10 @@ const getUserFromToken = (req) => {
   }
 };
 
-// @route   POST /api/assessments/save
+// @route   POST /api/assessments/save-result
 // @desc    Save assessment result
 // @access  Private
-router.post('/save', async (req, res) => {
+router.post('/save-result', async (req, res) => {
   try {
     const user = getUserFromToken(req);
     
