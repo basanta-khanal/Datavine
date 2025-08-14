@@ -2999,6 +2999,26 @@ export default function Page() {
           }
         }
 
+        // Load user's assessment history
+        try {
+          const historyResponse = await apiClient.getAssessmentHistory()
+          if (historyResponse.success && historyResponse.data) {
+            const updatedUserData = {
+              ...userData,
+              assessmentHistory: historyResponse.data.map((assessment: any) => ({
+                id: assessment.id,
+                testType: assessment.testType,
+                score: assessment.score,
+                completedAt: assessment.completedAt
+              }))
+            }
+            updateState({ user: updatedUserData })
+            localStorage.setItem("datavine_user", JSON.stringify(updatedUserData))
+          }
+        } catch (error) {
+          console.error('Failed to load assessment history:', error)
+        }
+
         toast({
           title: "Authentication successful",
           description: `Welcome, ${authForm.name || authForm.email}!`,

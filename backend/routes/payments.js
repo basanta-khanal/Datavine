@@ -1,25 +1,22 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const dataService = require('../services/dataService');
 
 const router = express.Router();
 
 // Middleware to get user from token
-const getUserFromToken = (req) => {
+const getUserFromToken = async (req) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) return null;
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret_key');
-    const users = global.inMemoryDB?.users || new Map();
+    const user = await dataService.findUserById(decoded.id);
     
-    for (const [email, userData] of users) {
-      if (userData.id === decoded.id) {
-        return userData;
-      }
-    }
-    return null;
+    return user;
   } catch (error) {
+    console.error('Token verification error:', error);
     return null;
   }
 };
@@ -29,7 +26,7 @@ const getUserFromToken = (req) => {
 // @access  Private
 router.post('/start-trial', async (req, res) => {
   try {
-    const user = getUserFromToken(req);
+    const user = await getUserFromToken(req);
     
     if (!user) {
       return res.status(401).json({
@@ -52,16 +49,14 @@ router.post('/start-trial', async (req, res) => {
     trialEndDate.setDate(trialEndDate.getDate() + 7);
 
     // Update user trial status
-    user.isTrialActive = true;
-    user.trialStartDate = trialStartDate;
-    user.trialEndDate = trialEndDate;
-    user.isSubscribed = true; // Temporarily set as subscribed for trial period
-    user.subscriptionType = 'trial';
-    user.updatedAt = new Date();
-
-    // Update user in storage
-    const users = global.inMemoryDB?.users || new Map();
-    users.set(user.email, user);
+    const updatedUser = await dataService.updateUser(user.email, {
+      isTrialActive: true,
+      trialStartDate: trialStartDate,
+      trialEndDate: trialEndDate,
+      isSubscribed: true, // Temporarily set as subscribed for trial period
+      subscriptionType: 'trial',
+      updatedAt: new Date()
+    });
 
     res.json({
       success: true,

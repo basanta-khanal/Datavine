@@ -159,7 +159,7 @@ router.post('/migrate-anonymous', async (req, res) => {
 // @access  Private
 router.get('/history', async (req, res) => {
   try {
-    const user = getUserFromToken(req);
+    const user = await getUserFromToken(req);
     
     if (!user) {
       return res.status(401).json({
@@ -170,16 +170,12 @@ router.get('/history', async (req, res) => {
 
     const { testType, limit = 10, page = 1 } = req.query;
 
-    // Get user's assessments
-    const assessments = global.inMemoryDB?.assessments || new Map();
-    const userAssessments = [];
+    // Get user's assessments using data service
+    let userAssessments = await dataService.getUserAssessments(user.id);
 
-    for (const [id, assessment] of assessments) {
-      if (assessment.userId === user.id) {
-        if (!testType || assessment.testType === testType) {
-          userAssessments.push(assessment);
-        }
-      }
+    // Filter by test type if specified
+    if (testType) {
+      userAssessments = userAssessments.filter(assessment => assessment.testType === testType);
     }
 
     // Sort by completion date (newest first)
