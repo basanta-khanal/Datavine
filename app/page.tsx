@@ -1987,48 +1987,6 @@ export default function Page() {
           // No stored authentication, ensure clean state
           clearAuthentication()
         }
-            
-            // Temporarily disable API call during initialization to fix loading issue
-            // TODO: Re-enable this once the API is working properly
-            /*
-            try {
-              const userResponse = await apiClient.getCurrentUser()
-              if (userResponse.success && userResponse.data) {
-                const refreshedUserData = {
-                  ...userResponse.data,
-                  assessmentHistory: userResponse.data?.assessmentHistory || [],
-                  subscription: {
-                    type: userResponse.data?.subscription?.type || "free",
-                    status: userResponse.data?.subscription?.status || "active",
-                    startDate: userResponse.data?.subscription?.startDate || new Date().toISOString(),
-                    endDate: userResponse.data?.subscription?.endDate || null
-                  },
-                  subscriptionExpiry: userResponse.data?.subscription?.endDate || "N/A",
-                  usedCoupon: userResponse.data?.usedCoupon || false,
-                  hasPaid: userResponse.data?.hasPaid || false,
-                  totalAssessments: userResponse.data?.totalAssessments || 0,
-                  averageScore: userResponse.data?.averageScore || 0,
-                  isSubscribed: userResponse.data?.isSubscribed || false,
-                  createdAt: userResponse.data?.createdAt || new Date().toISOString(),
-                }
-                updateState({ user: refreshedUserData })
-                localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
-              } else {
-                console.error('Invalid user response:', userResponse)
-                // Keep the stored data if refresh fails
-              }
-            } catch (error) {
-              console.error('Error refreshing user data:', error)
-              // Keep the stored data if refresh fails
-            }
-            */
-          } catch (error) {
-            console.error('Error parsing stored user data:', error)
-            // Clear invalid stored data
-            localStorage.removeItem("datavine_auth")
-            localStorage.removeItem("datavine_user")
-          }
-        }
         
         console.log('App initialization completed successfully')
       } catch (error) {
