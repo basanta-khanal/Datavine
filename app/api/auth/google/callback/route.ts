@@ -16,12 +16,20 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get('code');
     const error = searchParams.get('error');
+    
+    console.log('Google OAuth callback received:', { 
+      code: code ? 'present' : 'missing', 
+      error: error || 'none',
+      url: request.url 
+    });
 
     if (error) {
+      console.log('Google OAuth error:', error);
       return createHtmlResponse(`
         <html>
           <body>
             <script>
+              console.log('Sending error message to parent window');
               window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: '${error}' }, window.location.origin);
               window.close();
             </script>
@@ -31,10 +39,12 @@ export async function GET(request: NextRequest) {
     }
 
     if (!code) {
+      console.log('No authorization code received');
       return createHtmlResponse(`
         <html>
           <body>
             <script>
+              console.log('Sending no code error to parent window');
               window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: 'No authorization code received' }, window.location.origin);
               window.close();
             </script>
@@ -128,10 +138,12 @@ export async function GET(request: NextRequest) {
     }
 
     // Return success response that closes the popup and sends data to parent
+    console.log('Google OAuth successful, sending data to parent window');
     return createHtmlResponse(`
       <html>
         <body>
           <script>
+            console.log('Sending success message to parent window');
             window.opener.postMessage({
               type: 'GOOGLE_AUTH_SUCCESS',
               user: ${JSON.stringify(backendData.user)},
@@ -149,6 +161,7 @@ export async function GET(request: NextRequest) {
       <html>
         <body>
           <script>
+            console.log('Sending internal error to parent window');
             window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: 'Internal server error' }, window.location.origin);
             window.close();
           </script>
