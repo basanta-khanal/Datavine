@@ -1,9 +1,10 @@
-const { User, Assessment } = require('../models');
+const User = require('../models/User');
+const Assessment = require('../models/Assessment');
 const { sequelize } = require('../config/database');
 
 class DataService {
   constructor() {
-    this.usePostgreSQL = sequelize && sequelize.authenticate;
+    this.usePostgreSQL = sequelize && typeof sequelize.authenticate === 'function';
     this.inMemoryDB = global.inMemoryDB || {
       users: new Map(),
       assessments: new Map(),
@@ -32,6 +33,7 @@ class DataService {
         return await User.findByPk(id);
       } catch (error) {
         console.error('PostgreSQL user lookup failed:', error);
+        // Continue to in-memory fallback
       }
     }
     
@@ -195,4 +197,15 @@ class DataService {
   }
 }
 
-module.exports = new DataService();
+// Initialize the data service
+const dataService = new DataService();
+
+// Log the initialization status
+console.log('DataService initialized:', {
+  usePostgreSQL: dataService.usePostgreSQL,
+  hasSequelize: !!sequelize,
+  hasUserModel: !!User,
+  hasAssessmentModel: !!Assessment
+});
+
+module.exports = dataService;
