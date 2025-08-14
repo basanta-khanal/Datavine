@@ -203,10 +203,37 @@ class ApiClient {
       timeSpent: number;
     }>;
     detailedResults?: any;
+    sessionId?: string;
   }): Promise<ApiResponse> {
     return this.request('/api/assessments/save-result', {
       method: 'POST',
       body: JSON.stringify(assessmentData),
+    });
+  }
+
+  async saveAnonymousAssessment(assessmentData: {
+    testType: 'iq' | 'adhd' | 'asd' | 'anxiety';
+    score: number;
+    maxScore: number;
+    answers: Array<{
+      questionId: number;
+      selectedAnswer: string;
+      isCorrect: boolean;
+      timeSpent: number;
+    }>;
+    detailedResults?: any;
+    sessionId: string;
+  }): Promise<ApiResponse> {
+    return this.request('/api/assessments/save-anonymous', {
+      method: 'POST',
+      body: JSON.stringify(assessmentData),
+    });
+  }
+
+  async migrateAnonymousAssessments(sessionId: string): Promise<ApiResponse> {
+    return this.request('/api/assessments/migrate-anonymous', {
+      method: 'POST',
+      body: JSON.stringify({ sessionId }),
     });
   }
 

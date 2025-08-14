@@ -1,12 +1,19 @@
 const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
-const User = require('./User');
 
 const Assessment = sequelize.define('Assessment', {
   id: {
     type: DataTypes.UUID,
     defaultValue: DataTypes.UUIDV4,
     primaryKey: true
+  },
+  userId: {
+    type: DataTypes.UUID,
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
   testType: {
     type: DataTypes.ENUM('iq', 'adhd', 'asd', 'anxiety'),
@@ -21,13 +28,12 @@ const Assessment = sequelize.define('Assessment', {
     allowNull: false
   },
   percentage: {
-    type: DataTypes.DECIMAL(5, 2),
+    type: DataTypes.INTEGER,
     allowNull: false
   },
   answers: {
     type: DataTypes.JSONB,
-    allowNull: false,
-    defaultValue: []
+    allowNull: true
   },
   detailedResults: {
     type: DataTypes.JSONB,
@@ -37,20 +43,33 @@ const Assessment = sequelize.define('Assessment', {
     type: DataTypes.JSONB,
     allowNull: true
   },
-  timeSpent: {
-    type: DataTypes.INTEGER, // in seconds
-    allowNull: true
+  sessionId: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    comment: 'For anonymous assessments before login'
   },
-  isCompleted: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true
+  completedAt: {
+    type: DataTypes.DATE,
+    allowNull: false,
+    defaultValue: DataTypes.NOW
   }
 }, {
-  timestamps: true
+  tableName: 'assessments',
+  timestamps: true,
+  indexes: [
+    {
+      fields: ['userId']
+    },
+    {
+      fields: ['testType']
+    },
+    {
+      fields: ['completedAt']
+    },
+    {
+      fields: ['sessionId']
+    }
+  ]
 });
-
-// Define relationship
-Assessment.belongsTo(User, { foreignKey: 'userId' });
-User.hasMany(Assessment, { foreignKey: 'userId' });
 
 module.exports = Assessment; 

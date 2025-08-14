@@ -2153,9 +2153,47 @@ export default function Page() {
   }
 
   const saveAssessmentResult = async (results: any) => {
-    // Only save if user is authenticated
+    console.log('saveAssessmentResult called, isAuthenticated:', isAuthenticated)
+    console.log('Current user:', appState.user)
+    console.log('API client token:', apiClient.getToken())
+    
+    // Get or create session ID for anonymous users
+    let sessionId = localStorage.getItem('datavine_session_id')
+    if (!sessionId && !isAuthenticated) {
+      sessionId = 'anon_' + Date.now().toString() + Math.random().toString(36).substr(2, 9)
+      localStorage.setItem('datavine_session_id', sessionId)
+    }
+    
+    // Save assessment based on authentication status
     if (!isAuthenticated) {
-      console.log('User not authenticated, skipping assessment save')
+      console.log('Saving anonymous assessment with session ID:', sessionId)
+      try {
+        const assessmentData = {
+          testType: appState.testType as "iq" | "adhd" | "asd" | "anxiety",
+          score: results.iqScore || results.score,
+          maxScore: results.maxPoints || results.maxScore,
+          answers: answers.map((answer, index) => ({
+            questionId: index + 1,
+            selectedAnswer: String(answer),
+            isCorrect: appState.testType === "iq" ? 
+              (getCurrentQuestions()[index] as any)?.correctAnswer === answer : 
+              false,
+            timeSpent: 0
+          })),
+          detailedResults: results,
+          sessionId
+        }
+
+        const response = await apiClient.saveAnonymousAssessment(assessmentData)
+        
+        if (response.success) {
+          console.log('Anonymous assessment saved successfully')
+        } else {
+          console.error('Failed to save anonymous assessment:', response.message)
+        }
+      } catch (error) {
+        console.error('Failed to save anonymous assessment:', error)
+      }
       return
     }
 
@@ -2944,6 +2982,21 @@ export default function Page() {
         localStorage.setItem("datavine_user", JSON.stringify(userData))
         if (response.token) {
           localStorage.setItem("datavine_token", response.token)
+        }
+
+        // Migrate anonymous assessments if any exist
+        const sessionId = localStorage.getItem('datavine_session_id')
+        if (sessionId) {
+          try {
+            const migrationResponse = await apiClient.migrateAnonymousAssessments(sessionId)
+            if (migrationResponse.success && migrationResponse.migratedCount > 0) {
+              console.log(`Migrated ${migrationResponse.migratedCount} anonymous assessments to user account`)
+              // Clear the session ID after successful migration
+              localStorage.removeItem('datavine_session_id')
+            }
+          } catch (error) {
+            console.error('Failed to migrate anonymous assessments:', error)
+          }
         }
 
         toast({

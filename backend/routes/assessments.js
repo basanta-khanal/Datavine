@@ -1,24 +1,30 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
+const dataService = require('../services/dataService');
 
 const router = express.Router();
 
 // Middleware to get user from token
-const getUserFromToken = (req) => {
+const getUserFromToken = async (req) => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
-    if (!token) return null;
+    console.log('Authorization header:', req.header('Authorization'));
+    console.log('Token:', token ? 'present' : 'missing');
+    
+    if (!token) {
+      console.log('No token found in request');
+      return null;
+    }
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret_key');
-    const users = global.inMemoryDB?.users || new Map();
+    console.log('Decoded token:', decoded);
     
-    for (const [email, userData] of users) {
-      if (userData.id === decoded.id) {
-        return userData;
-      }
-    }
-    return null;
+    const user = await dataService.findUserById(decoded.id);
+    console.log('User found:', user ? user.email : 'not found');
+    
+    return user;
   } catch (error) {
+    console.error('Token verification error:', error);
     return null;
   }
 };
@@ -28,7 +34,7 @@ const getUserFromToken = (req) => {
 // @access  Private
 router.post('/save-result', async (req, res) => {
   try {
-    const user = getUserFromToken(req);
+    const user = await getUserFromToken(req);
     
     if (!user) {
       return res.status(401).json({
@@ -37,7 +43,7 @@ router.post('/save-result', async (req, res) => {
       });
     }
 
-    const { testType, score, maxScore, answers, detailedResults } = req.body;
+    const { testType, score, maxScore, answers, detailedResults, sessionId } = req.body;
 
     // Validate required fields
     if (!testType || score === undefined || !maxScore) {
@@ -47,34 +53,16 @@ router.post('/save-result', async (req, res) => {
       });
     }
 
-    // Create assessment result
-    const assessmentId = Date.now().toString();
-    const assessment = {
-      id: assessmentId,
-      userId: user.id,
+    // Save assessment using data service
+    const assessment = await dataService.saveAssessment({
       testType,
       score,
       maxScore,
       percentage: Math.round((score / maxScore) * 100),
       answers: answers || [],
       detailedResults: detailedResults || {},
-      completedAt: new Date().toISOString(),
-      createdAt: new Date().toISOString()
-    };
-
-    // Store assessment
-    const assessments = global.inMemoryDB?.assessments || new Map();
-    assessments.set(assessmentId, assessment);
-
-    // Update user's assessment history
-    if (!user.assessmentHistory) {
-      user.assessmentHistory = [];
-    }
-    user.assessmentHistory.push(assessmentId);
-
-    // Update user in storage
-    const users = global.inMemoryDB?.users || new Map();
-    users.set(user.email, user);
+      sessionId
+    }, user.id);
 
     res.status(201).json({
       success: true,
@@ -87,6 +75,81 @@ router.post('/save-result', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Server error during save'
+    });
+  }
+});
+
+// @route   POST /api/assessments/save-anonymous
+// @desc    Save anonymous assessment result (before login)
+// @access  Public
+router.post('/save-anonymous', async (req, res) => {
+  try {
+    const { testType, score, maxScore, answers, detailedResults, sessionId } = req.body;
+
+    // Validate required fields
+    if (!testType || score === undefined || !maxScore) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    // Save anonymous assessment
+    const assessment = await dataService.saveAssessment({
+      testType,
+      score,
+      maxScore,
+      percentage: Math.round((score / maxScore) * 100),
+      answers: answers || [],
+      detailedResults: detailedResults || {},
+      sessionId
+    });
+
+    res.status(201).json({
+      success: true,
+      message: 'Anonymous assessment result saved successfully',
+      assessment
+    });
+
+  } catch (error) {
+    console.error('Save anonymous assessment error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during save'
+    });
+  }
+});
+
+// @route   POST /api/assessments/migrate-anonymous
+// @desc    Migrate anonymous assessments to user account after login
+// @access  Private
+router.post('/migrate-anonymous', async (req, res) => {
+  try {
+    const user = await getUserFromToken(req);
+    
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: 'Not authorized'
+      });
+    }
+
+    const { sessionId } = req.body;
+
+    // Migrate anonymous assessments to user account
+    const migratedAssessments = await dataService.migrateAnonymousAssessments(user.id, sessionId);
+
+    res.json({
+      success: true,
+      message: `Migrated ${migratedAssessments.length} assessments to your account`,
+      migratedCount: migratedAssessments.length
+    });
+
+  } catch (error) {
+    console.error('Migrate anonymous assessments error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Server error during migration'
     });
   }
 });
