@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X, User } from "lucide-react"
+import { Brain, CheckCircle, CreditCard, Home, Loader2, Upload, Camera, X, User, Lock } from "lucide-react"
 import Logo from "@/components/logo"
 
 import { Button } from "@/components/ui/button"
@@ -1902,6 +1902,28 @@ export default function Page() {
 
   const [isInitializing, setIsInitializing] = useState(true)
 
+  const clearAuthentication = () => {
+    setIsAuthenticated(false)
+    apiClient.clearToken()
+    localStorage.removeItem("datavine_auth")
+    localStorage.removeItem("datavine_user")
+    localStorage.removeItem("datavine_token")
+    updateState({
+      user: {
+        name: "",
+        email: "",
+        phone: "",
+        profilePicture: null,
+        hasPaid: false,
+        isSubscribed: false,
+        isTrialActive: false,
+        subscription: "Free",
+        subscriptionExpiry: "N/A",
+        assessmentHistory: [],
+      }
+    })
+  }
+
   useEffect(() => {
     const initializeApp = async () => {
       try {
@@ -1922,17 +1944,49 @@ export default function Page() {
         // Check for stored authentication state
         const storedAuth = localStorage.getItem("datavine_auth")
         const storedUser = localStorage.getItem("datavine_user")
+        const storedToken = localStorage.getItem("datavine_token")
 
-        if (storedAuth === "true" && storedUser) {
+        if (storedAuth === "true" && storedUser && storedToken) {
           try {
             const userData = JSON.parse(storedUser)
-            setIsAuthenticated(true)
-            updateState({ user: userData })
             
-            // Set the token for API calls
-            if (userData.token) {
-              apiClient.setToken(userData.token)
+            // Set the token for API calls first
+            apiClient.setToken(storedToken)
+            
+            // Verify the token is valid by making a test API call
+            try {
+              const userResponse = await apiClient.getCurrentUser()
+              if (userResponse.success && userResponse.data) {
+                // Token is valid, update user data and set authenticated
+                const refreshedUserData = {
+                  ...userResponse.data,
+                  assessmentHistory: userResponse.data?.assessmentHistory || [],
+                  subscription: userResponse.data?.subscription?.type || "Free",
+                  subscriptionExpiry: userResponse.data?.subscription?.endDate || "N/A",
+                  usedCoupon: userResponse.data?.usedCoupon || false,
+                  hasPaid: userResponse.data?.hasPaid || false,
+                }
+                setIsAuthenticated(true)
+                updateState({ user: refreshedUserData })
+                localStorage.setItem("datavine_user", JSON.stringify(refreshedUserData))
+              } else {
+                // Token is invalid, clear authentication
+                console.log('Stored token is invalid, clearing authentication')
+                clearAuthentication()
+              }
+            } catch (error) {
+              console.error('Error validating stored token:', error)
+              // Token validation failed, clear authentication
+              clearAuthentication()
             }
+          } catch (error) {
+            console.error('Error parsing stored user data:', error)
+            clearAuthentication()
+          }
+        } else {
+          // No stored authentication, ensure clean state
+          clearAuthentication()
+        }
             
             // Temporarily disable API call during initialization to fix loading issue
             // TODO: Re-enable this once the API is working properly
@@ -2070,7 +2124,9 @@ export default function Page() {
         updateState({ currentView: "success", testResults })
         
         // Save results to database if user is authenticated
-        await saveAssessmentResult(testResults)
+        if (isAuthenticated) {
+          await saveAssessmentResult(testResults)
+        }
       } catch (error) {
         console.error('Error submitting test:', error)
         toast({
@@ -2139,7 +2195,11 @@ export default function Page() {
   }
 
   const saveAssessmentResult = async (results: any) => {
-    if (!isAuthenticated) return
+    // Only save if user is authenticated
+    if (!isAuthenticated) {
+      console.log('User not authenticated, skipping assessment save')
+      return
+    }
 
     try {
       const assessmentData = {
@@ -2157,7 +2217,29 @@ export default function Page() {
         detailedResults: results
       }
 
-      await apiClient.saveAssessmentResult(assessmentData)
+      const response = await apiClient.saveAssessmentResult(assessmentData)
+      
+      if (response.success) {
+        console.log('Assessment result saved successfully')
+        // Update user's assessment history in local state
+        if (appState.user) {
+          const updatedUser = {
+            ...appState.user,
+            assessmentHistory: [...(appState.user.assessmentHistory || []), {
+              id: response.assessment?.id || Date.now().toString(),
+              testType: appState.testType,
+              score: results.iqScore || results.score,
+              completedAt: new Date().toISOString()
+            }]
+          }
+          updateState({ user: updatedUser })
+          
+          // Update localStorage
+          localStorage.setItem("datavine_user", JSON.stringify(updatedUser))
+        }
+      } else {
+        console.error('Failed to save assessment:', response.message)
+      }
     } catch (error) {
       console.error('Failed to save assessment result:', error)
     }
@@ -2181,13 +2263,7 @@ export default function Page() {
       }
     }
 
-    setIsAuthenticated(false)
-    updateState({ user: null })
-
-    // Clear authentication state from localStorage
-    localStorage.removeItem("datavine_auth")
-    localStorage.removeItem("datavine_user")
-    localStorage.removeItem("datavine_token")
+    clearAuthentication()
 
     toast({
       title: "Logged out",
@@ -2892,6 +2968,9 @@ export default function Page() {
         // Store authentication state in localStorage
         localStorage.setItem("datavine_auth", "true")
         localStorage.setItem("datavine_user", JSON.stringify(userData))
+        if (response.token) {
+          localStorage.setItem("datavine_token", response.token)
+        }
 
         toast({
           title: "Authentication successful",
@@ -3645,65 +3724,111 @@ export default function Page() {
                 </Button>
               </div>
 
-              {isIQTest ? (
+              {appState.user?.isSubscribed || appState.user?.hasPaid ? (
+                // Show detailed results for subscribers
                 <>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{testResults.iqScore}</div>
-                      <div className="text-sm text-slate-600">IQ Score</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-4xl font-bold text-slate-900">{testResults.percentile}%</div>
-                      <div className="text-sm text-slate-600">Percentile</div>
-                    </div>
-                  </div>
-
-                  <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
-                    <h3 className="text-xl font-semibold text-slate-900 mb-4">IQ Classification</h3>
-                    <div
-                      className={`px-3 py-1.5 rounded-full font-medium text-sm w-fit ${classification.color} ${classification.bgColor}`}
-                    >
-                      {classification.category} ({classification.range})
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-                    <div>
-                      <div className="text-lg font-semibold text-slate-900 mb-2">Correct Answers</div>
-                      <Progress value={testResults.accuracy} />
-                      <div className="text-sm text-slate-600 mt-2">
-                        {testResults.totalCorrect} out of {testResults.totalQuestions}
+                  {isIQTest ? (
+                    <>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-slate-900">{testResults.iqScore}</div>
+                          <div className="text-sm text-slate-600">IQ Score</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-4xl font-bold text-slate-900">{testResults.percentile}%</div>
+                          <div className="text-sm text-slate-600">Percentile</div>
+                        </div>
                       </div>
-                    </div>
-                    <div>
-                      <div className="text-lg font-semibold text-slate-900 mb-2">Points Earned</div>
-                      <Progress value={(testResults.totalPoints / testResults.maxPoints) * 100} />
-                      <div className="text-sm text-slate-600 mt-2">
-                        {testResults.totalPoints} out of {testResults.maxPoints}
+
+                      <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
+                        <h3 className="text-xl font-semibold text-slate-900 mb-4">IQ Classification</h3>
+                        <div
+                          className={`px-3 py-1.5 rounded-full font-medium text-sm w-fit ${classification.color} ${classification.bgColor}`}
+                        >
+                          {classification.category} ({classification.range})
+                        </div>
                       </div>
-                    </div>
-                  </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                        <div>
+                          <div className="text-lg font-semibold text-slate-900 mb-2">Correct Answers</div>
+                          <Progress value={testResults.accuracy} />
+                          <div className="text-sm text-slate-600 mt-2">
+                            {testResults.totalCorrect} out of {testResults.totalQuestions}
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-lg font-semibold text-slate-900 mb-2">Points Earned</div>
+                          <Progress value={(testResults.totalPoints / testResults.maxPoints) * 100} />
+                          <div className="text-sm text-slate-600 mt-2">
+                            {testResults.totalPoints} out of {testResults.maxPoints}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Show score for non-IQ tests */}
+                      {testType !== "adhd" && testType !== "asd" && testType !== "anxiety" && (
+                        <div className="text-center mb-8">
+                          <div className="text-4xl font-bold text-slate-900">
+                            {score} / {maxScore}
+                          </div>
+                          <div className="text-sm text-slate-600">Total Score</div>
+                        </div>
+                      )}
+
+                      <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
+                        <h3 className="text-xl font-semibold text-slate-900 mb-4">Assessment Insights</h3>
+                        <div
+                          className={`px-3 py-1.5 rounded-full font-medium text-sm w-fit ${classification.color} ${classification.bgColor}`}
+                        >
+                          {classification.category}
+                        </div>
+                        <p className="text-slate-700 mt-3">{classification.description}</p>
+                      </div>
+                    </>
+                  )}
                 </>
               ) : (
+                // Show limited results for non-subscribers
                 <>
-                  {/* Hide score display for ADHD, ASD, and Anxiety tests */}
-                  {testType !== "adhd" && testType !== "asd" && testType !== "anxiety" && (
-                    <div className="text-center mb-8">
-                      <div className="text-4xl font-bold text-slate-900">
-                        {score} / {maxScore}
+                  <div className="text-center mb-8">
+                    <div className="bg-slate-100 p-8 rounded-xl border border-slate-200">
+                      <Lock className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+                      <h3 className="text-xl font-semibold text-slate-900 mb-2">Assessment Completed!</h3>
+                      <p className="text-slate-600 mb-4">
+                        Your assessment has been completed successfully. Start your free trial to see your detailed results, scores, and personalized insights.
+                      </p>
+                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-blue-600 mr-2" />
+                          <span className="text-blue-800 font-medium">Assessment saved • Ready for detailed analysis</span>
+                        </div>
                       </div>
-                      <div className="text-sm text-slate-600">Total Score</div>
                     </div>
-                  )}
+                  </div>
 
                   <div className="bg-white rounded-xl p-6 mb-6 border border-slate-200">
-                    <h3 className="text-xl font-semibold text-slate-900 mb-4">Assessment Insights</h3>
-                    <div
-                      className={`px-3 py-1.5 rounded-full font-medium text-sm w-fit ${classification.color} ${classification.bgColor}`}
-                    >
-                      {classification.category}
+                    <h3 className="text-xl font-semibold text-slate-900 mb-4">What You'll Get with Premium</h3>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-3" />
+                        <span className="text-slate-700">Detailed score breakdown and analysis</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-3" />
+                        <span className="text-slate-700">AI-powered personalized recommendations</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-3" />
+                        <span className="text-slate-700">Progress tracking and performance insights</span>
+                      </div>
+                      <div className="flex items-center">
+                        <CheckCircle className="h-4 w-4 text-green-600 mr-3" />
+                        <span className="text-slate-700">Unlimited assessments and detailed reports</span>
+                      </div>
                     </div>
-                    <p className="text-slate-700 mt-3">{classification.description}</p>
                   </div>
                 </>
               )}
