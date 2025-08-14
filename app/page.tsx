@@ -2589,6 +2589,7 @@ export default function Page() {
         // Listen for popup callback and handle response
         const handleMessage = async (event: MessageEvent) => {
           console.log('Received message from popup:', event.data);
+          console.log('Message origin:', event.origin, 'Window origin:', window.location.origin);
           if (event.origin !== window.location.origin) {
             console.log('Message origin mismatch:', event.origin, 'expected:', window.location.origin);
             return;
@@ -2652,9 +2653,11 @@ export default function Page() {
         
         // Add timeout for authentication
         const authTimeout = setTimeout(() => {
+          console.log('Google OAuth timeout reached');
           window.removeEventListener('message', handleMessage);
           
           if (!apiClient.getToken()) {
+            console.log('No token received, showing timeout error');
             toast({
               title: "Authentication Timeout",
               description: "Google sign-in timed out. Please try again.",
